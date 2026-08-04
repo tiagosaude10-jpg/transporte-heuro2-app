@@ -6,7 +6,7 @@ const APP_SHELL = [
   './js/app.js',
   './manifest.json',
   './A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png',
-  './assets/images/tela-inicial.jpeg'
+  './tela-inicial.jpeg'
 ];
 
 self.addEventListener('install', (event) => {
