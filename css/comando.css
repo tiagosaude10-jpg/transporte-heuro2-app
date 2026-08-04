@@ -1,6 +1,7 @@
 :root {
   color-scheme: light;
   background: #ffffff;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -53,14 +54,10 @@ body {
   -webkit-user-drag: none;
 }
 
-.command-admin-hotspot {
+.command-hotspot {
   position: absolute;
   z-index: 4;
-  left: 40%;
-  bottom: 0.8%;
-  width: 20%;
-  height: 8.8%;
-  border-radius: 22px 22px 0 0;
+  display: block;
   background: transparent;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
@@ -68,13 +65,76 @@ body {
   transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease;
 }
 
-.command-admin-hotspot:active,
-.command-admin-hotspot.is-pressed {
+.command-admin-hotspot {
+  left: 40%;
+  bottom: .8%;
+  width: 20%;
+  height: 8.8%;
+  border-radius: 22px 22px 0 0;
+}
+
+.command-hotspot:active,
+.command-hotspot.is-pressed {
   background: rgba(22, 105, 216, .16);
   box-shadow: inset 0 0 0 2px rgba(22, 105, 216, .38);
   transform: scale(.97);
 }
 
-.command-admin-hotspot[hidden] {
+.permission-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 22, 54, .46);
+  backdrop-filter: blur(3px);
+}
+
+.permission-dialog[hidden] {
   display: none;
+}
+
+.permission-dialog__card {
+  width: min(100%, 360px);
+  padding: 24px 22px 20px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 20px 48px rgba(0, 28, 82, .3);
+  text-align: center;
+}
+
+.permission-dialog__icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff2e8;
+  color: #c04b00;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.permission-dialog h2 {
+  margin: 0 0 8px;
+  color: #0b2f78;
+  font-size: 1.35rem;
+}
+
+.permission-dialog p {
+  margin: 0 0 18px;
+  color: #536581;
+  line-height: 1.45;
+}
+
+.permission-dialog button {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0d6fe0, #0844a6);
+  color: #ffffff;
+  font: 800 1rem/1 system-ui, -apple-system, sans-serif;
 }
