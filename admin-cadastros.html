@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#073d9d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
-  <title>Aprovar cadastros — HEURO Transportes</title>
+  <title>Gerenciar cadastros — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/admin-cadastros.css?v=1">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=2">
 </head>
 <body>
   <main class="admin-page">
@@ -17,18 +17,27 @@
       <a class="back-link" href="comando.html" aria-label="Voltar à tela de comando">←</a>
       <div>
         <p>PAINEL DO ADMINISTRADOR</p>
-        <h1>Aprovar cadastros</h1>
-        <span>Analise as solicitações e defina o acesso de cada usuário.</span>
+        <h1>Gerenciar cadastros</h1>
+        <span>Aprove, rejeite, bloqueie, reative, arquive ou exclua usuários.</span>
       </div>
     </header>
 
     <section class="summary-card" aria-live="polite">
-      <div><strong id="pendingCount">0</strong><span>Pendentes</span></div>
+      <div><strong id="userCount">0</strong><span id="countLabel">Cadastros</span></div>
       <button id="refreshButton" type="button">Atualizar</button>
     </section>
 
+    <nav class="status-filters" aria-label="Filtrar cadastros">
+      <button type="button" data-status="pendente" class="is-active">Pendentes</button>
+      <button type="button" data-status="aprovado">Aprovados</button>
+      <button type="button" data-status="rejeitado">Rejeitados</button>
+      <button type="button" data-status="bloqueado">Bloqueados</button>
+      <button type="button" data-status="arquivado">Arquivados</button>
+      <button type="button" data-status="todos">Todos</button>
+    </nav>
+
     <p id="adminMessage" class="admin-message" role="alert"></p>
-    <section id="pendingList" class="pending-list" aria-label="Cadastros pendentes"></section>
+    <section id="userList" class="pending-list" aria-label="Lista de cadastros"></section>
 
     <template id="userCardTemplate">
       <article class="user-card">
@@ -38,7 +47,7 @@
             <h2 class="user-name"></h2>
             <p class="user-email"></p>
           </div>
-          <span class="status-badge">Pendente</span>
+          <span class="status-badge"></span>
         </div>
 
         <dl class="user-details">
@@ -46,11 +55,13 @@
           <div><dt>Setor / Empresa</dt><dd data-field="organization"></dd></div>
           <div><dt>Cargo</dt><dd data-field="job_role"></dd></div>
           <div><dt>Acesso solicitado</dt><dd data-field="requested_access"></dd></div>
+          <div><dt>Acesso autorizado</dt><dd data-field="authorized_access"></dd></div>
           <div><dt>CPF</dt><dd data-field="cpf"></dd></div>
           <div><dt>Telefone</dt><dd data-field="phone"></dd></div>
+          <div><dt>Cadastrado em</dt><dd data-field="created_at"></dd></div>
         </dl>
 
-        <label class="access-select-label">
+        <label class="access-select-label pending-control">
           Acesso a conceder
           <select class="access-select">
             <option value="solicitante">Solicitante</option>
@@ -64,13 +75,32 @@
         </label>
 
         <div class="decision-actions">
-          <button class="approve-button" type="button">Aprovar</button>
-          <button class="reject-button" type="button">Rejeitar</button>
-          <button class="block-button" type="button">Bloquear</button>
+          <button class="approve-button pending-action" type="button">Aprovar</button>
+          <button class="reject-button pending-action" type="button">Rejeitar</button>
+          <button class="block-button block-action" type="button">Bloquear</button>
+          <button class="reactivate-button reactivate-action" type="button">Reativar</button>
+          <button class="resubmit-button resubmit-action" type="button">Reenviar para análise</button>
+          <button class="archive-button archive-action" type="button">Arquivar</button>
+          <button class="delete-button delete-action" type="button">Excluir definitivamente</button>
         </div>
       </article>
     </template>
+
+    <dialog id="confirmDialog" class="confirm-dialog">
+      <form method="dialog" class="confirm-box">
+        <h2 id="confirmTitle">Confirmar ação</h2>
+        <p id="confirmText"></p>
+        <label id="deleteConfirmationLabel" hidden>
+          Digite <strong>EXCLUIR</strong> para confirmar
+          <input id="deleteConfirmation" type="text" autocomplete="off">
+        </label>
+        <div>
+          <button value="cancel" class="cancel-confirm">Cancelar</button>
+          <button id="confirmActionButton" value="default" class="confirm-action">Confirmar</button>
+        </div>
+      </form>
+    </dialog>
   </main>
-  <script src="js/admin-cadastros.js?v=1" defer></script>
+  <script src="js/admin-cadastros.js?v=2" defer></script>
 </body>
 </html>
