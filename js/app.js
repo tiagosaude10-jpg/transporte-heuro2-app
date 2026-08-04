@@ -4,6 +4,7 @@
   const passwordInput = document.getElementById('loginPassword');
   const togglePasswordButton = document.getElementById('togglePassword');
   const loginForm = document.getElementById('loginForm');
+  const firstRegistrationLink = document.getElementById('firstRegistrationLink');
 
   togglePasswordButton?.addEventListener('click', () => {
     if (!passwordInput) return;
@@ -19,6 +20,18 @@
   loginForm?.addEventListener('submit', (event) => {
     event.preventDefault();
     loginForm.reportValidity();
+  });
+
+  firstRegistrationLink?.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    const destination = firstRegistrationLink.href;
+    firstRegistrationLink.classList.add('is-pressed');
+    firstRegistrationLink.setAttribute('aria-busy', 'true');
+
+    window.setTimeout(() => {
+      window.location.assign(destination);
+    }, 140);
   });
 
   if ('serviceWorker' in navigator) {
