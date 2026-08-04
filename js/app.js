@@ -1,13 +1,17 @@
 (() => {
   'use strict';
 
-  const app = document.getElementById('app');
+  const enterButton = document.getElementById('enterButton');
 
-  if (!app) {
-    console.error('Transporte HEURO 2: elemento principal #app não encontrado.');
-    return;
+  enterButton?.addEventListener('click', () => {
+    alert('Tela de login será adicionada na próxima etapa.');
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch((error) => {
+        console.error('Falha ao registrar o service worker:', error);
+      });
+    });
   }
-
-  document.documentElement.dataset.appReady = 'true';
-  console.info('Transporte HEURO 2 — Etapa 1 carregada.');
 })();
