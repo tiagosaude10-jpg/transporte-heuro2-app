@@ -9,7 +9,7 @@
   <title>Primeiro cadastro — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/cadastro.css?v=8">
+  <link rel="stylesheet" href="css/cadastro.css?v=9">
 </head>
 <body>
 <main class="registration-page">
@@ -22,7 +22,7 @@
 
   <form id="registrationForm" class="registration-card" novalidate>
     <section class="field-card field-card--institution">
-      <label for="institutionalLink">Vínculo institucional</label><p>Informe seu vínculo com a instituição.</p>
+      <label for="institutionalLink">Vínulo institucional</label><p>Informe seu vínculo com a instituição.</p>
       <select id="institutionalLink" name="institutionalLink" required><option value="">Selecione o vínculo</option><option value="heuro">HEURO — Servidor/Colaborador</option><option value="empresa">Empresa de Transporte</option><option value="administracao">Administração Geral</option></select>
     </section>
 
@@ -55,7 +55,7 @@
     <section class="field-card field-card--basic"><label for="email">E-mail</label><p>Será usado para acesso e recuperação da conta.</p><input id="email" name="email" type="email" autocomplete="email" required></section>
     <section class="field-card field-card--basic"><label for="phone">Telefone / WhatsApp</label><p>Informe um número com DDD.</p><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></section>
 
-    <section class="field-card field-card--basic"><label for="birthDateText">Data de nascimento</label><p>Digite no formato dia/mês/ano ou use o calendário.</p><div class="date-control"><input id="birthDateText" name="birthDateText" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" required><button id="clearBirthDate" class="date-clear" type="button" aria-label="Limpar data">×</button><button id="openBirthDatePicker" class="date-picker" type="button" aria-label="Abrir calendário">▣</button><input id="birthDatePicker" class="native-date-picker" type="date" tabindex="-1" aria-label="Selecionar data de nascimento"></div></section>
+    <section class="field-card field-card--basic"><label for="birthDateText">Data de nascimento</label><p>Digite no formato dia/mês/ano ou use o calendário.</p><div class="date-control"><input id="birthDateText" name="birthDateText" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" required><button id="clearBirthDate" class="date-clear" type="button" aria-label="Limpar data">×</button><button id="openBirthDatePicker" class="date-picker" type="button" aria-label="Abrir calendário"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M7.5 3v4M16.5 3v4M3.5 9h17M7 12.5h2M11 12.5h2M15 12.5h2M7 16.5h2M11 16.5h2M15 16.5h2"></path></svg></button><input id="birthDatePicker" class="native-date-picker" type="date" tabindex="-1" aria-label="Selecionar data de nascimento"></div></section>
     <section class="field-card field-card--basic"><label for="password">Senha</label><p>Use no mínimo 6 caracteres.</p><input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required></section>
     <section class="field-card field-card--basic"><label for="confirmPassword">Confirmar senha</label><p>Digite novamente a mesma senha.</p><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></section>
 
