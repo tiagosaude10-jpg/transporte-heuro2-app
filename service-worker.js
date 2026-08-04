@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transporte-heuro2-v2';
+const CACHE_NAME = 'transporte-heuro2-v3';
 const APP_SHELL = [
   './',
   './index.html',
