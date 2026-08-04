@@ -157,12 +157,16 @@ input { font: inherit; }
   border-radius: 12px;
   pointer-events: auto;
   touch-action: manipulation;
-  transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease;
+  transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease, filter .12s ease;
 }
 
 .login-screen__register:active,
 .login-screen__register.is-pressed {
-  background: rgba(16, 91, 214, .18);
-  box-shadow: inset 0 0 0 2px rgba(16, 91, 214, .42);
-  transform: scale(.985);
+  background: rgba(21, 98, 224, .28);
+  box-shadow:
+    inset 0 0 0 3px rgba(14, 76, 190, .82),
+    0 0 0 2px rgba(255, 255, 255, .72),
+    0 0 18px rgba(27, 99, 219, .38);
+  transform: scale(.975);
+  filter: saturate(1.12) brightness(.98);
 }
