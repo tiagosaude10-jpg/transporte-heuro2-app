@@ -9,32 +9,74 @@
   <title>Gerenciar cadastros — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/admin-cadastros.css?v=2">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=3">
 </head>
 <body>
   <main class="admin-page">
     <header class="admin-header">
-      <a class="back-link" href="comando.html" aria-label="Voltar à tela de comando">←</a>
-      <div>
+      <a class="back-link" href="comando.html?v=40" aria-label="Voltar à tela de comando">←</a>
+
+      <div class="brand-mark" aria-hidden="true">
+        <img src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt="">
+      </div>
+
+      <div class="admin-header__text">
         <p>PAINEL DO ADMINISTRADOR</p>
         <h1>Gerenciar cadastros</h1>
-        <span>Aprove, rejeite, bloqueie, reative, arquive ou exclua usuários.</span>
+        <span>Controle os acessos e as situações dos usuários do HEURO Transportes.</span>
       </div>
     </header>
 
-    <section class="summary-card" aria-live="polite">
-      <div><strong id="userCount">0</strong><span id="countLabel">Cadastros</span></div>
-      <button id="refreshButton" type="button">Atualizar</button>
+    <section class="dashboard-card" aria-live="polite">
+      <div class="dashboard-card__count">
+        <span class="dashboard-card__icon" aria-hidden="true">👥</span>
+        <div>
+          <strong id="userCount">0</strong>
+          <span id="countLabel">Cadastros</span>
+        </div>
+      </div>
+      <button id="refreshButton" type="button">
+        <span aria-hidden="true">↻</span>
+        Atualizar
+      </button>
     </section>
 
-    <nav class="status-filters" aria-label="Filtrar cadastros">
-      <button type="button" data-status="pendente" class="is-active">Pendentes</button>
-      <button type="button" data-status="aprovado">Aprovados</button>
-      <button type="button" data-status="rejeitado">Rejeitados</button>
-      <button type="button" data-status="bloqueado">Bloqueados</button>
-      <button type="button" data-status="arquivado">Arquivados</button>
-      <button type="button" data-status="todos">Todos</button>
-    </nav>
+    <section class="filters-panel" aria-labelledby="filterTitle">
+      <div class="filters-panel__heading">
+        <div>
+          <span class="eyebrow">VISUALIZAÇÃO</span>
+          <h2 id="filterTitle">Escolha uma categoria</h2>
+        </div>
+        <span class="filters-panel__hint">Toque para filtrar</span>
+      </div>
+
+      <nav class="status-filters" aria-label="Filtrar cadastros">
+        <button type="button" data-status="pendente" class="filter-pending is-active">
+          <span class="filter-icon" aria-hidden="true">⏳</span>
+          <span>Pendentes</span>
+        </button>
+        <button type="button" data-status="aprovado" class="filter-approved">
+          <span class="filter-icon" aria-hidden="true">✓</span>
+          <span>Aprovados</span>
+        </button>
+        <button type="button" data-status="rejeitado" class="filter-rejected">
+          <span class="filter-icon" aria-hidden="true">✕</span>
+          <span>Rejeitados</span>
+        </button>
+        <button type="button" data-status="bloqueado" class="filter-blocked">
+          <span class="filter-icon" aria-hidden="true">🔒</span>
+          <span>Bloqueados</span>
+        </button>
+        <button type="button" data-status="arquivado" class="filter-archived">
+          <span class="filter-icon" aria-hidden="true">▣</span>
+          <span>Arquivados</span>
+        </button>
+        <button type="button" data-status="todos" class="filter-all">
+          <span class="filter-icon" aria-hidden="true">☰</span>
+          <span>Todos</span>
+        </button>
+      </nav>
+    </section>
 
     <p id="adminMessage" class="admin-message" role="alert"></p>
     <section id="userList" class="pending-list" aria-label="Lista de cadastros"></section>
