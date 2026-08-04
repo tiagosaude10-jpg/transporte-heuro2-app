@@ -45,6 +45,7 @@ body {
 .command-screen__image {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -52,31 +53,36 @@ body {
   object-position: center;
   user-select: none;
   -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 .command-hotspot {
   position: absolute;
-  z-index: 4;
+  z-index: 20;
   display: block;
   background: transparent;
+  border: 0;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  cursor: pointer;
+  pointer-events: auto;
   transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease;
 }
 
 .command-admin-hotspot {
-  left: 40%;
-  bottom: .8%;
-  width: 20%;
-  height: 8.8%;
-  border-radius: 22px 22px 0 0;
+  left: 33%;
+  bottom: 0;
+  width: 34%;
+  height: 14%;
+  min-height: 72px;
+  border-radius: 28px 28px 0 0;
 }
 
 .command-hotspot:active,
 .command-hotspot.is-pressed {
   background: rgba(22, 105, 216, .16);
-  box-shadow: inset 0 0 0 2px rgba(22, 105, 216, .38);
+  box-shadow: inset 0 0 0 2px rgba(22, 105, 216, .42);
   transform: scale(.97);
 }
 
