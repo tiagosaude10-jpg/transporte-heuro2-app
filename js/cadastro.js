@@ -2,6 +2,11 @@
   'use strict';
 
   const form = document.getElementById('registrationForm');
+  const institutionalLink = document.getElementById('institutionalLink');
+  const heuroSectorField = document.getElementById('heuroSectorField');
+  const heuroSector = document.getElementById('heuroSector');
+  const transportCompanyField = document.getElementById('transportCompanyField');
+  const transportCompany = document.getElementById('transportCompany');
   const cpf = document.getElementById('cpf');
   const phone = document.getElementById('phone');
   const birthDateText = document.getElementById('birthDateText');
@@ -13,6 +18,28 @@
   const message = document.getElementById('registrationMessage');
 
   const onlyDigits = (value) => value.replace(/\D/g, '');
+
+  const updateInstitutionalFields = () => {
+    const value = institutionalLink?.value || '';
+    const isHeuro = value === 'heuro';
+    const isCompany = value === 'empresa';
+
+    if (heuroSectorField) heuroSectorField.hidden = !isHeuro;
+    if (transportCompanyField) transportCompanyField.hidden = !isCompany;
+
+    if (heuroSector) {
+      heuroSector.required = isHeuro;
+      if (!isHeuro) heuroSector.value = '';
+    }
+
+    if (transportCompany) {
+      transportCompany.required = isCompany;
+      if (!isCompany) transportCompany.value = '';
+    }
+  };
+
+  institutionalLink?.addEventListener('change', updateInstitutionalFields);
+  updateInstitutionalFields();
 
   cpf?.addEventListener('input', () => {
     const digits = onlyDigits(cpf.value).slice(0, 11);
