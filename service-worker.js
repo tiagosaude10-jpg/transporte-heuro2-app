@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transporte-heuro2-v4';
+const CACHE_NAME = 'transporte-heuro2-v5';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,11 +26,32 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const request = event.request;
+  const isNavigation = request.mode === 'navigate';
+  const isCodeFile = /\.(?:html|css|js|json)$/.test(new URL(request.url).pathname);
+
+  if (isNavigation || isCodeFile) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          return response;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-      return response;
-    }))
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        return response;
+      });
+    })
   );
 });
