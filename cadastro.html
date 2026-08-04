@@ -10,7 +10,7 @@
   <title>Primeiro cadastro — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/cadastro.css?v=2">
+  <link rel="stylesheet" href="css/cadastro.css?v=3">
 </head>
 <body>
   <main class="registration-page">
@@ -30,6 +30,42 @@
       </div>
 
       <form id="registrationForm" novalidate>
+        <div class="field">
+          <label for="institutionalLink">Vínculo institucional</label>
+          <p>Informe a qual grupo você pertence.</p>
+          <select id="institutionalLink" name="institutionalLink" required>
+            <option value="">Selecione o vínculo</option>
+            <option value="heuro">HEURO — Servidor/Colaborador</option>
+            <option value="empresa">Empresa de Transporte</option>
+            <option value="administracao">Administração Geral</option>
+          </select>
+        </div>
+
+        <div id="heuroSectorField" class="field" hidden>
+          <label for="heuroSector">Setor do HEURO</label>
+          <p>Selecione o setor onde você atua.</p>
+          <select id="heuroSector" name="heuroSector">
+            <option value="">Selecione o setor</option>
+            <option>UTI</option>
+            <option>Sala Vermelha</option>
+            <option>Clínica Médica</option>
+            <option>Clínica Cirúrgica / Ortopédica</option>
+            <option>Centro Cirúrgico</option>
+            <option>NIR</option>
+            <option>Diagnóstico por Imagem</option>
+            <option>Laboratório</option>
+            <option>Recepção</option>
+            <option>Administração</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <div id="transportCompanyField" class="field" hidden>
+          <label for="transportCompany">Empresa de Transporte</label>
+          <p>Digite o nome da empresa à qual você pertence.</p>
+          <input id="transportCompany" name="transportCompany" type="text" autocomplete="organization">
+        </div>
+
         <div class="field">
           <label for="accessType">Tipo de acesso solicitado</label>
           <p>Selecione como você utilizará o aplicativo.</p>
@@ -95,6 +131,6 @@
       </form>
     </section>
   </main>
-  <script src="js/cadastro.js?v=2" defer></script>
+  <script src="js/cadastro.js?v=3" defer></script>
 </body>
 </html>
