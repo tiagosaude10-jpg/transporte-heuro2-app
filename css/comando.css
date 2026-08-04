@@ -1,7 +1,6 @@
 :root {
   color-scheme: light;
   background: #ffffff;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -33,7 +32,6 @@ body {
 .command-screen__image {
   position: absolute;
   inset: 0;
-  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -44,87 +42,27 @@ body {
   pointer-events: none;
 }
 
-.command-hotspot {
+.command-admin-button {
   position: fixed;
-  z-index: 9999;
-  display: block;
-  background: transparent;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  width: 100%;
+  height: 26vh;
+  min-height: 150px;
+  margin: 0;
+  padding: 0;
   border: 0;
-  text-decoration: none;
+  border-radius: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   pointer-events: auto;
 }
 
-.command-admin-hotspot {
-  left: 30%;
-  right: 30%;
-  bottom: 0;
-  height: 16vh;
-  min-height: 90px;
-  border-radius: 30px 30px 0 0;
-}
-
-.command-hotspot:active,
-.command-hotspot.is-pressed {
-  background: rgba(22, 105, 216, .18);
-  box-shadow: inset 0 0 0 3px rgba(22, 105, 216, .45);
-  transform: scale(.98);
-}
-
-.permission-dialog {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: rgba(5, 22, 54, .46);
-  backdrop-filter: blur(3px);
-}
-
-.permission-dialog[hidden] { display: none; }
-
-.permission-dialog__card {
-  width: min(100%, 360px);
-  padding: 24px 22px 20px;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 20px 48px rgba(0, 28, 82, .3);
-  text-align: center;
-}
-
-.permission-dialog__icon {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 14px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #fff2e8;
-  color: #c04b00;
-  font-size: 2rem;
-  font-weight: 900;
-}
-
-.permission-dialog h2 {
-  margin: 0 0 8px;
-  color: #0b2f78;
-  font-size: 1.35rem;
-}
-
-.permission-dialog p {
-  margin: 0 0 18px;
-  color: #536581;
-  line-height: 1.45;
-}
-
-.permission-dialog button {
-  width: 100%;
-  min-height: 50px;
-  border: 0;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #0d6fe0, #0844a6);
-  color: #ffffff;
-  font: 800 1rem/1 system-ui, -apple-system, sans-serif;
+.command-admin-button:active {
+  background: rgba(22, 105, 216, .08);
 }
