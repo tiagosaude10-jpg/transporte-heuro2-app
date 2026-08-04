@@ -7,6 +7,8 @@
   const heuroSector = document.getElementById('heuroSector');
   const transportCompanyField = document.getElementById('transportCompanyField');
   const transportCompany = document.getElementById('transportCompany');
+  const accessType = document.getElementById('accessType');
+  const accessTypeField = accessType?.closest('.field');
   const cpf = document.getElementById('cpf');
   const phone = document.getElementById('phone');
   const birthDateText = document.getElementById('birthDateText');
@@ -19,10 +21,15 @@
 
   const onlyDigits = (value) => value.replace(/\D/g, '');
 
+  // Administrador não é uma opção comum de solicitação.
+  // Administração Geral recebe esse perfil internamente.
+  accessType?.querySelector('option[value="administrador"]')?.remove();
+
   const updateInstitutionalFields = () => {
     const value = institutionalLink?.value || '';
     const isHeuro = value === 'heuro';
     const isCompany = value === 'empresa';
+    const isGeneralAdministration = value === 'administracao';
 
     if (heuroSectorField) heuroSectorField.hidden = !isHeuro;
     if (transportCompanyField) transportCompanyField.hidden = !isCompany;
@@ -36,9 +43,27 @@
       transportCompany.required = isCompany;
       if (!isCompany) transportCompany.value = '';
     }
+
+    if (accessTypeField) accessTypeField.hidden = isGeneralAdministration;
+
+    if (accessType) {
+      accessType.required = !isGeneralAdministration;
+      if (isGeneralAdministration) accessType.value = '';
+    }
+
+    if (form) {
+      form.dataset.effectiveAccessType = isGeneralAdministration
+        ? 'administrador_geral'
+        : (accessType?.value || '');
+    }
   };
 
   institutionalLink?.addEventListener('change', updateInstitutionalFields);
+  accessType?.addEventListener('change', () => {
+    if (form && institutionalLink?.value !== 'administracao') {
+      form.dataset.effectiveAccessType = accessType.value;
+    }
+  });
   updateInstitutionalFields();
 
   cpf?.addEventListener('input', () => {
@@ -87,6 +112,8 @@
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    updateInstitutionalFields();
 
     if (!form.checkValidity()) {
       form.reportValidity();
