@@ -12,7 +12,6 @@
   enterButton?.addEventListener('click', () => {
     if (welcomeScreen) welcomeScreen.hidden = true;
     if (loginScreen) loginScreen.hidden = false;
-    document.getElementById('loginIdentifier')?.focus();
   });
 
   togglePassword?.addEventListener('click', () => {
@@ -22,22 +21,21 @@
 
   loginForm?.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (!loginForm.checkValidity()) {
-      loginForm.reportValidity();
-      return;
-    }
-    alert('Login preparado. A autenticação será ligada ao banco de dados na etapa correspondente.');
   });
 
   firstRegistrationButton?.addEventListener('click', () => {
-    alert('O primeiro cadastro será conectado na próxima etapa.');
+    // A tela de primeiro cadastro será ligada apenas quando for autorizada.
   });
 
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js').catch((error) => {
-        console.error('Falha ao registrar o service worker:', error);
-      });
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((registration) => registration.unregister());
+    });
+  }
+
+  if ('caches' in window) {
+    caches.keys().then((keys) => {
+      keys.forEach((key) => caches.delete(key));
     });
   }
 })();
