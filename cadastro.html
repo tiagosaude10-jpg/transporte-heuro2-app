@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#062e86">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
+  <title>Primeiro cadastro — HEURO Transportes</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
+  <link rel="stylesheet" href="css/cadastro.css?v=1">
+</head>
+<body>
+  <main class="registration-page">
+    <header class="registration-header">
+      <img class="registration-logo" src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt="HEURO Transportes">
+      <div>
+        <p class="registration-kicker">HEURO TRANSPORTES</p>
+        <h1>Realizar primeiro cadastro</h1>
+        <p>Preencha seus dados para solicitar acesso ao sistema.</p>
+      </div>
+    </header>
+
+    <section class="registration-card">
+      <div class="registration-intro">
+        <strong>Solicitação de acesso</strong>
+        <span>Todos os campos abaixo devem ser preenchidos. O cadastro ficará aguardando autorização do administrador.</span>
+      </div>
+
+      <form id="registrationForm" novalidate>
+        <fieldset class="profile-group">
+          <legend>Tipo de acesso solicitado</legend>
+          <label><input type="radio" name="profile" value="solicitante" required><span><strong>Solicitante de transporte</strong><small>Realiza solicitações de transporte.</small></span></label>
+          <label><input type="radio" name="profile" value="executante"><span><strong>Executante de transporte</strong><small>Recebe e executa os transportes.</small></span></label>
+          <label><input type="radio" name="profile" value="administrador"><span><strong>Administrador</strong><small>Acesso sujeito à aprovação de outro administrador.</small></span></label>
+        </fieldset>
+
+        <div class="field"><label for="fullName">Nome completo</label><p>Digite seu nome como consta no documento.</p><input id="fullName" name="fullName" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="cpf">CPF</label><p>Informe apenas um CPF válido.</p><input id="cpf" name="cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required></div>
+        <div class="field"><label for="email">E-mail</label><p>Será usado para acesso e recuperação da conta.</p><input id="email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="phone">Telefone / WhatsApp</label><p>Informe um número com DDD.</p><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></div>
+        <div class="field"><label for="birthDate">Data de nascimento</label><p>Digite a data ou use o calendário.</p><div class="date-control"><input id="birthDate" name="birthDate" type="date" required><button id="clearBirthDate" type="button" aria-label="Limpar data">×</button></div></div>
+        <div class="field"><label for="password">Senha</label><p>Use no mínimo 6 caracteres.</p><input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required></div>
+        <div class="field"><label for="confirmPassword">Confirmar senha</label><p>Digite novamente a mesma senha.</p><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></div>
+
+        <label class="declaration"><input id="truthDeclaration" type="checkbox" required><span>Declaro que as informações fornecidas são verdadeiras e estou ciente de que o acesso depende da autorização de um administrador.</span></label>
+
+        <p id="registrationMessage" class="registration-message" aria-live="polite"></p>
+        <button class="primary-action" type="submit">Enviar cadastro para aprovação</button>
+        <a class="secondary-action" href="login.html">Voltar ao login</a>
+      </form>
+    </section>
+  </main>
+  <script src="js/cadastro.js?v=1" defer></script>
+</body>
+</html>
