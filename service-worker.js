@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transporte-heuro2-v1';
+const CACHE_NAME = 'transporte-heuro2-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,7 @@ const APP_SHELL = [
   './js/app.js',
   './manifest.json',
   './A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png',
-  './tela-inicial.jpeg'
+  './99BD9DA5-6979-422A-99EB-B41F091CC5FE.png'
 ];
 
 self.addEventListener('install', (event) => {
