@@ -4,12 +4,9 @@
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   width: 100%;
   min-height: 100%;
   margin: 0;
@@ -22,25 +19,16 @@ body {
   overflow: hidden;
 }
 
-.command-shell {
+.command-shell,
+.command-screen {
   width: 100%;
   height: 100vh;
   height: 100svh;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   background: #ffffff;
 }
 
-.command-screen {
-  position: relative;
-  width: 100vw;
-  height: 100svh;
-  max-width: 100vw;
-  max-height: 100svh;
-  overflow: hidden;
-  background: #ffffff;
-}
+.command-screen { position: relative; }
 
 .command-screen__image {
   position: absolute;
@@ -57,39 +45,37 @@ body {
 }
 
 .command-hotspot {
-  position: absolute;
-  z-index: 20;
+  position: fixed;
+  z-index: 9999;
   display: block;
   background: transparent;
   border: 0;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  cursor: pointer;
   pointer-events: auto;
-  transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease;
 }
 
 .command-admin-hotspot {
-  left: 33%;
+  left: 30%;
+  right: 30%;
   bottom: 0;
-  width: 34%;
-  height: 14%;
-  min-height: 72px;
-  border-radius: 28px 28px 0 0;
+  height: 16vh;
+  min-height: 90px;
+  border-radius: 30px 30px 0 0;
 }
 
 .command-hotspot:active,
 .command-hotspot.is-pressed {
-  background: rgba(22, 105, 216, .16);
-  box-shadow: inset 0 0 0 2px rgba(22, 105, 216, .42);
-  transform: scale(.97);
+  background: rgba(22, 105, 216, .18);
+  box-shadow: inset 0 0 0 3px rgba(22, 105, 216, .45);
+  transform: scale(.98);
 }
 
 .permission-dialog {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 10000;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -97,9 +83,7 @@ body {
   backdrop-filter: blur(3px);
 }
 
-.permission-dialog[hidden] {
-  display: none;
-}
+.permission-dialog[hidden] { display: none; }
 
 .permission-dialog__card {
   width: min(100%, 360px);
