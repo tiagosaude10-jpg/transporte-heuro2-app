@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#073d9d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
+  <title>Aprovar cadastros — HEURO Transportes</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=1">
+</head>
+<body>
+  <main class="admin-page">
+    <header class="admin-header">
+      <a class="back-link" href="comando.html" aria-label="Voltar à tela de comando">←</a>
+      <div>
+        <p>PAINEL DO ADMINISTRADOR</p>
+        <h1>Aprovar cadastros</h1>
+        <span>Analise as solicitações e defina o acesso de cada usuário.</span>
+      </div>
+    </header>
+
+    <section class="summary-card" aria-live="polite">
+      <div><strong id="pendingCount">0</strong><span>Pendentes</span></div>
+      <button id="refreshButton" type="button">Atualizar</button>
+    </section>
+
+    <p id="adminMessage" class="admin-message" role="alert"></p>
+    <section id="pendingList" class="pending-list" aria-label="Cadastros pendentes"></section>
+
+    <template id="userCardTemplate">
+      <article class="user-card">
+        <div class="user-card__top">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <h2 class="user-name"></h2>
+            <p class="user-email"></p>
+          </div>
+          <span class="status-badge">Pendente</span>
+        </div>
+
+        <dl class="user-details">
+          <div><dt>Vínculo</dt><dd data-field="institutional_link"></dd></div>
+          <div><dt>Setor / Empresa</dt><dd data-field="organization"></dd></div>
+          <div><dt>Cargo</dt><dd data-field="job_role"></dd></div>
+          <div><dt>Acesso solicitado</dt><dd data-field="requested_access"></dd></div>
+          <div><dt>CPF</dt><dd data-field="cpf"></dd></div>
+          <div><dt>Telefone</dt><dd data-field="phone"></dd></div>
+        </dl>
+
+        <label class="access-select-label">
+          Acesso a conceder
+          <select class="access-select">
+            <option value="solicitante">Solicitante</option>
+            <option value="executante">Executante</option>
+          </select>
+        </label>
+
+        <label class="notes-label">
+          Observação administrativa
+          <textarea class="decision-notes" rows="2" placeholder="Opcional"></textarea>
+        </label>
+
+        <div class="decision-actions">
+          <button class="approve-button" type="button">Aprovar</button>
+          <button class="reject-button" type="button">Rejeitar</button>
+          <button class="block-button" type="button">Bloquear</button>
+        </div>
+      </article>
+    </template>
+  </main>
+  <script src="js/admin-cadastros.js?v=1" defer></script>
+</body>
+</html>
