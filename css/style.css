@@ -71,7 +71,10 @@ input {
 .hotspot {
   position: absolute;
   display: block;
+  margin: 0;
+  padding: 0;
   border: 0;
+  outline: 0;
   background: transparent;
   cursor: pointer;
   text-decoration: none;
@@ -86,23 +89,30 @@ input {
   border-radius: 18px;
 }
 
+/*
+ * Campos do login reconstruídos como áreas internas de digitação.
+ * Eles não redesenham o quadro da imagem: cobrem somente o texto de exemplo.
+ */
 .login-control {
   position: absolute;
-  left: 12.5%;
-  width: 75%;
-  height: 5.8%;
+  z-index: 2;
+  display: block;
+  height: 4.35%;
   margin: 0;
-  border: 1.5px solid #b8c4dc;
-  border-radius: 12px;
-  outline: none;
+  padding: 0 1.4%;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
   background: #ffffff;
-  color: #0b2f83;
-  font-size: clamp(14px, 3.6vw, 22px);
-  line-height: 1;
-  padding: 0 7%;
-  box-shadow: 0 0 0 2px #ffffff inset;
+  box-shadow: none;
+  color: #173c8e;
+  caret-color: #173c8e;
+  font-size: clamp(15px, 3.7vw, 23px);
+  font-weight: 400;
+  line-height: normal;
   appearance: none;
   -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .login-control::placeholder {
@@ -110,26 +120,31 @@ input {
   opacity: 1;
 }
 
+.login-control:focus,
+.login-control:focus-visible {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
 .login-control--identifier {
-  top: 38.6%;
+  left: 15.8%;
+  top: 39.32%;
+  width: 68.2%;
 }
 
 .login-control--password {
-  top: 50.1%;
-  padding-right: 12%;
-}
-
-.login-control:focus {
-  border-color: #397df4;
-  box-shadow: 0 0 0 3px rgba(57, 125, 244, 0.22);
+  left: 15.8%;
+  top: 50.82%;
+  width: 64.2%;
 }
 
 .login-screen__toggle {
   z-index: 3;
-  left: 78%;
-  top: 50.1%;
-  width: 9%;
-  height: 5.8%;
+  left: 78.5%;
+  top: 50.45%;
+  width: 8.5%;
+  height: 5.2%;
 }
 
 .login-screen__submit {
@@ -146,9 +161,4 @@ input {
   width: 75%;
   height: 4.7%;
   border-radius: 12px;
-}
-
-.hotspot:focus-visible {
-  outline: 3px solid rgba(0, 92, 255, 0.65);
-  outline-offset: 2px;
 }
