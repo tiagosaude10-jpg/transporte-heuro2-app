@@ -4,8 +4,10 @@
   const form = document.getElementById('registrationForm');
   const cpf = document.getElementById('cpf');
   const phone = document.getElementById('phone');
-  const birthDate = document.getElementById('birthDate');
+  const birthDateText = document.getElementById('birthDateText');
+  const birthDatePicker = document.getElementById('birthDatePicker');
   const clearBirthDate = document.getElementById('clearBirthDate');
+  const openBirthDatePicker = document.getElementById('openBirthDatePicker');
   const password = document.getElementById('password');
   const confirmPassword = document.getElementById('confirmPassword');
   const message = document.getElementById('registrationMessage');
@@ -27,14 +29,46 @@
       .replace(/(\d{5})(\d{4})$/, '$1-$2');
   });
 
+  birthDateText?.addEventListener('input', () => {
+    const digits = onlyDigits(birthDateText.value).slice(0, 8);
+    birthDateText.value = digits
+      .replace(/^(\d{2})(\d)/, '$1/$2')
+      .replace(/^(\d{2}\/\d{2})(\d)/, '$1/$2');
+  });
+
   clearBirthDate?.addEventListener('click', () => {
-    if (birthDate) birthDate.value = '';
+    if (birthDateText) birthDateText.value = '';
+    if (birthDatePicker) birthDatePicker.value = '';
+  });
+
+  openBirthDatePicker?.addEventListener('click', () => {
+    if (!birthDatePicker) return;
+    if (typeof birthDatePicker.showPicker === 'function') {
+      try {
+        birthDatePicker.showPicker();
+        return;
+      } catch (_) {}
+    }
+    birthDatePicker.click();
+  });
+
+  birthDatePicker?.addEventListener('change', () => {
+    if (!birthDatePicker.value || !birthDateText) return;
+    const [year, month, day] = birthDatePicker.value.split('-');
+    birthDateText.value = `${day}/${month}/${year}`;
   });
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
+
     if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(birthDateText?.value || '')) {
+      message.textContent = 'Informe a data de nascimento no formato DD/MM/AAAA.';
+      birthDateText?.focus();
       return;
     }
 
@@ -44,6 +78,6 @@
       return;
     }
 
-    message.textContent = 'Tela pronta. O envio ao banco será ativado na próxima etapa.';
+    message.textContent = 'Cadastro validado. O envio ao banco será ativado na próxima etapa.';
   });
 })();
