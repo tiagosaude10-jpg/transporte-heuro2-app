@@ -1,7 +1,7 @@
 {
   "id": "/transporte-heuro2-app/",
-  "name": "Transporte HEURO 2",
-  "short_name": "HEURO 2",
+  "name": "HEURO Transportes",
+  "short_name": "HEURO Transportes",
   "description": "Aplicativo de agendamentos e operações de transporte do HEURO.",
   "start_url": "./",
   "scope": "./",
