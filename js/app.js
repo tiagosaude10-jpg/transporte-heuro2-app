@@ -15,19 +15,10 @@
   message.id = 'loginMessage';
   message.setAttribute('role', 'alert');
   message.style.cssText = [
-    'position:absolute',
-    'left:8%',
-    'right:8%',
-    'top:64%',
-    'z-index:8',
-    'margin:0',
-    'padding:10px 12px',
-    'border-radius:12px',
-    'background:rgba(255,255,255,.95)',
-    'color:#9b1c1c',
-    'font:700 14px/1.3 system-ui,-apple-system,sans-serif',
-    'text-align:center',
-    'display:none'
+    'position:absolute','left:8%','right:8%','top:64%','z-index:8','margin:0',
+    'padding:10px 12px','border-radius:12px','background:rgba(255,255,255,.95)',
+    'color:#9b1c1c','font:700 14px/1.3 system-ui,-apple-system,sans-serif',
+    'text-align:center','display:none'
   ].join(';');
   loginForm?.appendChild(message);
 
@@ -46,12 +37,9 @@
 
   togglePasswordButton?.addEventListener('click', () => {
     if (!passwordInput) return;
-    const passwordIsVisible = passwordInput.type === 'text';
-    passwordInput.type = passwordIsVisible ? 'password' : 'text';
-    togglePasswordButton.setAttribute(
-      'aria-label',
-      passwordIsVisible ? 'Mostrar senha' : 'Ocultar senha'
-    );
+    const visible = passwordInput.type === 'text';
+    passwordInput.type = visible ? 'password' : 'text';
+    togglePasswordButton.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
   });
 
   loginForm?.addEventListener('submit', async (event) => {
@@ -77,55 +65,28 @@
     try {
       const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
         method: 'POST',
-        headers: {
-          apikey: SUPABASE_KEY,
-          'Content-Type': 'application/json'
-        },
+        headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: identifier, password })
       });
-
       const authData = await authResponse.json();
-      if (!authResponse.ok) {
-        throw new Error(
-          authData?.error_description || authData?.msg || 'E-mail ou senha incorretos.'
-        );
-      }
+      if (!authResponse.ok) throw new Error(authData?.error_description || authData?.msg || 'E-mail ou senha incorretos.');
 
       const userId = authData?.user?.id;
       const accessToken = authData?.access_token;
-      if (!userId || !accessToken) {
-        throw new Error('Não foi possível validar a sessão. Tente novamente.');
-      }
+      if (!userId || !accessToken) throw new Error('Não foi possível validar a sessão. Tente novamente.');
 
       const profileResponse = await fetch(
         `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=id,display_name,status,authorized_access`,
-        {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${accessToken}`,
-            Accept: 'application/json'
-          }
-        }
+        { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}`, Accept: 'application/json' } }
       );
-
       const profiles = await profileResponse.json();
-      if (!profileResponse.ok || !Array.isArray(profiles) || profiles.length === 0) {
-        throw new Error('Seu perfil não foi localizado. Procure o administrador do sistema.');
-      }
+      if (!profileResponse.ok || !Array.isArray(profiles) || profiles.length === 0) throw new Error('Seu perfil não foi localizado. Procure o administrador do sistema.');
 
       const profile = profiles[0];
-      if (profile.status === 'pendente') {
-        throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.');
-      }
-      if (profile.status === 'rejeitado') {
-        throw new Error('Seu cadastro foi rejeitado. Procure o administrador do sistema.');
-      }
-      if (profile.status === 'bloqueado') {
-        throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.');
-      }
-      if (profile.status !== 'aprovado' || !profile.authorized_access) {
-        throw new Error('Seu perfil ainda não possui autorização de acesso.');
-      }
+      if (profile.status === 'pendente') throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.');
+      if (profile.status === 'rejeitado') throw new Error('Seu cadastro foi rejeitado. Procure o administrador do sistema.');
+      if (profile.status === 'bloqueado') throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.');
+      if (profile.status !== 'aprovado' || !profile.authorized_access) throw new Error('Seu perfil ainda não possui autorização de acesso.');
 
       localStorage.setItem('heuro_session', JSON.stringify({
         access_token: accessToken,
@@ -133,11 +94,12 @@
         expires_at: authData.expires_at || 0,
         user_id: userId,
         display_name: profile.display_name || '',
-        access: profile.authorized_access
+        access: profile.authorized_access,
+        status: profile.status
       }));
 
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.assign('./comando.html'), 180);
+      window.setTimeout(() => window.location.replace('./comando.html?v=20260804-1802'), 120);
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.');
       setLoading(false);
@@ -146,21 +108,10 @@
 
   firstRegistrationLink?.addEventListener('click', (event) => {
     event.preventDefault();
-    const destination = firstRegistrationLink.href;
     firstRegistrationLink.classList.add('is-pressed');
-    firstRegistrationLink.setAttribute('aria-busy', 'true');
-    window.setTimeout(() => window.location.assign(destination), 140);
+    window.setTimeout(() => window.location.assign(firstRegistrationLink.href), 140);
   });
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach((registration) => registration.unregister());
-    });
-  }
-
-  if ('caches' in window) {
-    caches.keys().then((cacheNames) => {
-      cacheNames.forEach((cacheName) => caches.delete(cacheName));
-    });
-  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then((items) => items.forEach((item) => item.unregister()));
+  if ('caches' in window) caches.keys().then((names) => names.forEach((name) => caches.delete(name)));
 })();
