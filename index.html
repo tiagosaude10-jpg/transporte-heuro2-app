@@ -3,20 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#082f86">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HEURO 2">
   <title>Transporte HEURO 2</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
+  <link rel="icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main id="app" class="app-shell" aria-live="polite">
-    <section class="stage-one" aria-labelledby="app-title">
-      <div class="stage-one__mark" aria-hidden="true">HEURO</div>
-      <h1 id="app-title">Transporte HEURO 2</h1>
-      <p>Estrutura inicial criada com sucesso.</p>
-      <p class="stage-one__status">Etapa 1 — base do aplicativo</p>
+  <main id="app" class="app-shell">
+    <section class="welcome-screen" aria-label="Tela inicial do Transporte HEURO">
+      <img class="welcome-screen__image" src="assets/images/tela-inicial.jpeg" alt="Transporte HEURO — Agendamentos e Operações">
+      <button id="enterButton" class="welcome-screen__button" type="button" aria-label="Entrar no Transporte HEURO"></button>
     </section>
   </main>
-
   <script src="js/app.js" defer></script>
 </body>
 </html>
