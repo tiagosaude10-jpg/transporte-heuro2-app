@@ -10,7 +10,7 @@
   <title>Primeiro cadastro — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/cadastro.css?v=1">
+  <link rel="stylesheet" href="css/cadastro.css?v=2">
 </head>
 <body>
   <main class="registration-page">
@@ -26,22 +26,64 @@
     <section class="registration-card">
       <div class="registration-intro">
         <strong>Solicitação de acesso</strong>
-        <span>Todos os campos abaixo devem ser preenchidos. O cadastro ficará aguardando autorização do administrador.</span>
+        <span>O cadastro ficará pendente até ser analisado e autorizado por um administrador.</span>
       </div>
 
       <form id="registrationForm" novalidate>
-        <fieldset class="profile-group">
-          <legend>Tipo de acesso solicitado</legend>
-          <label><input type="radio" name="profile" value="solicitante" required><span><strong>Solicitante de transporte</strong><small>Realiza solicitações de transporte.</small></span></label>
-          <label><input type="radio" name="profile" value="executante"><span><strong>Executante de transporte</strong><small>Recebe e executa os transportes.</small></span></label>
-          <label><input type="radio" name="profile" value="administrador"><span><strong>Administrador</strong><small>Acesso sujeito à aprovação de outro administrador.</small></span></label>
-        </fieldset>
+        <div class="field">
+          <label for="accessType">Tipo de acesso solicitado</label>
+          <p>Selecione como você utilizará o aplicativo.</p>
+          <select id="accessType" name="accessType" required>
+            <option value="">Selecione o tipo de acesso</option>
+            <option value="solicitante">Solicitante de transporte</option>
+            <option value="executante">Executante de transporte</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="jobRole">Cargo / Função</label>
+          <p>Selecione seu cargo ou função no serviço.</p>
+          <select id="jobRole" name="jobRole" required>
+            <option value="">Selecione o cargo</option>
+            <option>Médico(a)</option>
+            <option>Enfermeiro(a)</option>
+            <option>Técnico(a) de enfermagem</option>
+            <option>Auxiliar de enfermagem</option>
+            <option>Motorista</option>
+            <option>Condutor de ambulância</option>
+            <option>Maqueiro(a)</option>
+            <option>Fisioterapeuta</option>
+            <option>Assistente social</option>
+            <option>Psicólogo(a)</option>
+            <option>Farmacêutico(a)</option>
+            <option>Recepcionista</option>
+            <option>Profissional administrativo</option>
+            <option>Coordenador(a)</option>
+            <option>Administrador do sistema</option>
+            <option>Outro</option>
+          </select>
+        </div>
 
         <div class="field"><label for="fullName">Nome completo</label><p>Digite seu nome como consta no documento.</p><input id="fullName" name="fullName" type="text" autocomplete="name" required></div>
-        <div class="field"><label for="cpf">CPF</label><p>Informe apenas um CPF válido.</p><input id="cpf" name="cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required></div>
+        <div class="field"><label for="displayName">Nome para exibição</label><p>Nome que aparecerá na tela inicial do aplicativo.</p><input id="displayName" name="displayName" type="text" maxlength="40" placeholder="Ex.: Tiago" required></div>
+        <div class="field"><label for="cpf">CPF</label><p>Informe um CPF válido.</p><input id="cpf" name="cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required></div>
         <div class="field"><label for="email">E-mail</label><p>Será usado para acesso e recuperação da conta.</p><input id="email" name="email" type="email" autocomplete="email" required></div>
         <div class="field"><label for="phone">Telefone / WhatsApp</label><p>Informe um número com DDD.</p><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></div>
-        <div class="field"><label for="birthDate">Data de nascimento</label><p>Digite a data ou use o calendário.</p><div class="date-control"><input id="birthDate" name="birthDate" type="date" required><button id="clearBirthDate" type="button" aria-label="Limpar data">×</button></div></div>
+
+        <div class="field">
+          <label for="birthDateText">Data de nascimento</label>
+          <p>Digite no formato dia/mês/ano ou use o calendário.</p>
+          <div class="date-control">
+            <input id="birthDateText" name="birthDateText" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" required>
+            <button id="clearBirthDate" class="date-clear" type="button" aria-label="Limpar data">×</button>
+            <button id="openBirthDatePicker" class="date-picker" type="button" aria-label="Abrir calendário">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg>
+            </button>
+            <input id="birthDatePicker" class="native-date-picker" type="date" tabindex="-1" aria-hidden="true">
+          </div>
+        </div>
+
         <div class="field"><label for="password">Senha</label><p>Use no mínimo 6 caracteres.</p><input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required></div>
         <div class="field"><label for="confirmPassword">Confirmar senha</label><p>Digite novamente a mesma senha.</p><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></div>
 
@@ -53,6 +95,6 @@
       </form>
     </section>
   </main>
-  <script src="js/cadastro.js?v=1" defer></script>
+  <script src="js/cadastro.js?v=2" defer></script>
 </body>
 </html>
