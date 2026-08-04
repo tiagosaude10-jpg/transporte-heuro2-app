@@ -89,10 +89,6 @@ input {
   border-radius: 18px;
 }
 
-/*
- * Campos do login reconstruídos como áreas internas de digitação.
- * Eles não redesenham o quadro da imagem: cobrem somente o texto de exemplo.
- */
 .login-control {
   position: absolute;
   z-index: 2;
@@ -148,6 +144,7 @@ input {
 }
 
 .login-screen__submit {
+  z-index: 4;
   left: 12.5%;
   top: 57.7%;
   width: 75%;
@@ -156,9 +153,12 @@ input {
 }
 
 .login-screen__register {
+  z-index: 10;
   left: 12.5%;
   top: 67.3%;
   width: 75%;
   height: 4.7%;
   border-radius: 12px;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
