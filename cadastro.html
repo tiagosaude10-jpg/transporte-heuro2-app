@@ -10,7 +10,7 @@
   <title>Primeiro cadastro — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/cadastro.css?v=5">
+  <link rel="stylesheet" href="css/cadastro.css?v=6">
 </head>
 <body>
   <main class="registration-page">
@@ -66,14 +66,13 @@
           <input id="transportCompany" name="transportCompany" type="text" autocomplete="organization">
         </div>
 
-        <div class="field">
+        <div id="accessTypeField" class="field">
           <label for="accessType">Tipo de acesso solicitado</label>
           <p>Selecione como você utilizará o aplicativo.</p>
           <select id="accessType" name="accessType" required>
             <option value="">Selecione o tipo de acesso</option>
             <option value="solicitante">Solicitante de transporte</option>
             <option value="executante">Executante de transporte</option>
-            <option value="administrador">Administrador</option>
           </select>
         </div>
 
@@ -131,6 +130,6 @@
       </form>
     </section>
   </main>
-  <script src="js/cadastro.js?v=3" defer></script>
+  <script src="js/cadastro.js?v=4" defer></script>
 </body>
 </html>
