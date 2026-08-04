@@ -1,0 +1,74 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f7fb;
+  color: #10244f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #eef4ff 0%, #ffffff 55%, #f4f7fb 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+}
+
+.stage-one {
+  width: min(100%, 430px);
+  padding: 32px 24px;
+  border: 1px solid rgba(20, 67, 145, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(22, 55, 112, 0.13);
+  text-align: center;
+}
+
+.stage-one__mark {
+  margin-bottom: 18px;
+  font-size: clamp(2rem, 11vw, 3.7rem);
+  font-weight: 900;
+  letter-spacing: -0.07em;
+  color: #0a47bb;
+}
+
+.stage-one h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 7vw, 2.3rem);
+}
+
+.stage-one p {
+  margin: 12px 0 0;
+  line-height: 1.55;
+  color: #53627d;
+}
+
+.stage-one__status {
+  display: inline-block;
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: #e9f7ee;
+  color: #087a3c !important;
+  font-size: 0.88rem;
+  font-weight: 750;
+}
