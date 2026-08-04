@@ -10,7 +10,7 @@
   <title>Primeiro cadastro — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/cadastro.css?v=4">
+  <link rel="stylesheet" href="css/cadastro.css?v=5">
 </head>
 <body>
   <main class="registration-page">
@@ -30,7 +30,7 @@
       </div>
 
       <form id="registrationForm" novalidate>
-        <div class="field">
+        <div class="field field--institution">
           <label for="institutionalLink">Vínculo institucional</label>
           <p>Informe a qual grupo você pertence.</p>
           <select id="institutionalLink" name="institutionalLink" required>
@@ -41,7 +41,7 @@
           </select>
         </div>
 
-        <div id="heuroSectorField" class="field" hidden>
+        <div id="heuroSectorField" class="field field--heuro" hidden>
           <label for="heuroSector">Setor do HEURO</label>
           <p>Selecione o setor onde você atua.</p>
           <select id="heuroSector" name="heuroSector">
@@ -60,7 +60,7 @@
           </select>
         </div>
 
-        <div id="transportCompanyField" class="field" hidden>
+        <div id="transportCompanyField" class="field field--company" hidden>
           <label for="transportCompany">Empresa de Transporte</label>
           <p>Digite o nome da empresa à qual você pertence.</p>
           <input id="transportCompany" name="transportCompany" type="text" autocomplete="organization">
