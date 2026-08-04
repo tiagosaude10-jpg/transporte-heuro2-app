@@ -6,16 +6,19 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Tela de comando — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/comando.css?v=5">
+  <link rel="stylesheet" href="css/comando.css?v=6">
 </head>
 <body>
   <main class="command-shell">
-    <section class="command-screen" aria-label="Tela de comando do HEURO Transportes">
+    <section id="commandScreen" class="command-screen" aria-label="Tela de comando do HEURO Transportes">
       <img class="command-screen__image" src="2AEAA123-F06C-4510-A36B-F98600DFC210.png" alt="Tela de comando do HEURO Transportes">
-      <a id="adminPanelLink" class="command-hotspot command-admin-hotspot" href="./admin-cadastros.html?v=3" data-required-access="administrador_geral" aria-label="Abrir painel do administrador"></a>
+      <a id="adminPanelLink" class="command-hotspot command-admin-hotspot" href="./admin-cadastros.html?v=3" data-required-access="administrador_geral" aria-label="Abrir painel do administrador" onclick="window.location.href='./admin-cadastros.html?v=3'; return false;"></a>
     </section>
   </main>
 
@@ -28,6 +31,42 @@
     </div>
   </div>
 
-  <script src="js/comando.js?v=3" defer></script>
+  <script>
+    (() => {
+      'use strict';
+      const destination = './admin-cadastros.html?v=3';
+      const screen = document.getElementById('commandScreen');
+      const link = document.getElementById('adminPanelLink');
+      let session = null;
+      try { session = JSON.parse(localStorage.getItem('heuro_session') || 'null'); } catch (_) {}
+      if (!session?.access_token) { window.location.replace('./login.html?v=6'); return; }
+
+      const openAdmin = () => {
+        if (session.access === 'administrador_geral' && session.status !== 'bloqueado') {
+          window.location.href = destination;
+          return;
+        }
+        const dialog = document.getElementById('permissionDialog');
+        if (dialog) dialog.hidden = false;
+      };
+
+      link?.addEventListener('pointerup', (event) => { event.preventDefault(); event.stopPropagation(); openAdmin(); }, { passive: false });
+      link?.addEventListener('touchend', (event) => { event.preventDefault(); event.stopPropagation(); openAdmin(); }, { passive: false });
+
+      screen?.addEventListener('pointerup', (event) => {
+        const rect = screen.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        if (x >= 0.27 && x <= 0.73 && y >= 0.82) openAdmin();
+      }, true);
+
+      document.getElementById('permissionClose')?.addEventListener('click', () => {
+        document.getElementById('permissionDialog').hidden = true;
+      });
+
+      if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then((items) => items.forEach((item) => item.unregister()));
+      if ('caches' in window) caches.keys().then((names) => names.forEach((name) => caches.delete(name)));
+    })();
+  </script>
 </body>
 </html>
