@@ -11,26 +11,15 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
   <link rel="icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1">
 </head>
 <body>
-  <main id="app" class="app-shell">
-    <section id="welcomeScreen" class="app-screen welcome-screen" aria-label="Tela inicial do Transporte HEURO">
+  <main class="app-shell">
+    <section class="app-screen welcome-screen" aria-label="Tela inicial do Transporte HEURO">
       <img class="app-screen__image" src="99BD9DA5-6979-422A-99EB-B41F091CC5FE.png" alt="Transporte HEURO — Agendamentos e Operações">
-      <button id="enterButton" class="hotspot welcome-screen__button" type="button" aria-label="Entrar no Transporte HEURO"></button>
-    </section>
-
-    <section id="loginScreen" class="app-screen login-screen" aria-label="Login do Transporte HEURO" hidden>
-      <img class="app-screen__image" src="544AB6B5-F264-4518-A2AE-1A3679A7EB68.png" alt="Tela de login do Transporte HEURO">
-      <form id="loginForm" novalidate>
-        <input id="loginIdentifier" class="login-control login-control--identifier" type="text" inputmode="email" autocomplete="username" placeholder="Digite seu e-mail ou CPF" aria-label="E-mail ou CPF" required>
-        <input id="loginPassword" class="login-control login-control--password" type="password" autocomplete="current-password" placeholder="Digite sua senha" aria-label="Senha" required>
-        <button id="togglePassword" class="hotspot login-screen__toggle" type="button" aria-label="Mostrar ou ocultar senha"></button>
-        <button class="hotspot login-screen__submit" type="submit" aria-label="Entrar no sistema"></button>
-        <button id="firstRegistrationButton" class="hotspot login-screen__register" type="button" aria-label="Realizar primeiro cadastro"></button>
-      </form>
+      <a class="hotspot welcome-screen__button" href="login.html" aria-label="Entrar no Transporte HEURO"></a>
     </section>
   </main>
-  <script src="js/app.js" defer></script>
+  <script src="js/app.js?v=1" defer></script>
 </body>
 </html>
