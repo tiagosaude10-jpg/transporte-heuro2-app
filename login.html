@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#062e86">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
+  <title>Login — HEURO Transportes</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
+  <link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="app-screen login-screen" aria-label="Login do Transporte HEURO">
+      <img class="app-screen__image" src="544AB6B5-F264-4518-A2AE-1A3679A7EB68.png" alt="Tela de login do Transporte HEURO">
+      <form id="loginForm" novalidate>
+        <input id="loginIdentifier" class="login-control login-control--identifier" type="text" autocomplete="username" placeholder="Digite seu e-mail ou CPF" aria-label="E-mail ou CPF" required>
+        <input id="loginPassword" class="login-control login-control--password" type="password" autocomplete="current-password" placeholder="Digite sua senha" aria-label="Senha" required>
+        <button id="togglePassword" class="hotspot login-screen__toggle" type="button" aria-label="Mostrar ou ocultar senha"></button>
+        <button class="hotspot login-screen__submit" type="submit" aria-label="Entrar no sistema"></button>
+        <button id="firstRegistrationButton" class="hotspot login-screen__register" type="button" aria-label="Realizar primeiro cadastro"></button>
+      </form>
+    </section>
+  </main>
+  <script src="js/app.js?v=1" defer></script>
+</body>
+</html>
