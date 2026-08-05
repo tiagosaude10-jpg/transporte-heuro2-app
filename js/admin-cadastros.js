@@ -38,8 +38,7 @@
     pendente: 'Pendente',
     aprovado: 'Aprovado',
     rejeitado: 'Rejeitado',
-    bloqueado: 'Bloqueado',
-    arquivado: 'Arquivado'
+    bloqueado: 'Bloqueado'
   };
 
   const showMessage = (text, success = false) => {
@@ -111,11 +110,14 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a decisão.');
-      showMessage(
-        decision === 'aprovar' ? 'Cadastro aprovado com sucesso.' :
-        decision === 'rejeitar' ? 'Cadastro rejeitado.' : 'Cadastro bloqueado.',
-        decision === 'aprovar'
-      );
+
+      const successText = decision === 'aprovar'
+        ? 'Cadastro aprovado com sucesso.'
+        : decision === 'rejeitar'
+          ? 'Cadastro rejeitado e excluído. A pessoa poderá se cadastrar novamente.'
+          : 'Usuário bloqueado. O histórico foi preservado.';
+
+      showMessage(successText, true);
       await loadUsers();
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Falha ao processar a decisão.');
@@ -133,10 +135,10 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível executar a ação.');
+
       const successMessages = {
         reativar: 'Usuário reativado com sucesso.',
         reenviar: 'Cadastro devolvido para nova análise.',
-        arquivar: 'Cadastro arquivado.',
         excluir: 'Cadastro excluído definitivamente.'
       };
       showMessage(successMessages[action] || 'Ação concluída.', true);
@@ -148,23 +150,20 @@
   };
 
   const configureActions = (card, user) => {
-    card.querySelectorAll('.pending-control,.pending-action,.block-action,.reactivate-action,.resubmit-action,.archive-action,.delete-action')
+    card.querySelectorAll('.pending-control,.pending-action,.block-action,.reactivate-action,.resubmit-action,.delete-action')
       .forEach((element) => { element.hidden = true; });
 
     if (user.status === 'pendente') {
-      card.querySelectorAll('.pending-control,.pending-action,.block-action,.archive-action,.delete-action')
+      card.querySelectorAll('.pending-control,.pending-action,.block-action,.delete-action')
         .forEach((element) => { element.hidden = false; });
     } else if (user.status === 'aprovado') {
-      card.querySelectorAll('.block-action,.archive-action,.delete-action')
-        .forEach((element) => { element.hidden = false; });
-    } else if (user.status === 'rejeitado') {
-      card.querySelectorAll('.resubmit-action,.archive-action,.delete-action')
+      card.querySelectorAll('.block-action,.delete-action')
         .forEach((element) => { element.hidden = false; });
     } else if (user.status === 'bloqueado') {
-      card.querySelectorAll('.reactivate-action,.archive-action,.delete-action')
-        .forEach((element) => { element.hidden = false; });
-    } else if (user.status === 'arquivado') {
       card.querySelectorAll('.reactivate-action,.delete-action')
+        .forEach((element) => { element.hidden = false; });
+    } else if (user.status === 'rejeitado') {
+      card.querySelectorAll('.resubmit-action,.delete-action')
         .forEach((element) => { element.hidden = false; });
     }
   };
@@ -175,7 +174,6 @@
       select.innerHTML = '<option value="administrador_geral">Administrador Geral — acesso total</option>';
       select.value = 'administrador_geral';
       select.disabled = true;
-      select.closest('.access-select-label').firstChild.textContent = 'Acesso a conceder automaticamente ';
       return;
     }
 
@@ -185,9 +183,8 @@
       '<option value="solicitante_executante">Solicitante e Executante</option>'
     ].join('');
 
-    const requested = ['solicitante', 'executante', 'solicitante_executante'].includes(user.requested_access)
+    select.value = ['solicitante','executante','solicitante_executante'].includes(user.requested_access)
       ? user.requested_access : 'solicitante';
-    select.value = requested;
   };
 
   const renderUsers = (users) => {
@@ -240,28 +237,38 @@
       });
 
       card.querySelector('.reject-button').addEventListener('click', () => requestDecision({
-        title: 'Rejeitar cadastro', text: `Rejeitar o cadastro de ${user.full_name || user.email}?`, confirmLabel: 'Rejeitar',
+        title: 'Rejeitar e excluir cadastro',
+        text: `Rejeitar e excluir o cadastro de ${user.full_name || user.email}? O e-mail ficará livre para um novo cadastro.`,
+        confirmLabel: 'Rejeitar e excluir',
         run: () => callDecisionRpc(user.id, 'rejeitar', null, notes.value.trim(), card)
       }));
+
       card.querySelector('.block-button').addEventListener('click', () => requestDecision({
-        title: 'Bloquear usuário', text: `Bloquear o acesso de ${user.full_name || user.email}? O histórico será preservado.`, confirmLabel: 'Bloquear',
+        title: 'Bloquear usuário',
+        text: `Bloquear o acesso de ${user.full_name || user.email}? O cadastro e todo o histórico serão preservados.`,
+        confirmLabel: 'Bloquear',
         run: () => callDecisionRpc(user.id, 'bloquear', null, notes.value.trim(), card)
       }));
+
       card.querySelector('.reactivate-button').addEventListener('click', () => requestDecision({
-        title: 'Reativar usuário', text: `Reativar o acesso de ${user.full_name || user.email}?`, confirmLabel: 'Reativar',
+        title: 'Reativar usuário',
+        text: `Reativar o acesso de ${user.full_name || user.email}?`,
+        confirmLabel: 'Reativar',
         run: () => callManageRpc(user.id, 'reativar', notes.value.trim(), card)
       }));
+
       card.querySelector('.resubmit-button').addEventListener('click', () => requestDecision({
-        title: 'Reenviar para análise', text: `Retornar o cadastro de ${user.full_name || user.email} para o status pendente?`, confirmLabel: 'Reenviar',
+        title: 'Reenviar para análise',
+        text: `Retornar o cadastro de ${user.full_name || user.email} para o status pendente?`,
+        confirmLabel: 'Reenviar',
         run: () => callManageRpc(user.id, 'reenviar', notes.value.trim(), card)
       }));
-      card.querySelector('.archive-button').addEventListener('click', () => requestDecision({
-        title: 'Arquivar cadastro', text: `Arquivar ${user.full_name || user.email}? O acesso será encerrado e o histórico será mantido.`, confirmLabel: 'Arquivar',
-        run: () => callManageRpc(user.id, 'arquivar', notes.value.trim(), card)
-      }));
+
       card.querySelector('.delete-button').addEventListener('click', () => requestDecision({
-        title: 'Excluir definitivamente', text: `Excluir definitivamente ${user.full_name || user.email}? Esta ação não poderá ser desfeita.`,
-        confirmLabel: 'Excluir definitivamente', requiresDeleteWord: true,
+        title: 'Excluir definitivamente',
+        text: `Excluir definitivamente ${user.full_name || user.email}? Esta ação não poderá ser desfeita.`,
+        confirmLabel: 'Excluir definitivamente',
+        requiresDeleteWord: true,
         run: () => callManageRpc(user.id, 'excluir', notes.value.trim(), card)
       }));
 
