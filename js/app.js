@@ -1,8 +1,7 @@
 (() => {
   'use strict';
 
-  const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
+  const { SUPABASE_URL, SUPABASE_KEY, saveSession, clearLegacyCaches } = window.HEURO;
 
   const identifierInput = document.getElementById('loginIdentifier');
   const passwordInput = document.getElementById('loginPassword');
@@ -89,11 +88,10 @@
 
       const profile = profiles[0];
       if (profile.status === 'pendente') throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.');
-      if (profile.status === 'rejeitado') throw new Error('Seu cadastro foi rejeitado. Procure o administrador do sistema.');
       if (profile.status === 'bloqueado') throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.');
       if (profile.status !== 'aprovado' || !profile.authorized_access) throw new Error('Seu perfil ainda não possui autorização de acesso.');
 
-      localStorage.setItem('heuro_session', JSON.stringify({
+      saveSession({
         access_token: accessToken,
         refresh_token: authData.refresh_token || '',
         expires_at: authData.expires_at || 0,
@@ -101,10 +99,10 @@
         display_name: profile.display_name || '',
         access: profile.authorized_access,
         status: profile.status
-      }));
+      });
 
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.replace('./comando.html?v=20260805-1845'), 180);
+      window.setTimeout(() => window.location.replace('./comando.html'), 180);
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.');
       setLoading(false);
@@ -117,6 +115,5 @@
     window.setTimeout(() => window.location.assign(firstRegistrationLink.href), 140);
   });
 
-  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then((items) => items.forEach((item) => item.unregister()));
-  if ('caches' in window) caches.keys().then((names) => names.forEach((name) => caches.delete(name)));
+  clearLegacyCaches();
 })();
