@@ -1,8 +1,11 @@
 (() => {
   'use strict';
 
-  const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
+  const app = window.HEURO;
+  if (!app) {
+    window.location.replace('./login.html');
+    return;
+  }
 
   const list = document.getElementById('userList');
   const count = document.getElementById('userCount');
@@ -15,17 +18,10 @@
   const confirmTitle = document.getElementById('confirmTitle');
   const confirmText = document.getElementById('confirmText');
   const confirmActionButton = document.getElementById('confirmActionButton');
-  const deleteConfirmationLabel = document.getElementById('deleteConfirmationLabel');
-  const deleteConfirmation = document.getElementById('deleteConfirmation');
 
   let activeStatus = 'pendente';
   let pendingConfirmation = null;
-
-  const readSession = () => {
-    try { return JSON.parse(localStorage.getItem('heuro_session') || 'null'); }
-    catch (_) { return null; }
-  };
-  const session = readSession();
+  const session = app.readSession();
 
   const labelMap = {
     heuro: 'HEURO — Servidor/Colaborador',
@@ -37,7 +33,6 @@
     administrador_geral: 'Administrador Geral',
     pendente: 'Pendente',
     aprovado: 'Aprovado',
-    rejeitado: 'Rejeitado',
     bloqueado: 'Bloqueado'
   };
 
@@ -47,13 +42,6 @@
     message.style.color = success ? '#0b6b35' : '#9b1c1c';
     message.style.display = 'block';
   };
-
-  const headers = () => ({
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${session.access_token}`,
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-  });
 
   const protectPage = () => {
     if (!session?.access_token || session.access !== 'administrador_geral') {
@@ -70,8 +58,6 @@
     pendingConfirmation = config;
     confirmTitle.textContent = config.title;
     confirmText.textContent = config.text;
-    deleteConfirmationLabel.hidden = !config.requiresDeleteWord;
-    deleteConfirmation.value = '';
     confirmActionButton.textContent = config.confirmLabel || 'Confirmar';
     confirmDialog.showModal();
   };
@@ -81,26 +67,25 @@
       pendingConfirmation = null;
       return;
     }
-    if (pendingConfirmation.requiresDeleteWord && deleteConfirmation.value.trim().toUpperCase() !== 'EXCLUIR') {
-      showMessage('Para excluir definitivamente, digite a palavra EXCLUIR.');
-      pendingConfirmation = null;
-      return;
-    }
+
     const action = pendingConfirmation;
     pendingConfirmation = null;
     await action.run();
   });
 
   const setCardBusy = (card, busy) => {
-    card.querySelectorAll('button,select,textarea').forEach((element) => { element.disabled = busy; });
+    card.querySelectorAll('button,select,textarea').forEach((element) => {
+      element.disabled = busy;
+    });
   };
 
   const callDecisionRpc = async (userId, decision, grantedAccess, notes, card) => {
     setCardBusy(card, true);
+
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/admin_decide_user`, {
+      const response = await fetch(app.apiUrl('/rest/v1/rpc/admin_decide_user'), {
         method: 'POST',
-        headers: headers(),
+        headers: app.jsonHeaders(session.access_token),
         body: JSON.stringify({
           target_user: userId,
           decision,
@@ -108,8 +93,11 @@
           decision_notes: notes || null
         })
       });
+
       const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a decisão.');
+      if (!response.ok) {
+        throw new Error(data?.message || data?.error || 'Não foi possível registrar a decisão.');
+      }
 
       const successText = decision === 'aprovar'
         ? 'Cadastro aprovado com sucesso.'
@@ -127,20 +115,25 @@
 
   const callManageRpc = async (userId, action, notes, card) => {
     setCardBusy(card, true);
+
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/admin_manage_user`, {
+      const response = await fetch(app.apiUrl('/rest/v1/rpc/admin_manage_user'), {
         method: 'POST',
-        headers: headers(),
+        headers: app.jsonHeaders(session.access_token),
         body: JSON.stringify({ target_user: userId, action, notes: notes || null })
       });
+
       const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível executar a ação.');
+      if (!response.ok) {
+        throw new Error(data?.message || data?.error || 'Não foi possível executar a ação.');
+      }
 
       const successMessages = {
         reativar: 'Usuário reativado com sucesso.',
         reenviar: 'Cadastro devolvido para nova análise.',
         excluir: 'Cadastro excluído definitivamente.'
       };
+
       showMessage(successMessages[action] || 'Ação concluída.', true);
       await loadUsers();
     } catch (error) {
@@ -162,14 +155,12 @@
     } else if (user.status === 'bloqueado') {
       card.querySelectorAll('.reactivate-action,.delete-action')
         .forEach((element) => { element.hidden = false; });
-    } else if (user.status === 'rejeitado') {
-      card.querySelectorAll('.resubmit-action,.delete-action')
-        .forEach((element) => { element.hidden = false; });
     }
   };
 
   const configureAccessSelect = (select, user) => {
     const isAdminRequest = user.institutional_link === 'administracao' || user.requested_access === 'administrador_geral';
+
     if (isAdminRequest) {
       select.innerHTML = '<option value="administrador_geral">Administrador Geral — acesso total</option>';
       select.value = 'administrador_geral';
@@ -183,15 +174,19 @@
       '<option value="solicitante_executante">Solicitante e Executante</option>'
     ].join('');
 
-    select.value = ['solicitante','executante','solicitante_executante'].includes(user.requested_access)
-      ? user.requested_access : 'solicitante';
+    select.value = ['solicitante', 'executante', 'solicitante_executante'].includes(user.requested_access)
+      ? user.requested_access
+      : 'solicitante';
   };
 
   const renderUsers = (users) => {
     if (!list || !template || !count) return;
+
     list.innerHTML = '';
     count.textContent = String(users.length);
-    countLabel.textContent = activeStatus === 'todos' ? 'Cadastros' : labelMap[activeStatus] || 'Cadastros';
+    countLabel.textContent = activeStatus === 'todos'
+      ? 'Cadastros'
+      : labelMap[activeStatus] || 'Cadastros';
 
     if (users.length === 0) {
       const empty = document.createElement('div');
@@ -227,7 +222,9 @@
 
       card.querySelector('.approve-button').addEventListener('click', () => {
         const access = (user.institutional_link === 'administracao' || user.requested_access === 'administrador_geral')
-          ? 'administrador_geral' : accessSelect.value;
+          ? 'administrador_geral'
+          : accessSelect.value;
+
         requestDecision({
           title: 'Aprovar cadastro',
           text: `Aprovar ${user.full_name || user.email} como ${labelMap[access]}?`,
@@ -268,7 +265,6 @@
         title: 'Excluir definitivamente',
         text: `Excluir definitivamente ${user.full_name || user.email}? Esta ação não poderá ser desfeita.`,
         confirmLabel: 'Excluir definitivamente',
-        requiresDeleteWord: true,
         run: () => callManageRpc(user.id, 'excluir', notes.value.trim(), card)
       }));
 
@@ -284,17 +280,22 @@
 
     try {
       const select = [
-        'id','full_name','display_name','email','cpf','phone','institutional_link',
-        'heuro_sector','transport_company','job_role','requested_access','authorized_access',
-        'status','created_at'
+        'id', 'full_name', 'display_name', 'email', 'cpf', 'phone', 'institutional_link',
+        'heuro_sector', 'transport_company', 'job_role', 'requested_access', 'authorized_access',
+        'status', 'created_at'
       ].join(',');
+
       const filter = activeStatus === 'todos' ? '' : `status=eq.${activeStatus}&`;
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/profiles?${filter}id=neq.${encodeURIComponent(session.user_id)}&select=${select}&order=created_at.desc`,
-        { headers: headers() }
-      );
+      const endpoint = `/rest/v1/profiles?${filter}id=neq.${encodeURIComponent(session.user_id)}&select=${select}&order=created_at.desc`;
+      const response = await fetch(app.apiUrl(endpoint), {
+        headers: app.authenticatedHeaders(session.access_token, { Accept: 'application/json' })
+      });
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data?.message || 'Não foi possível carregar os cadastros.');
+      if (!response.ok) {
+        throw new Error(data?.message || 'Não foi possível carregar os cadastros.');
+      }
+
       renderUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Erro ao carregar os cadastros.');
