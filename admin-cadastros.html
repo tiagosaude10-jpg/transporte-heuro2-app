@@ -9,12 +9,12 @@
   <title>Gerenciar cadastros — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/admin-cadastros.css?v=6">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=20260805.1">
 </head>
 <body>
   <main class="admin-page">
     <header class="admin-header">
-      <a class="back-link" href="comando.html?v=60" aria-label="Voltar à tela de comando">←</a>
+      <a class="back-link" href="comando.html" aria-label="Voltar à tela de comando">←</a>
       <div class="brand-mark" aria-hidden="true">
         <img src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt="">
       </div>
@@ -72,7 +72,6 @@
           <div><h2 class="user-name"></h2><p class="user-email"></p></div>
           <span class="status-badge"></span>
         </div>
-
         <dl class="user-details">
           <div><dt>Vínculo</dt><dd data-field="institutional_link"></dd></div>
           <div><dt>Setor / Empresa</dt><dd data-field="organization"></dd></div>
@@ -83,7 +82,6 @@
           <div><dt>Telefone</dt><dd data-field="phone"></dd></div>
           <div><dt>Cadastrado em</dt><dd data-field="created_at"></dd></div>
         </dl>
-
         <label class="access-select-label pending-control">Acesso a conceder
           <select class="access-select">
             <option value="solicitante">Solicitante</option>
@@ -91,11 +89,9 @@
             <option value="solicitante_executante">Solicitante e Executante</option>
           </select>
         </label>
-
         <label class="notes-label">Observação administrativa
           <textarea class="decision-notes" rows="2" placeholder="Opcional"></textarea>
         </label>
-
         <div class="decision-actions">
           <button class="approve-button pending-action" type="button">Aprovar</button>
           <button class="reject-button pending-action" type="button">Rejeitar e excluir</button>
@@ -111,9 +107,6 @@
       <form method="dialog" class="confirm-box">
         <h2 id="confirmTitle">Confirmar ação</h2>
         <p id="confirmText"></p>
-        <label id="deleteConfirmationLabel" hidden style="display:none!important" aria-hidden="true">
-          <input id="deleteConfirmation" type="hidden" value="EXCLUIR">
-        </label>
         <div>
           <button value="cancel" class="cancel-confirm">Cancelar</button>
           <button id="confirmActionButton" value="default" class="confirm-action">Confirmar</button>
@@ -122,15 +115,7 @@
     </dialog>
   </main>
 
-  <script>
-    (() => {
-      const confirmationButton = document.getElementById('confirmActionButton');
-      const hiddenConfirmation = document.getElementById('deleteConfirmation');
-      confirmationButton?.addEventListener('click', () => {
-        if (hiddenConfirmation) hiddenConfirmation.value = 'EXCLUIR';
-      }, true);
-    })();
-  </script>
-  <script src="js/admin-cadastros.js?v=5" defer></script>
+  <script src="js/config.js?v=20260805.1"></script>
+  <script src="js/admin-cadastros.js?v=20260805.1" defer></script>
 </body>
 </html>
