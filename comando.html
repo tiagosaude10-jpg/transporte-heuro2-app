@@ -17,136 +17,70 @@
     html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
     .command-screen{position:fixed;inset:0;background:#fff}
     .command-screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
-
-    .screen-hotspot{
-      position:fixed;
-      z-index:2147483647;
-      display:block;
-      margin:0;
-      padding:0;
-      background:transparent;
-      border:0;
-      text-decoration:none;
-      appearance:none;
-      -webkit-appearance:none;
-      -webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;
-      pointer-events:auto;
-      cursor:pointer;
-    }
-
-    /* Área invisível sobre o botão “Mais” da barra inferior. */
-    .admin-hotspot{
-      right:0;
-      bottom:0;
-      width:24%;
-      height:13%;
-      min-width:82px;
-      min-height:76px;
-    }
-
-    /* Área invisível sobre o botão “Sair”, no canto superior direito. */
-    .logout-hotspot{
-      right:1.5%;
-      top:calc(env(safe-area-inset-top) + 1.5%);
-      width:22%;
-      height:10%;
-      min-width:76px;
-      min-height:58px;
-      border-radius:18px;
-    }
-
-    .screen-hotspot:active,
-    .screen-hotspot.is-pressed{
-      background:rgba(7,91,216,.10);
-      box-shadow:inset 0 0 0 2px rgba(7,91,216,.22);
-    }
+    .screen-hotspot{position:fixed;z-index:2147483647;display:block;margin:0;padding:0;background:transparent;border:0;text-decoration:none;appearance:none;-webkit-appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+    .admin-hotspot{right:0;bottom:0;width:24%;height:13%;min-width:82px;min-height:76px}
+    .logout-hotspot{right:0;top:0;width:32%;height:18%;min-width:110px;min-height:92px;border-radius:0 0 0 24px}
+    .screen-hotspot:active,.screen-hotspot.is-pressed{background:rgba(7,91,216,.10);box-shadow:inset 0 0 0 2px rgba(7,91,216,.22)}
   </style>
 </head>
 <body>
-  <main class="command-screen" aria-label="Tela de comando do HEURO Transportes">
-    <img src="2AEAA123-F06C-4510-A36B-F98600DFC210.png?v=50" alt="Tela de comando do HEURO Transportes">
-
-    <a
-      id="adminPanelLink"
-      class="screen-hotspot admin-hotspot"
-      href="./admin-cadastros.html?v=50"
-      aria-label="Abrir painel do administrador"
-    ></a>
-
-    <button
-      id="logoutButton"
-      class="screen-hotspot logout-hotspot"
-      type="button"
-      aria-label="Sair do sistema"
-    ></button>
+  <main id="commandScreen" class="command-screen" aria-label="Tela de comando do HEURO Transportes">
+    <img src="2AEAA123-F06C-4510-A36B-F98600DFC210.png?v=60" alt="Tela de comando do HEURO Transportes">
+    <a id="adminPanelLink" class="screen-hotspot admin-hotspot" href="./admin-cadastros.html?v=60" aria-label="Abrir painel do administrador"></a>
+    <button id="logoutButton" class="screen-hotspot logout-hotspot" type="button" aria-label="Sair do sistema"></button>
   </main>
 
   <script>
     (() => {
       'use strict';
-
       const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
-
       let session = null;
-      try {
-        session = JSON.parse(localStorage.getItem('heuro_session') || 'null');
-      } catch (_) {
-        session = null;
-      }
-
-      if (!session?.access_token) {
-        window.location.replace('./login.html?v=50');
-        return;
-      }
+      try { session = JSON.parse(localStorage.getItem('heuro_session') || 'null'); } catch (_) {}
+      if (!session?.access_token) { window.location.replace('./login.html?v=60'); return; }
 
       const logoutButton = document.getElementById('logoutButton');
       let loggingOut = false;
 
-      const clearLocalSession = async () => {
-        localStorage.removeItem('heuro_session');
-        sessionStorage.clear();
-
-        if ('caches' in window) {
-          const names = await caches.keys().catch(() => []);
-          await Promise.all(names.map((name) => caches.delete(name)));
-        }
-      };
-
-      const logout = async () => {
+      const logout = (event) => {
+        if (event) { event.preventDefault(); event.stopPropagation(); }
         if (loggingOut) return;
         loggingOut = true;
         logoutButton?.classList.add('is-pressed');
-        logoutButton?.setAttribute('aria-busy', 'true');
 
-        try {
-          await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-            method: 'POST',
-            headers: {
-              apikey: SUPABASE_KEY,
-              Authorization: `Bearer ${session.access_token}`
-            }
-          });
-        } catch (_) {
-          // Mesmo sem internet, a sessão local será encerrada.
-        } finally {
-          await clearLocalSession();
-          window.location.replace('./login.html?v=50&logout=1');
-        }
+        const token = session?.access_token || '';
+        localStorage.removeItem('heuro_session');
+        sessionStorage.clear();
+
+        fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          keepalive: true,
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}` }
+        }).catch(() => {});
+
+        if ('caches' in window) caches.keys().then(names => names.forEach(name => caches.delete(name))).catch(() => {});
+        window.location.replace('./login.html?v=60&logout=1');
       };
 
-      logoutButton?.addEventListener('click', logout);
-      logoutButton?.addEventListener('touchend', (event) => {
-        event.preventDefault();
-        logout();
-      }, { passive: false });
+      ['click','pointerup','touchend'].forEach(type => {
+        logoutButton?.addEventListener(type, logout, { passive: false });
+      });
 
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((items) => {
-          items.forEach((item) => item.unregister());
-        });
-      }
+      document.addEventListener('pointerup', (event) => {
+        const x = event.clientX / window.innerWidth;
+        const y = event.clientY / window.innerHeight;
+        if (x >= 0.68 && y <= 0.20) logout(event);
+      }, true);
+
+      document.addEventListener('touchend', (event) => {
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        const x = touch.clientX / window.innerWidth;
+        const y = touch.clientY / window.innerHeight;
+        if (x >= 0.68 && y <= 0.20) logout(event);
+      }, { capture: true, passive: false });
+
+      if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(items => items.forEach(item => item.unregister()));
     })();
   </script>
 </body>
