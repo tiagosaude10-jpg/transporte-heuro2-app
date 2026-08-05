@@ -23,6 +23,32 @@
     sessionStorage.clear();
   };
 
+  const apiUrl = (path) => `${SUPABASE_URL}${path}`;
+
+  const publicHeaders = (extra = {}) => ({
+    apikey: SUPABASE_KEY,
+    ...extra
+  });
+
+  const authenticatedHeaders = (accessToken, extra = {}) => ({
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${accessToken}`,
+    ...extra
+  });
+
+  const jsonHeaders = (accessToken = '', extra = {}) => {
+    const base = accessToken
+      ? authenticatedHeaders(accessToken)
+      : publicHeaders();
+
+    return {
+      ...base,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...extra
+    };
+  };
+
   const clearLegacyCaches = async () => {
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations().catch(() => []);
@@ -43,6 +69,10 @@
     readSession,
     saveSession,
     clearSession,
+    apiUrl,
+    publicHeaders,
+    authenticatedHeaders,
+    jsonHeaders,
     clearLegacyCaches
   });
 })();
