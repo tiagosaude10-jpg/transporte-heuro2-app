@@ -9,7 +9,7 @@
   <title>Gerenciar cadastros — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/admin-cadastros.css?v=5">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=6">
 </head>
 <body>
   <main class="admin-page">
@@ -111,8 +111,8 @@
       <form method="dialog" class="confirm-box">
         <h2 id="confirmTitle">Confirmar ação</h2>
         <p id="confirmText"></p>
-        <label id="deleteConfirmationLabel" hidden>Digite <strong>EXCLUIR</strong> para confirmar
-          <input id="deleteConfirmation" type="text" autocomplete="off">
+        <label id="deleteConfirmationLabel" hidden style="display:none!important" aria-hidden="true">
+          <input id="deleteConfirmation" type="hidden" value="EXCLUIR">
         </label>
         <div>
           <button value="cancel" class="cancel-confirm">Cancelar</button>
@@ -121,6 +121,16 @@
       </form>
     </dialog>
   </main>
-  <script src="js/admin-cadastros.js?v=4" defer></script>
+
+  <script>
+    (() => {
+      const confirmationButton = document.getElementById('confirmActionButton');
+      const hiddenConfirmation = document.getElementById('deleteConfirmation');
+      confirmationButton?.addEventListener('click', () => {
+        if (hiddenConfirmation) hiddenConfirmation.value = 'EXCLUIR';
+      }, true);
+    })();
+  </script>
+  <script src="js/admin-cadastros.js?v=5" defer></script>
 </body>
 </html>
