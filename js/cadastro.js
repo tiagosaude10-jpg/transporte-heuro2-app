@@ -11,7 +11,7 @@
   const transportCompanyField = document.getElementById('transportCompanyField');
   const transportCompany = document.getElementById('transportCompany');
   const accessTypeField = document.getElementById('accessTypeField');
-  const accessInputs = Array.from(document.querySelectorAll('input[name="accessType"]'));
+  const accessOptions = document.querySelector('.access-options');
   const cpf = document.getElementById('cpf');
   const phone = document.getElementById('phone');
   const birthDateText = document.getElementById('birthDateText');
@@ -23,10 +23,20 @@
   const message = document.getElementById('registrationMessage');
   const submitButton = form?.querySelector('button[type="submit"]');
 
-  const onlyDigits = (value) => value.replace(/\D/g, '');
+  if (accessOptions && !accessOptions.querySelector('[value="solicitante_executante"]')) {
+    const combinedOption = document.createElement('label');
+    combinedOption.className = 'access-option access-option--combined';
+    combinedOption.innerHTML = [
+      '<input type="radio" name="accessType" value="solicitante_executante">',
+      '<span class="access-icon">S+E</span>',
+      '<span><strong>Solicitante e Executante</strong><small>Pode solicitar, executar e registrar transportes.</small></span>'
+    ].join('');
+    accessOptions.appendChild(combinedOption);
+  }
 
-  const getSelectedAccessType = () =>
-    accessInputs.find((input) => input.checked)?.value || '';
+  let accessInputs = Array.from(document.querySelectorAll('input[name="accessType"]'));
+  const onlyDigits = (value) => value.replace(/\D/g, '');
+  const getSelectedAccessType = () => accessInputs.find((input) => input.checked)?.value || '';
 
   const updateInstitutionalFields = () => {
     const institutionalValue = institutionalLink?.value || '';
@@ -184,7 +194,6 @@
       );
 
       const result = await response.json().catch(() => ({}));
-
       if (!response.ok) {
         const errorText = result.msg || result.message || result.error_description || 'Não foi possível criar o cadastro.';
         throw new Error(errorText);
@@ -192,8 +201,7 @@
 
       form.reset();
       updateInstitutionalFields();
-      message.textContent =
-        'Cadastro enviado. Abra o seu e-mail e confirme a conta. Depois volte ao aplicativo.';
+      message.textContent = 'Cadastro enviado. Abra o seu e-mail e confirme a conta. Depois volte ao aplicativo.';
     } catch (error) {
       console.error('Erro ao criar cadastro:', error);
       message.textContent = `Falha ao enviar o cadastro: ${error.message}`;
