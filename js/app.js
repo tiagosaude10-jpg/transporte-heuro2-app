@@ -32,7 +32,8 @@
     if (!submitButton) return;
     submitButton.disabled = loading;
     submitButton.setAttribute('aria-busy', String(loading));
-    submitButton.style.opacity = loading ? '.72' : '';
+    submitButton.classList.toggle('is-pressed', loading);
+    submitButton.style.opacity = '';
   };
 
   togglePasswordButton?.addEventListener('click', () => {
@@ -47,6 +48,8 @@
     message.style.display = 'none';
 
     if (!loginForm.checkValidity()) {
+      submitButton?.classList.add('is-pressed');
+      window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 180);
       loginForm.reportValidity();
       return;
     }
@@ -55,6 +58,8 @@
     const password = passwordInput?.value || '';
 
     if (!identifier.includes('@')) {
+      submitButton?.classList.add('is-pressed');
+      window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 180);
       showMessage('Neste momento, entre usando o e-mail cadastrado. O acesso por CPF será ativado depois.');
       identifierInput?.focus();
       return;
@@ -99,7 +104,7 @@
       }));
 
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.replace('./comando.html?v=20260804-1802'), 120);
+      window.setTimeout(() => window.location.replace('./comando.html?v=20260805-1845'), 180);
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.');
       setLoading(false);
