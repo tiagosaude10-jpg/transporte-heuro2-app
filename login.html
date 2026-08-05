@@ -11,21 +11,42 @@
   <title>Login — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
+  <style>
+    .login-screen__submit,.login-screen__register{overflow:visible!important}
+    .press-feedback{position:absolute;inset:-3px;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .08s ease,transform .08s ease;background:rgba(20,105,235,.34);border:3px solid #075bd8;box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 22px rgba(0,87,220,.7),inset 0 0 14px rgba(255,255,255,.45);transform:scale(1.02)}
+    .login-screen__submit.is-pressed .press-feedback,.login-screen__submit[aria-busy="true"] .press-feedback,.login-screen__register.is-pressed .press-feedback{opacity:1;transform:scale(.985)}
+  </style>
 </head>
 <body>
   <main class="app-shell">
     <section class="app-screen login-screen" aria-label="Login do Transporte HEURO">
-      <img class="app-screen__image" src="544AB6B5-F264-4518-A2AE-1A3679A7EB68.png" alt="Tela de login do Transporte HEURO">
+      <img class="app-screen__image" src="544AB6B5-F264-4518-A2AE-1A3679A7EB68.png?v=8" alt="Tela de login do Transporte HEURO">
       <form id="loginForm" novalidate>
         <input id="loginIdentifier" class="login-control login-control--identifier" type="text" autocomplete="username" placeholder="Digite seu e-mail ou CPF" aria-label="E-mail ou CPF" required>
         <input id="loginPassword" class="login-control login-control--password" type="password" autocomplete="current-password" placeholder="Digite sua senha" aria-label="Senha" required>
         <button id="togglePassword" class="hotspot login-screen__toggle" type="button" aria-label="Mostrar ou ocultar senha"></button>
-        <button class="hotspot login-screen__submit" type="submit" aria-label="Entrar no sistema"></button>
+        <button id="loginSubmitButton" class="hotspot login-screen__submit" type="submit" aria-label="Entrar no sistema"><span class="press-feedback" aria-hidden="true"></span></button>
       </form>
-      <a id="firstRegistrationLink" class="hotspot login-screen__register" href="./cadastro.html?v=3" aria-label="Realizar primeiro cadastro"></a>
+      <a id="firstRegistrationLink" class="hotspot login-screen__register" href="./cadastro.html?v=8" aria-label="Realizar primeiro cadastro"><span class="press-feedback" aria-hidden="true"></span></a>
     </section>
   </main>
-  <script src="js/app.js?v=7" defer></script>
+  <script src="js/app.js?v=8" defer></script>
+  <script>
+    (()=>{
+      const bindPress=(el)=>{
+        if(!el)return;
+        const press=()=>el.classList.add('is-pressed');
+        const release=()=>{if(el.getAttribute('aria-busy')!=='true')setTimeout(()=>el.classList.remove('is-pressed'),180)};
+        el.addEventListener('pointerdown',press,{passive:true});
+        el.addEventListener('touchstart',press,{passive:true});
+        el.addEventListener('pointerup',release,{passive:true});
+        el.addEventListener('pointercancel',release,{passive:true});
+        el.addEventListener('touchend',release,{passive:true});
+      };
+      bindPress(document.getElementById('loginSubmitButton'));
+      bindPress(document.getElementById('firstRegistrationLink'));
+    })();
+  </script>
 </body>
 </html>
