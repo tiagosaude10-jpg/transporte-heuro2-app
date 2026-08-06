@@ -16,14 +16,11 @@
     .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16)}
     .grid{display:grid;gap:15px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     label{display:grid;gap:7px;font-weight:750;font-size:.92rem}input,select,textarea{width:100%;border:1px solid #c7d7eb;border-radius:12px;padding:13px 14px;font:inherit;color:#18395f;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}textarea{min-height:96px;resize:vertical}
-    fieldset{margin:0;border:0;padding:0;display:grid;gap:8px}legend{font-weight:800;font-size:.92rem;margin-bottom:1px}.choice-grid{display:grid;gap:10px}.choice-grid.two{grid-template-columns:1fr 1fr}.choice-grid.three{grid-template-columns:repeat(3,1fr)}
-    .choice{position:relative;display:block}.choice input{position:absolute;opacity:0;pointer-events:none}.choice span{min-height:50px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;border:2px solid #c9d9ec;border-radius:13px;background:#f7fafe;color:#234c7d;font-weight:850;transition:.15s ease}.choice input:checked+span{border-color:#0b63c8;background:#e6f1ff;color:#064a9b;box-shadow:0 0 0 3px rgba(11,99,200,.12)}
-    .choice.emergency input:checked+span{border-color:#c62828;background:#fdeaea;color:#9a1717}.choice.urgency input:checked+span{border-color:#e58a00;background:#fff1d8;color:#9a5700}.choice.elective input:checked+span{border-color:#198754;background:#e8f7ef;color:#11613a}
     .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}
     .hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}
     .actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}
     .primary:active,.secondary:active,.back:active{transform:scale(.98);filter:brightness(1.08)}.message{display:none;margin-top:14px;padding:12px;border-radius:12px;font-weight:700}.message.ok{display:block;background:#e7f8ee;color:#17663a}.message.error{display:block;background:#fdecec;color:#982525}
-    @media(max-width:560px){.row{grid-template-columns:1fr}.card{padding:17px}.page{padding-left:10px;padding-right:10px}.choice-grid.three{grid-template-columns:1fr}.choice-grid.two{grid-template-columns:1fr}}
+    @media(max-width:560px){.row{grid-template-columns:1fr}.card{padding:17px}.page{padding-left:10px;padding-right:10px}}
   </style>
 </head>
 <body>
@@ -34,31 +31,29 @@
     </header>
     <form id="transportForm" class="card" novalidate>
       <div class="grid">
-        <fieldset>
-          <legend>Tipo de suporte</legend>
-          <div class="choice-grid two">
-            <label class="choice"><input type="radio" name="supportType" value="basico" required><span>Suporte Básico</span></label>
-            <label class="choice"><input type="radio" name="supportType" value="avancado_uti" required><span>Suporte Avançado / UTI</span></label>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>Prioridade do transporte</legend>
-          <div class="choice-grid three">
-            <label class="choice emergency"><input type="radio" name="priority" value="emergencia" required><span>Emergência</span></label>
-            <label class="choice urgency"><input type="radio" name="priority" value="urgencia" required><span>Urgência</span></label>
-            <label class="choice elective"><input type="radio" name="priority" value="eletivo" required><span>Eletivo</span></label>
-          </div>
-          <span class="hint">Ordem da fila: Emergência, Urgência e Eletivo. Dentro da mesma prioridade, vale o horário da solicitação.</span>
-        </fieldset>
         <label>Nome do paciente<input id="patientName" required autocomplete="off"></label>
-        <div class="row">
-          <label>Data de nascimento<input id="birthDate" type="date" required></label>
-          <label>Setor de origem
-            <select id="originSector" required>
-              <option value="">Selecione</option><option>UTI</option><option>Sala Vermelha</option><option>Clínica Geral</option><option>Clínica Médica</option><option>Clínica Cirúrgica</option><option>Clínica Ortopédica</option><option>Centro Cirúrgico</option><option>Oncologia</option><option>Outro</option>
-            </select>
-          </label>
-        </div>
+        <label>Data de nascimento<input id="birthDate" type="date" required></label>
+        <label>Tipo de transporte
+          <select id="supportType" name="supportType" required>
+            <option value="">Selecione o tipo de transporte</option>
+            <option value="basico">Suporte Básico</option>
+            <option value="avancado_uti">Suporte Avançado / UTI</option>
+          </select>
+        </label>
+        <label>Prioridade
+          <select id="priority" name="priority" required>
+            <option value="">Selecione a prioridade</option>
+            <option value="emergencia">Emergência</option>
+            <option value="urgencia">Urgência</option>
+            <option value="eletivo">Eletivo</option>
+          </select>
+          <span class="hint">Ordem da fila: Emergência, Urgência e Eletivo. Dentro da mesma prioridade, vale o horário da solicitação.</span>
+        </label>
+        <label>Setor de origem
+          <select id="originSector" required>
+            <option value="">Selecione</option><option>UTI</option><option>Sala Vermelha</option><option>Clínica Geral</option><option>Clínica Médica</option><option>Clínica Cirúrgica</option><option>Clínica Ortopédica</option><option>Centro Cirúrgico</option><option>Oncologia</option><option>Outro</option>
+          </select>
+        </label>
         <label id="originLocationLabel">Enfermaria / Leito<input id="originLocation" autocomplete="off"></label>
         <label>Destino<input id="destination" required autocomplete="off" placeholder="Informe o local de destino"></label>
         <label class="check"><input id="oxygenRequired" type="checkbox"><span>Paciente necessita de oxigênio</span></label>
@@ -70,7 +65,7 @@
       </div>
     </form>
   </main>
-  <script src="js/config.js?v=20260806.23"></script>
-  <script src="js/solicitar-transporte.js?v=20260806.23" defer></script>
+  <script src="js/config.js?v=20260806.25"></script>
+  <script src="js/solicitar-transporte.js?v=20260806.25" defer></script>
 </body>
 </html>
