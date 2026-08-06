@@ -21,10 +21,17 @@
   const oxygenRequired = document.getElementById('oxygenRequired');
   const oxygenDetailsLabel = document.getElementById('oxygenDetailsLabel');
   const oxygenDetails = document.getElementById('oxygenDetails');
-  const attachments = document.getElementById('attachments');
   const submitButton = document.getElementById('submitButton');
   const message = document.getElementById('formMessage');
+  const attachmentSheet = document.getElementById('attachmentSheet');
+  const openAttachmentMenu = document.getElementById('openAttachmentMenu');
+  const closeAttachmentMenu = document.getElementById('closeAttachmentMenu');
+  const cameraInput = document.getElementById('cameraInput');
+  const photoInput = document.getElementById('photoInput');
+  const documentInput = document.getElementById('documentInput');
+  const attachmentSummary = document.getElementById('attachmentSummary');
   const priorityRank = Object.freeze({ emergencia: 1, urgencia: 2, eletivo: 3 });
+  let selectedFiles = [];
 
   const showMessage = (text, ok = false) => {
     message.textContent = text;
@@ -118,6 +125,58 @@
     });
   };
 
+  const closeSheet = () => {
+    attachmentSheet.hidden = true;
+  };
+
+  const updateAttachmentSummary = () => {
+    if (selectedFiles.length === 0) {
+      attachmentSummary.className = 'attachment-summary';
+      attachmentSummary.textContent = 'Nenhum arquivo selecionado.';
+      return;
+    }
+    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+    const totalMb = (totalSize / (1024 * 1024)).toFixed(1);
+    attachmentSummary.className = 'attachment-summary has-files';
+    attachmentSummary.innerHTML = `${selectedFiles.length} arquivo(s) selecionado(s) — ${totalMb} MB <button type="button" id="clearAttachments">Limpar</button>`;
+    document.getElementById('clearAttachments')?.addEventListener('click', () => {
+      selectedFiles = [];
+      [cameraInput, photoInput, documentInput].forEach((input) => { input.value = ''; });
+      updateAttachmentSummary();
+    });
+  };
+
+  const addSelectedFiles = (input) => {
+    const incoming = Array.from(input.files || []);
+    incoming.forEach((file) => {
+      const duplicate = selectedFiles.some((current) => current.name === file.name && current.size === file.size && current.lastModified === file.lastModified);
+      if (!duplicate) selectedFiles.push(file);
+    });
+    updateAttachmentSummary();
+    closeSheet();
+  };
+
+  openAttachmentMenu.addEventListener('click', () => {
+    attachmentSheet.hidden = false;
+  });
+  closeAttachmentMenu.addEventListener('click', closeSheet);
+  attachmentSheet.addEventListener('click', (event) => {
+    if (event.target === attachmentSheet) closeSheet();
+  });
+
+  document.querySelectorAll('[data-attachment-source]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const source = button.dataset.attachmentSource;
+      if (source === 'camera') cameraInput.click();
+      if (source === 'photo') photoInput.click();
+      if (source === 'document') documentInput.click();
+    });
+  });
+
+  cameraInput.addEventListener('change', () => addSelectedFiles(cameraInput));
+  photoInput.addEventListener('change', () => addSelectedFiles(photoInput));
+  documentInput.addEventListener('change', () => addSelectedFiles(documentInput));
+
   sector.addEventListener('change', updateOriginLabel);
   oxygenRequired.addEventListener('change', () => {
     oxygenDetailsLabel.classList.toggle('hidden', !oxygenRequired.checked);
@@ -126,9 +185,8 @@
   });
 
   const uploadFiles = async () => {
-    const files = Array.from(attachments.files || []);
     const paths = [];
-    for (const file of files) {
+    for (const file of selectedFiles) {
       if (file.size > 10 * 1024 * 1024) throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);
       const extension = (file.name.split('.').pop() || 'bin').replace(/[^a-z0-9]/gi, '').toLowerCase();
       const path = `${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
@@ -198,7 +256,10 @@
       if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a solicitação.');
 
       form.reset();
+      selectedFiles = [];
+      [cameraInput, photoInput, documentInput].forEach((input) => { input.value = ''; });
       document.querySelectorAll('.native-picker').forEach((picker) => { picker.value = ''; });
+      updateAttachmentSummary();
       updateOriginLabel();
       oxygenDetailsLabel.classList.add('hidden');
       showMessage('Solicitação enviada com sucesso para a equipe de transporte.', true);
@@ -212,5 +273,6 @@
   });
 
   bindSmartFields();
+  updateAttachmentSummary();
   updateOriginLabel();
 })();
