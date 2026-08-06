@@ -1,6 +1,36 @@
 (() => {
   'use strict';
 
+  const IMAGE_WIDTH = 768;
+  const IMAGE_HEIGHT = 1664;
+  const IMAGE_RATIO = IMAGE_WIDTH / IMAGE_HEIGHT;
+
+  const fitCommandStage = () => {
+    const stage = document.getElementById('commandStage');
+    const screen = document.getElementById('commandScreen');
+    if (!stage || !screen) return;
+
+    const viewport = window.visualViewport;
+    const availableWidth = Math.max(1, Math.floor(viewport?.width || window.innerWidth || document.documentElement.clientWidth));
+    const availableHeight = Math.max(1, Math.floor((viewport?.height || window.innerHeight || document.documentElement.clientHeight) - 8));
+
+    let stageWidth = availableWidth;
+    let stageHeight = stageWidth / IMAGE_RATIO;
+
+    if (stageHeight > availableHeight) {
+      stageHeight = availableHeight;
+      stageWidth = stageHeight * IMAGE_RATIO;
+    }
+
+    stage.style.width = `${Math.floor(stageWidth)}px`;
+    stage.style.height = `${Math.floor(stageHeight)}px`;
+
+    screen.style.width = `${availableWidth}px`;
+    screen.style.height = `${availableHeight + 8}px`;
+    screen.style.left = `${Math.floor(viewport?.offsetLeft || 0)}px`;
+    screen.style.top = `${Math.floor(viewport?.offsetTop || 0)}px`;
+  };
+
   const loadConfig = () => new Promise((resolve, reject) => {
     if (window.HEURO) {
       resolve(window.HEURO);
@@ -14,6 +44,12 @@
   });
 
   const start = async () => {
+    fitCommandStage();
+    window.addEventListener('resize', fitCommandStage, { passive: true });
+    window.addEventListener('orientationchange', () => window.setTimeout(fitCommandStage, 120), { passive: true });
+    window.visualViewport?.addEventListener('resize', fitCommandStage, { passive: true });
+    window.visualViewport?.addEventListener('scroll', fitCommandStage, { passive: true });
+
     const app = await loadConfig();
     let session = app.readSession();
 
