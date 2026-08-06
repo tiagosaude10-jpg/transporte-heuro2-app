@@ -60,25 +60,40 @@
 
   if (!attachments) return;
 
+  attachments.multiple = true;
+  attachments.setAttribute('multiple', 'multiple');
+
   const attachmentLabel = attachments.closest('label');
   const attachmentHint = attachmentLabel?.querySelector('.hint');
-  if (attachmentHint) attachmentHint.textContent = 'ATÉ 20 MB POR ARQUIVO. É POSSÍVEL ADICIONAR VÁRIAS FOTOS E DOCUMENTOS.';
+  if (attachmentHint) {
+    attachmentHint.textContent = 'ATÉ 20 MB POR ARQUIVO. VOCÊ PODE ADICIONAR VÁRIAS FOTOS E DOCUMENTOS, INCLUSIVE EM ETAPAS.';
+  }
 
+  const nativeFilesDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'files');
+  const nativeFilesGetter = nativeFilesDescriptor?.get;
   const actualSizes = new WeakMap();
   let accumulatedFiles = [];
-  let internalChange = false;
+
+  const getNativeFiles = () => {
+    try {
+      return nativeFilesGetter ? [...(nativeFilesGetter.call(attachments) || [])] : [];
+    } catch (_) {
+      return [];
+    }
+  };
 
   const getActualSize = (file) => {
     if (actualSizes.has(file)) return actualSizes.get(file);
     const descriptor = Object.getOwnPropertyDescriptor(Blob.prototype, 'size');
-    return descriptor?.get ? descriptor.get.call(file) : file.size;
+    const size = descriptor?.get ? descriptor.get.call(file) : Number(file.size || 0);
+    actualSizes.set(file, size);
+    return size;
   };
 
   const fileKey = (file) => `${file.name}|${getActualSize(file)}|${file.lastModified}`;
 
-  const prepareFileForLegacyValidation = (file) => {
+  const prepareForLegacyValidator = (file) => {
     const actualSize = getActualSize(file);
-    actualSizes.set(file, actualSize);
     if (actualSize > 10 * 1024 * 1024 && actualSize <= 20 * 1024 * 1024) {
       try {
         Object.defineProperty(file, 'size', {
@@ -91,15 +106,6 @@
     return file;
   };
 
-  const syncInputFiles = () => {
-    if (typeof DataTransfer === 'undefined') return;
-    const transfer = new DataTransfer();
-    accumulatedFiles.forEach((file) => transfer.items.add(file));
-    internalChange = true;
-    attachments.files = transfer.files;
-    internalChange = false;
-  };
-
   const updateSummary = () => {
     if (!attachmentSummary) return;
     const total = accumulatedFiles.reduce((sum, file) => sum + getActualSize(file), 0);
@@ -109,9 +115,16 @@
     clearAttachments?.classList.toggle('hidden', accumulatedFiles.length === 0);
   };
 
-  attachments.addEventListener('change', (event) => {
-    if (internalChange) return;
-    const incoming = [...(event.target.files || [])];
+  try {
+    Object.defineProperty(attachments, 'files', {
+      configurable: true,
+      enumerable: true,
+      get: () => accumulatedFiles
+    });
+  } catch (_) {}
+
+  attachments.addEventListener('change', () => {
+    const incoming = getNativeFiles();
     const existing = new Set(accumulatedFiles.map(fileKey));
 
     for (const file of incoming) {
@@ -120,7 +133,8 @@
         alert(`O ARQUIVO ${file.name} ULTRAPASSA 20 MB.`);
         continue;
       }
-      const prepared = prepareFileForLegacyValidation(file);
+
+      const prepared = prepareForLegacyValidator(file);
       const key = fileKey(prepared);
       if (!existing.has(key)) {
         accumulatedFiles.push(prepared);
@@ -128,19 +142,22 @@
       }
     }
 
-    syncInputFiles();
-    queueMicrotask(updateSummary);
+    updateSummary();
   }, true);
 
-  clearAttachments?.addEventListener('click', () => {
+  clearAttachments?.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     accumulatedFiles = [];
-    attachments.value = '';
+    try { attachments.value = ''; } catch (_) {}
     updateSummary();
   }, true);
 
   form?.addEventListener('reset', () => {
     accumulatedFiles = [];
-    attachments.value = '';
+    try { attachments.value = ''; } catch (_) {}
     updateSummary();
-  });
+  }, true);
+
+  updateSummary();
 })();
