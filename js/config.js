@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.40';
+  const APP_VERSION = '20260806.41';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
