@@ -15,8 +15,7 @@
     label{display:grid;gap:7px;min-width:0;font-weight:750;font-size:.92rem}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;height:48px;border:1px solid #c7d7eb;border-radius:12px;padding:0 14px;font:inherit;color:#18395f;background:#fff;outline:none}textarea{height:auto;min-height:96px;padding:13px 14px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}
     .smart-field{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;width:100%;height:48px;border:1px solid #c7d7eb;border-radius:12px;background:#fff;overflow:hidden}.smart-field:focus-within{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}.smart-field .manual{height:46px;border:0;border-radius:0;box-shadow:none!important;padding:0 12px;font-size:16px}.smart-field button{height:46px;border:0;border-left:1px solid #d9e4f1;background:#eef6ff;display:grid;place-items:center;font-size:21px;cursor:pointer}.smart-field .picker-button{color:#0a63c7}.smart-field .clear-button{color:#a52626;background:#fff4f4;font-size:18px;font-weight:900}.smart-field button:active{filter:brightness(.92);transform:scale(.96)}.native-picker{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;left:-9999px!important}
     .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}.hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}
-    .attachment-button{width:100%;min-height:52px;border:1px solid #c7d7eb;border-radius:12px;background:#f7faff;color:#174d8c;font:inherit;font-weight:850;display:flex;align-items:center;justify-content:center;gap:9px}.attachment-button:active{transform:scale(.985);filter:brightness(.96)}.attachment-summary{min-height:20px;font-size:.82rem;color:#617a9b;font-weight:600}.attachment-summary.has-files{color:#17663a}.attachment-summary button{margin-left:7px;border:0;background:transparent;color:#a52626;font-weight:900;text-decoration:underline}
-    .sheet{position:fixed;inset:0;z-index:2147483647;background:rgba(3,18,58,.55);display:flex;align-items:flex-end;justify-content:center;padding:14px}.sheet[hidden]{display:none}.sheet-box{width:min(100%,520px);background:#fff;border-radius:22px 22px 16px 16px;padding:18px;box-shadow:0 -14px 45px rgba(0,0,0,.25)}.sheet-box h2{margin:0 0 5px;font-size:1.15rem}.sheet-box p{margin:0 0 14px;color:#617a9b;font-size:.9rem}.sheet-options{display:grid;gap:10px}.sheet-option{min-height:54px;border:1px solid #c7d7eb;border-radius:14px;background:#f7faff;color:#174d8c;font-weight:850;font-size:.98rem;text-align:left;padding:0 16px}.sheet-option:active{transform:scale(.985);background:#eaf3ff}.sheet-cancel{margin-top:10px;width:100%;min-height:50px;border:0;border-radius:14px;background:#e8eef6;color:#3e5878;font-weight:850}
+    .native-attachment{height:auto;min-height:52px;padding:8px;border:1px solid #c7d7eb;border-radius:12px;background:#f7faff;color:#174d8c;font-weight:700}.native-attachment::file-selector-button{min-height:38px;margin-right:10px;border:0;border-radius:10px;padding:0 14px;background:#0a55c4;color:#fff;font:inherit;font-weight:800}.native-attachment::-webkit-file-upload-button{min-height:38px;margin-right:10px;border:0;border-radius:10px;padding:0 14px;background:#0a55c4;color:#fff;font:inherit;font-weight:800}.attachment-summary{min-height:20px;font-size:.82rem;color:#617a9b;font-weight:600}.attachment-summary.has-files{color:#17663a}.clear-attachments{justify-self:start;border:0;background:transparent;color:#a52626;font-weight:900;text-decoration:underline;padding:0}
     .actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}.primary:active,.secondary:active,.back:active{transform:scale(.98);filter:brightness(1.08)}.message{display:none;margin-top:14px;padding:12px;border-radius:12px;font-weight:700}.message.ok{display:block;background:#e7f8ee;color:#17663a}.message.error{display:block;background:#fdecec;color:#982525}
     @media(max-width:560px){.row{grid-template-columns:1fr}.card{padding:17px}.page{padding-left:10px;padding-right:10px}}
   </style>
@@ -40,27 +39,13 @@
     <label id="oxygenDetailsLabel" class="hidden">Detalhes do oxigênio<input id="oxygenDetails" autocomplete="off" placeholder="Ex.: cateter 2 L/min"></label>
     <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
     <label>Foto ou Documento
-      <button id="openAttachmentMenu" class="attachment-button" type="button"><span>📎</span><span>Adicionar Foto ou Documento</span></button>
+      <input id="attachments" class="native-attachment" type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.txt" multiple>
       <span id="attachmentSummary" class="attachment-summary">Nenhum arquivo selecionado.</span>
+      <button id="clearAttachments" class="clear-attachments hidden" type="button">Limpar anexos</button>
+      <span class="hint">Ao tocar, o aparelho mostrará Fototeca, Tirar Foto e Escolher Arquivos. Até 10 MB por arquivo.</span>
     </label>
-    <input id="cameraInput" class="hidden" type="file" accept="image/*" capture="environment">
-    <input id="photoInput" class="hidden" type="file" accept="image/*" multiple>
-    <input id="documentInput" class="hidden" type="file" accept="application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.txt" multiple>
-    <span class="hint">Até 10 MB por arquivo.</span>
     <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.href='./comando.html'">Voltar à tela de comando</button></div><div id="formMessage" class="message" role="status"></div>
   </div></form>
 </main>
-<section id="attachmentSheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="attachmentTitle">
-  <div class="sheet-box">
-    <h2 id="attachmentTitle">Foto ou Documento</h2>
-    <p>Escolha de onde deseja adicionar o arquivo.</p>
-    <div class="sheet-options">
-      <button class="sheet-option" type="button" data-attachment-source="camera">📷 Abrir a câmera para tirar foto</button>
-      <button class="sheet-option" type="button" data-attachment-source="photo">🖼️ Selecionar uma foto do aparelho</button>
-      <button class="sheet-option" type="button" data-attachment-source="document">📄 Selecionar um documento</button>
-    </div>
-    <button id="closeAttachmentMenu" class="sheet-cancel" type="button">Cancelar</button>
-  </div>
-</section>
-<script src="js/config.js?v=20260806.30"></script><script src="js/solicitar-transporte.js?v=20260806.30" defer></script>
+<script src="js/config.js?v=20260806.32"></script><script src="js/solicitar-transporte.js?v=20260806.32" defer></script>
 </body></html>
