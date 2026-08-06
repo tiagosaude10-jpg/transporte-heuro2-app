@@ -15,10 +15,45 @@
 
   const start = async () => {
     const app = await loadConfig();
-    const session = app.readSession();
+    let session = app.readSession();
 
-    if (!session?.access_token) {
+    if (!session?.access_token || !session?.user_id) {
       window.location.replace('./login.html');
+      return;
+    }
+
+    const invalidateSession = (reason = 'sessao_invalida') => {
+      app.clearSession();
+      window.location.replace(`./login.html?motivo=${encodeURIComponent(reason)}`);
+    };
+
+    try {
+      const response = await fetch(
+        app.apiUrl(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user_id)}&select=id,display_name,status,authorized_access`),
+        { headers: app.authenticatedHeaders(session.access_token) }
+      );
+      const profiles = await response.json().catch(() => []);
+
+      if (!response.ok || !Array.isArray(profiles) || profiles.length === 0) {
+        invalidateSession('cadastro_indisponivel');
+        return;
+      }
+
+      const profile = profiles[0];
+      if (profile.status !== 'aprovado' || !profile.authorized_access) {
+        invalidateSession(profile.status === 'bloqueado' ? 'acesso_bloqueado' : 'acesso_nao_autorizado');
+        return;
+      }
+
+      session = {
+        ...session,
+        display_name: profile.display_name || session.display_name || '',
+        access: profile.authorized_access,
+        status: profile.status
+      };
+      app.saveSession(session);
+    } catch (_) {
+      invalidateSession('falha_validacao');
       return;
     }
 
@@ -67,13 +102,10 @@
       const token = session.access_token;
       app.clearSession();
 
-      fetch(`${app.SUPABASE_URL}/auth/v1/logout`, {
+      fetch(app.apiUrl('/auth/v1/logout'), {
         method: 'POST',
         keepalive: true,
-        headers: {
-          apikey: app.SUPABASE_KEY,
-          Authorization: `Bearer ${token}`
-        }
+        headers: app.authenticatedHeaders(token)
       }).catch(() => {});
 
       window.location.replace('./login.html?logout=1');
