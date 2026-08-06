@@ -16,7 +16,7 @@ body {
 
 body {
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
   overflow: hidden;
 }
 
@@ -26,7 +26,7 @@ input { font: inherit; }
 .app-shell {
   width: 100%;
   height: 100vh;
-  height: 100svh;
+  height: 100dvh;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -36,19 +36,19 @@ input { font: inherit; }
 .app-screen {
   position: relative;
   max-width: 100vw;
-  max-height: 100svh;
+  max-height: 100dvh;
   margin: 0 auto;
   overflow: hidden;
   background: #ffffff;
 }
 
 .welcome-screen {
-  width: min(100vw, calc(100svh * 711 / 1536));
+  width: min(100vw, calc(100dvh * 711 / 1536));
   aspect-ratio: 711 / 1536;
 }
 
 .login-screen {
-  width: min(100vw, calc(100svh * 832 / 1792));
+  width: min(100vw, calc(100dvh * 832 / 1792));
   aspect-ratio: 832 / 1792;
 }
 
@@ -95,13 +95,13 @@ input { font: inherit; }
   border: 0;
   border-radius: 10px;
   outline: 0;
-  background: #ffffff;
+  background: transparent;
   box-shadow: none;
   color: #173c8e;
   caret-color: #173c8e;
   font-size: clamp(15px, 3.7vw, 23px);
   font-weight: 400;
-  line-height: normal;
+  line-height: 1.2;
   appearance: none;
   -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
@@ -116,7 +116,8 @@ input { font: inherit; }
 .login-control:focus-visible {
   border: 0;
   outline: 0;
-  box-shadow: inset 0 0 0 2px rgba(20, 91, 204, .16);
+  box-shadow: inset 0 0 0 2px rgba(20, 91, 204, .18);
+  background: rgba(255,255,255,.10);
 }
 
 .login-control--identifier {
@@ -149,7 +150,7 @@ input { font: inherit; }
   border-radius: 14px;
   pointer-events: auto;
   touch-action: manipulation;
-  transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease, filter .12s ease, opacity .12s ease;
+  transition: background-color .10s ease, box-shadow .10s ease, transform .10s ease, filter .10s ease, opacity .10s ease;
 }
 
 .login-screen__submit {
@@ -169,17 +170,27 @@ input { font: inherit; }
 
 .login-screen__submit:active,
 .login-screen__submit.is-pressed,
-.login-screen__submit[aria-busy="true"],
+.login-screen__submit[aria-busy="true"] {
+  background: rgba(255,255,255,.30);
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.96),
+    0 0 0 5px rgba(0,145,255,.88),
+    0 0 28px 10px rgba(0,115,255,.65);
+  transform: scale(.965);
+  filter: saturate(1.28) brightness(1.12);
+  opacity: 1 !important;
+}
+
 .login-screen__forgot:active,
 .login-screen__forgot.is-pressed,
 .login-screen__register:active,
 .login-screen__register.is-pressed {
-  background: rgba(21, 98, 224, .24);
+  background: rgba(21, 98, 224, .22);
   box-shadow:
-    inset 0 0 0 3px rgba(14, 76, 190, .86),
-    0 0 0 2px rgba(255, 255, 255, .76),
-    0 0 20px rgba(27, 99, 219, .44);
+    inset 0 0 0 3px rgba(14, 76, 190, .88),
+    0 0 0 2px rgba(255, 255, 255, .80),
+    0 0 20px rgba(27, 99, 219, .48);
   transform: scale(.975);
-  filter: saturate(1.12) brightness(.98);
+  filter: saturate(1.12) brightness(.99);
   opacity: 1 !important;
 }
