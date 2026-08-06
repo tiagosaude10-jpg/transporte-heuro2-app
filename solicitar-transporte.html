@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0a4ea3">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Solicitação de Transporte — HEURO</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#eef4fb;color:#17365f}
+    body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    .page{min-height:100vh;background:linear-gradient(180deg,#0b4b98 0,#1973c8 210px,#eef4fb 210px);padding:18px 14px 32px}
+    .top{max-width:720px;margin:auto;color:#fff;display:flex;align-items:center;gap:12px;padding:4px 2px 18px}
+    .back{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.16);color:#fff;border-radius:12px;min-width:48px;height:44px;font-size:24px}
+    .top h1{font-size:1.25rem;margin:0}.top p{margin:3px 0 0;font-size:.9rem;opacity:.9}
+    .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16)}
+    .grid{display:grid;gap:15px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:grid;gap:7px;font-weight:750;font-size:.92rem}input,select,textarea{width:100%;border:1px solid #c7d7eb;border-radius:12px;padding:13px 14px;font:inherit;color:#18395f;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}textarea{min-height:96px;resize:vertical}
+    .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}
+    .hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}
+    .actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}
+    .primary:active,.secondary:active,.back:active{transform:scale(.98);filter:brightness(1.08)}.message{display:none;margin-top:14px;padding:12px;border-radius:12px;font-weight:700}.message.ok{display:block;background:#e7f8ee;color:#17663a}.message.error{display:block;background:#fdecec;color:#982525}
+    @media(max-width:560px){.row{grid-template-columns:1fr}.card{padding:17px}.page{padding-left:10px;padding-right:10px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top">
+      <button class="back" type="button" onclick="history.back()" aria-label="Voltar">‹</button>
+      <div><h1>Solicitação de Transporte</h1><p>Preencha os dados para encaminhar à equipe de transporte.</p></div>
+    </header>
+    <form id="transportForm" class="card" novalidate>
+      <div class="grid">
+        <label>Nome do paciente<input id="patientName" required autocomplete="off"></label>
+        <div class="row">
+          <label>Data de nascimento<input id="birthDate" type="date" required></label>
+          <label>Setor de origem
+            <select id="originSector" required>
+              <option value="">Selecione</option><option>UTI</option><option>Sala Vermelha</option><option>Clínica Médica</option><option>Clínica Cirúrgica</option><option>Clínica Ortopédica</option><option>Centro Cirúrgico</option><option>Oncologia</option><option>Outro</option>
+            </select>
+          </label>
+        </div>
+        <label id="originLocationLabel">Enfermaria / Leito<input id="originLocation" autocomplete="off"></label>
+        <label>Destino<input id="destination" required autocomplete="off" placeholder="Informe o local de destino"></label>
+        <label class="check"><input id="oxygenRequired" type="checkbox"><span>Paciente necessita de oxigênio</span></label>
+        <label id="oxygenDetailsLabel" class="hidden">Detalhes do oxigênio<input id="oxygenDetails" autocomplete="off" placeholder="Ex.: cateter 2 L/min"></label>
+        <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
+        <label>Foto ou documento<input id="attachments" type="file" accept="image/*,application/pdf" capture="environment" multiple><span class="hint">Até 10 MB por arquivo.</span></label>
+        <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.href='./comando.html'">Voltar à tela de comando</button></div>
+        <div id="formMessage" class="message" role="status"></div>
+      </div>
+    </form>
+  </main>
+  <script src="js/config.js?v=20260806.21"></script>
+  <script src="js/solicitar-transporte.js?v=20260806.21" defer></script>
+</body>
+</html>
