@@ -1,1 +1,34 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Atualizando Transportes da Equipe</title></head><body><p style="font:700 16px system-ui;text-align:center;padding:40px;color:#0b397d">Atualizando Transportes da Equipe…</p><script>location.replace('./transportes-equipe-v62.html?fresh='+Date.now());</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#073d9d">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Transportes da Equipe — HEURO</title>
+<link rel="stylesheet" href="css/transportes-equipe.css?v=20260806.63">
+<style>
+.status-cards{max-width:860px;margin:0 auto 16px;display:grid;gap:14px}.status-card{width:100%;border:0;border-radius:28px;background:#fff;padding:18px;box-shadow:0 12px 28px rgba(30,65,112,.12);text-align:left;transition:transform .12s ease,filter .12s ease,box-shadow .12s ease}.status-card__title{display:grid;place-items:center;min-height:84px;padding:16px 22px;border-radius:23px;color:#fff;font-size:clamp(1.28rem,4.8vw,1.9rem);font-weight:900;text-align:center}.status-card__description{display:block;padding:17px 5px 2px;color:#677b99;font-size:clamp(1rem,3.6vw,1.35rem);line-height:1.35}.status-card[data-tab="pending"] .status-card__title{background:linear-gradient(135deg,#dc3545,#b91f30)}.status-card[data-tab="active"] .status-card__title{background:linear-gradient(135deg,#249457,#176c42)}.status-card[data-tab="completed"] .status-card__title{background:linear-gradient(135deg,#2378dc,#0f56b2)}.status-card.active,.status-card:active{transform:scale(.988);filter:brightness(1.035);box-shadow:0 10px 25px rgba(30,65,112,.18),inset 0 0 0 3px rgba(255,255,255,.72)}@media(max-width:560px){.status-cards{gap:12px}.status-card{padding:14px;border-radius:24px}.status-card__title{min-height:70px;border-radius:19px}.status-card__description{padding-top:13px}}
+</style>
+</head>
+<body>
+<main class="page">
+<section class="workspace">
+<header class="top"><a class="back" href="./comando-oficial.html?v=20260806.63" aria-label="Voltar à tela de comando">←</a><div><h1>Transportes da Equipe</h1><p>Aceite, acompanhe e conclua os transportes.</p></div></header>
+<section class="metrics"><article class="metric"><span>Pendentes</span><strong id="pendingCount">0</strong></article><article class="metric"><span>Aceitos / em andamento</span><strong id="activeCount">0</strong></article><article class="metric"><span>Concluídos</span><strong id="completedCount">0</strong></article></section>
+<section class="toolbar"><input id="searchInput" class="search" type="search" placeholder="Pesquisar paciente ou protocolo"><button id="refreshButton" class="refresh" type="button" aria-label="Atualizar">↻</button></section>
+<nav class="status-cards" aria-label="Categorias dos transportes">
+<button class="tab status-card active" data-tab="pending" type="button"><span class="status-card__title">Transportes pendentes</span><span class="status-card__description">Solicitações aguardando aceite da equipe.</span></button>
+<button class="tab status-card" data-tab="active" type="button"><span class="status-card__title">Transportes aceitos</span><span class="status-card__description">Transportes aceitos ou atualmente em execução.</span></button>
+<button class="tab status-card" data-tab="completed" type="button"><span class="status-card__title">Transportes concluídos</span><span class="status-card__description">Visualize os transportes concluídos e consulte os registros.</span></button>
+</nav>
+<section id="requestList" class="list"><div class="empty">Carregando transportes...</div></section>
+</section>
+</main>
+<div id="actionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><section class="sheet"><h2 id="modalTitle">Transporte</h2><p id="modalSubtitle" class="protocol"></p><div id="modalContent"></div><div class="sheet-actions"><button id="modalCancel" class="cancel" type="button">Cancelar</button><button id="modalConfirm" class="confirm" type="button">Confirmar</button></div></section></div>
+<script src="js/config.js?v=20260806.63"></script>
+<script src="js/transportes-equipe.js?v=20260806.63" defer></script>
+</body>
+</html>
