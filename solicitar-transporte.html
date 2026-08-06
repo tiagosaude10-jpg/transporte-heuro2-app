@@ -10,68 +10,56 @@
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#eef4fb;color:#17365f}
     body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
     .page{min-height:100vh;background:linear-gradient(180deg,#0b4b98 0,#1973c8 210px,#eef4fb 210px);padding:18px 14px 32px}
-    .top{max-width:720px;margin:auto;color:#fff;display:flex;align-items:center;gap:12px;padding:4px 2px 18px}
-    .back{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.16);color:#fff;border-radius:12px;min-width:48px;height:44px;font-size:24px}
-    .top h1{font-size:1.25rem;margin:0}.top p{margin:3px 0 0;font-size:.9rem;opacity:.9}
-    .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16);overflow:hidden}
-    .grid{display:grid;gap:15px;min-width:0}.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0}.row>*{min-width:0}
-    label{display:grid;gap:7px;min-width:0;font-weight:750;font-size:.92rem}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;border:1px solid #c7d7eb;border-radius:12px;padding:13px 14px;font:inherit;color:#18395f;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}textarea{min-height:96px;resize:vertical}
-    input[type="date"],input[type="time"]{width:100%;max-width:100%;min-width:0;height:48px;padding:0 12px;font-size:16px;line-height:48px;overflow:hidden}
-    input[type="date"]::-webkit-date-and-time-value,input[type="time"]::-webkit-date-and-time-value{text-align:left;margin:0}
-    .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}
-    .hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}
-    .actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}
-    .primary:active,.secondary:active,.back:active{transform:scale(.98);filter:brightness(1.08)}.message{display:none;margin-top:14px;padding:12px;border-radius:12px;font-weight:700}.message.ok{display:block;background:#e7f8ee;color:#17663a}.message.error{display:block;background:#fdecec;color:#982525}
+    .top{max-width:720px;margin:auto;color:#fff;display:flex;align-items:center;gap:12px;padding:4px 2px 18px}.back{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.16);color:#fff;border-radius:12px;min-width:48px;height:44px;font-size:24px}.top h1{font-size:1.25rem;margin:0}.top p{margin:3px 0 0;font-size:.9rem;opacity:.9}
+    .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16);overflow:hidden}.grid{display:grid;gap:15px;min-width:0}.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0}.row>*{min-width:0}
+    label{display:grid;gap:7px;min-width:0;font-weight:750;font-size:.92rem}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;height:48px;border:1px solid #c7d7eb;border-radius:12px;padding:0 14px;font:inherit;color:#18395f;background:#fff;outline:none}textarea{height:auto;min-height:96px;padding:13px 14px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}
+    .smart-field{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;width:100%;height:48px;border:1px solid #c7d7eb;border-radius:12px;background:#fff;overflow:hidden}.smart-field:focus-within{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}.smart-field .manual{height:46px;border:0;border-radius:0;box-shadow:none!important;padding:0 12px;font-size:16px}.smart-field button{height:46px;border:0;border-left:1px solid #d9e4f1;background:#eef6ff;display:grid;place-items:center;font-size:21px;cursor:pointer}.smart-field .picker-button{color:#0a63c7}.smart-field .clear-button{color:#a52626;background:#fff4f4;font-size:18px;font-weight:900}.smart-field button:active{filter:brightness(.92);transform:scale(.96)}.native-picker{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;left:-9999px!important}
+    .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}.hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}.actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}.primary:active,.secondary:active,.back:active{transform:scale(.98);filter:brightness(1.08)}.message{display:none;margin-top:14px;padding:12px;border-radius:12px;font-weight:700}.message.ok{display:block;background:#e7f8ee;color:#17663a}.message.error{display:block;background:#fdecec;color:#982525}
     @media(max-width:560px){.row{grid-template-columns:1fr}.card{padding:17px}.page{padding-left:10px;padding-right:10px}}
   </style>
 </head>
 <body>
-  <main class="page">
-    <header class="top">
-      <button class="back" type="button" onclick="history.back()" aria-label="Voltar">‹</button>
-      <div><h1>Solicitação de Transporte</h1><p>Preencha os dados para encaminhar à equipe de transporte.</p></div>
-    </header>
-    <form id="transportForm" class="card" novalidate>
-      <div class="grid">
-        <label>Nome do paciente<input id="patientName" required autocomplete="off"></label>
-        <label>Data de nascimento<input id="birthDate" type="date" required></label>
-        <label>Tipo de transporte
-          <select id="supportType" name="supportType" required>
-            <option value="">Selecione o tipo de transporte</option>
-            <option value="basico">Suporte Básico</option>
-            <option value="avancado_uti">Suporte Avançado / UTI</option>
-          </select>
-        </label>
-        <label>Prioridade
-          <select id="priority" name="priority" required>
-            <option value="">Selecione a prioridade</option>
-            <option value="emergencia">Emergência</option>
-            <option value="urgencia">Urgência</option>
-            <option value="eletivo">Eletivo</option>
-          </select>
-          <span class="hint">Ordem da fila: Emergência, Urgência e Eletivo. Dentro da mesma prioridade, vale o horário da solicitação.</span>
-        </label>
-        <label>Setor de origem
-          <select id="originSector" required>
-            <option value="">Selecione</option><option>UTI</option><option>Sala Vermelha</option><option>Clínica Geral</option><option>Clínica Médica</option><option>Clínica Cirúrgica</option><option>Clínica Ortopédica</option><option>Centro Cirúrgico</option><option>Oncologia</option><option>Outro</option>
-          </select>
-        </label>
-        <label id="originLocationLabel">Enfermaria / Leito<input id="originLocation" autocomplete="off"></label>
-        <label>Destino<input id="destination" required autocomplete="off" placeholder="Informe o local de destino"></label>
-        <div class="row">
-          <label>Data do transporte<input id="transportDate" type="date" required></label>
-          <label>Horário do destino<input id="destinationTime" type="time" required></label>
-        </div>
-        <label class="check"><input id="oxygenRequired" type="checkbox"><span>Paciente necessita de oxigênio</span></label>
-        <label id="oxygenDetailsLabel" class="hidden">Detalhes do oxigênio<input id="oxygenDetails" autocomplete="off" placeholder="Ex.: cateter 2 L/min"></label>
-        <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
-        <label>Foto ou documento<input id="attachments" type="file" accept="image/*,application/pdf" capture="environment" multiple><span class="hint">Até 10 MB por arquivo.</span></label>
-        <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.href='./comando.html'">Voltar à tela de comando</button></div>
-        <div id="formMessage" class="message" role="status"></div>
+<main class="page">
+  <header class="top"><button class="back" type="button" onclick="history.back()" aria-label="Voltar">‹</button><div><h1>Solicitação de Transporte</h1><p>Preencha os dados para encaminhar à equipe de transporte.</p></div></header>
+  <form id="transportForm" class="card" novalidate><div class="grid">
+    <label>Nome do paciente<input id="patientName" required autocomplete="off"></label>
+    <label>Data de nascimento
+      <div class="smart-field">
+        <input id="birthDateText" class="manual" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off" required>
+        <button class="picker-button" type="button" data-picker="birthDateNative" aria-label="Abrir calendário">📅</button>
+        <button class="clear-button" type="button" data-clear="birthDateText,birthDateNative" aria-label="Limpar data">×</button>
       </div>
-    </form>
-  </main>
-  <script src="js/config.js?v=20260806.28"></script>
-  <script src="js/solicitar-transporte.js?v=20260806.28" defer></script>
-</body>
-</html>
+      <input id="birthDateNative" class="native-picker" type="date" tabindex="-1">
+    </label>
+    <label>Tipo de transporte<select id="supportType" name="supportType" required><option value="">Selecione o tipo de transporte</option><option value="basico">Suporte Básico</option><option value="avancado_uti">Suporte Avançado / UTI</option></select></label>
+    <label>Prioridade<select id="priority" name="priority" required><option value="">Selecione a prioridade</option><option value="emergencia">Emergência</option><option value="urgencia">Urgência</option><option value="eletivo">Eletivo</option></select><span class="hint">Ordem da fila: Emergência, Urgência e Eletivo. Dentro da mesma prioridade, vale o horário da solicitação.</span></label>
+    <label>Setor de origem<select id="originSector" required><option value="">Selecione</option><option>UTI</option><option>Sala Vermelha</option><option>Clínica Geral</option><option>Clínica Médica</option><option>Clínica Cirúrgica</option><option>Clínica Ortopédica</option><option>Centro Cirúrgico</option><option>Oncologia</option><option>Outro</option></select></label>
+    <label id="originLocationLabel">Enfermaria / Leito<input id="originLocation" autocomplete="off"></label>
+    <label>Destino<input id="destination" required autocomplete="off" placeholder="Informe o local de destino"></label>
+    <div class="row">
+      <label>Data do transporte
+        <div class="smart-field">
+          <input id="transportDateText" class="manual" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off" required>
+          <button class="picker-button" type="button" data-picker="transportDateNative" aria-label="Abrir calendário">📅</button>
+          <button class="clear-button" type="button" data-clear="transportDateText,transportDateNative" aria-label="Limpar data">×</button>
+        </div>
+        <input id="transportDateNative" class="native-picker" type="date" tabindex="-1">
+      </label>
+      <label>Horário do destino
+        <div class="smart-field">
+          <input id="destinationTimeText" class="manual" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" required>
+          <button class="picker-button" type="button" data-picker="destinationTimeNative" aria-label="Abrir relógio">🕒</button>
+          <button class="clear-button" type="button" data-clear="destinationTimeText,destinationTimeNative" aria-label="Limpar horário">×</button>
+        </div>
+        <input id="destinationTimeNative" class="native-picker" type="time" tabindex="-1">
+      </label>
+    </div>
+    <label class="check"><input id="oxygenRequired" type="checkbox"><span>Paciente necessita de oxigênio</span></label>
+    <label id="oxygenDetailsLabel" class="hidden">Detalhes do oxigênio<input id="oxygenDetails" autocomplete="off" placeholder="Ex.: cateter 2 L/min"></label>
+    <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
+    <label>Foto ou documento<input id="attachments" type="file" accept="image/*,application/pdf" capture="environment" multiple><span class="hint">Até 10 MB por arquivo.</span></label>
+    <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.href='./comando.html'">Voltar à tela de comando</button></div><div id="formMessage" class="message" role="status"></div>
+  </div></form>
+</main>
+<script src="js/config.js?v=20260806.29"></script><script src="js/solicitar-transporte.js?v=20260806.29" defer></script>
+</body></html>
