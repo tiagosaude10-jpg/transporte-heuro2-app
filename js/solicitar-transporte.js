@@ -25,6 +25,8 @@
   const submitButton = document.getElementById('submitButton');
   const message = document.getElementById('formMessage');
 
+  const priorityRank = Object.freeze({ emergencia: 1, urgencia: 2, eletivo: 3 });
+
   const showMessage = (text, ok = false) => {
     message.textContent = text;
     message.className = `message ${ok ? 'ok' : 'error'}`;
@@ -84,10 +86,17 @@
     submitButton.textContent = 'Enviando...';
 
     try {
+      const supportType = form.elements.supportType.value;
+      const priority = form.elements.priority.value;
+      if (!supportType || !priority) throw new Error('Selecione o tipo de suporte e a prioridade do transporte.');
+
       const attachmentPaths = await uploadFiles();
       const payload = {
         requester_id: session.user_id,
         requester_name: session.display_name || 'Usuário',
+        support_type: supportType,
+        priority,
+        priority_rank: priorityRank[priority],
         patient_name: document.getElementById('patientName').value.trim(),
         birth_date: document.getElementById('birthDate').value,
         origin_sector: sector.value,
