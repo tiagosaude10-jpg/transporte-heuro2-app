@@ -38,7 +38,7 @@
       const profile = profiles[0]; if (profile.status === 'pendente') throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.'); if (profile.status === 'bloqueado') throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.'); if (profile.status !== 'aprovado' || !profile.authorized_access) throw new Error('Seu perfil ainda não possui autorização de acesso.');
       saveSession({ access_token: accessToken, refresh_token: authData.refresh_token || '', expires_at: authData.expires_at || 0, user_id: userId, display_name: profile.display_name || '', access: profile.authorized_access, status: profile.status });
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.replace(`./comando-v55.html?fresh=${Date.now()}`), 350);
+      window.setTimeout(() => window.location.replace(`./comando-v56.html?fresh=${Date.now()}`), 350);
     } catch (error) { showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.'); setLoading(false); releaseSubmit(); }
   });
   forgotPasswordLink?.addEventListener('click', (event) => { event.preventDefault(); navigateWithFeedback(forgotPasswordLink); });
