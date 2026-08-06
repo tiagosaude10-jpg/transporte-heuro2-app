@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.30';
+  const APP_VERSION = '20260806.31';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -44,4 +44,11 @@
   });
 
   window.HEURO = Object.freeze({ APP_VERSION, SUPABASE_URL, SUPABASE_KEY, SESSION_KEY, readSession, saveSession, clearSession, clearLegacyCaches, apiUrl, publicHeaders, authenticatedHeaders, jsonHeaders });
+
+  if (/solicitar-transporte\.html$/i.test(location.pathname)) {
+    const pickerFix = document.createElement('script');
+    pickerFix.src = `js/picker-fix.js?v=${APP_VERSION}`;
+    pickerFix.defer = false;
+    document.head.appendChild(pickerFix);
+  }
 })();
