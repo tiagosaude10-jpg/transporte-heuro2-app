@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.42';
+  const APP_VERSION = '20260806.43';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -32,6 +32,11 @@
     pickerFix.src = `js/picker-fix.js?v=${APP_VERSION}`;
     pickerFix.defer = false;
     document.head.appendChild(pickerFix);
+
+    const locationAttachments = document.createElement('script');
+    locationAttachments.src = `js/solicitacao-local-anexos.js?v=${APP_VERSION}`;
+    locationAttachments.defer = false;
+    document.head.appendChild(locationAttachments);
 
     const pdfLoader = document.createElement('script');
     pdfLoader.src = `js/pdf-loader.js?v=${APP_VERSION}`;
