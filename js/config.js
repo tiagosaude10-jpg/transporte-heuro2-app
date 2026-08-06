@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.47';
+  const APP_VERSION = '20260806.48';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -38,5 +38,23 @@
     pdfLoader.src = `js/pdf-loader.js?v=${APP_VERSION}`;
     pdfLoader.defer = false;
     document.head.appendChild(pdfLoader);
+  }
+
+  if (/admin-cadastros\.html$/i.test(location.pathname)) {
+    const organizeApprovalPage = () => {
+      const whatsappSection = document.querySelector('.transport-settings');
+      if (whatsappSection) whatsappSection.remove();
+      const backLink = document.querySelector('.back-link');
+      if (backLink) {
+        backLink.href = './admin-painel.html';
+        backLink.setAttribute('aria-label', 'Voltar ao painel do administrador');
+      }
+      const title = document.querySelector('.admin-header__text h1');
+      const subtitle = document.querySelector('.admin-header__text span');
+      if (title) title.textContent = 'Aprovação de cadastros';
+      if (subtitle) subtitle.textContent = 'Analise e gerencie as solicitações de acesso ao HEURO Transportes.';
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', organizeApprovalPage, { once: true });
+    else organizeApprovalPage();
   }
 })();
