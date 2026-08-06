@@ -56,6 +56,10 @@
         </label>
         <label id="originLocationLabel">Enfermaria / Leito<input id="originLocation" autocomplete="off"></label>
         <label>Destino<input id="destination" required autocomplete="off" placeholder="Informe o local de destino"></label>
+        <div class="row">
+          <label>Data do transporte<input id="transportDate" type="date" required></label>
+          <label>Horário do destino<input id="destinationTime" type="time" required></label>
+        </div>
         <label class="check"><input id="oxygenRequired" type="checkbox"><span>Paciente necessita de oxigênio</span></label>
         <label id="oxygenDetailsLabel" class="hidden">Detalhes do oxigênio<input id="oxygenDetails" autocomplete="off" placeholder="Ex.: cateter 2 L/min"></label>
         <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
@@ -65,7 +69,7 @@
       </div>
     </form>
   </main>
-  <script src="js/config.js?v=20260806.25"></script>
-  <script src="js/solicitar-transporte.js?v=20260806.25" defer></script>
+  <script src="js/config.js?v=20260806.26"></script>
+  <script src="js/solicitar-transporte.js?v=20260806.26" defer></script>
 </body>
 </html>
