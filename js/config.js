@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.50';
+  const APP_VERSION = '20260806.52';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -28,25 +28,12 @@
   const jsonHeaders = () => ({ apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Accept: 'application/json' });
   window.HEURO = Object.freeze({ APP_VERSION, SUPABASE_URL, SUPABASE_KEY, SESSION_KEY, readSession, saveSession, clearSession, clearLegacyCaches, apiUrl, publicHeaders, authenticatedHeaders, jsonHeaders });
 
-  if (/solicitar-transporte\.html$/i.test(location.pathname)) {
-    const pickerFix = document.createElement('script');
-    pickerFix.src = `js/picker-fix.js?v=${APP_VERSION}`;
-    pickerFix.defer = false;
-    document.head.appendChild(pickerFix);
-
-    const pdfLoader = document.createElement('script');
-    pdfLoader.src = `js/pdf-loader.js?v=${APP_VERSION}`;
-    pdfLoader.defer = false;
-    document.head.appendChild(pdfLoader);
-  }
-
   if (/admin-cadastros\.html$/i.test(location.pathname)) {
     const organizeApprovalPage = () => {
-      const whatsappSection = document.querySelector('.transport-settings');
-      if (whatsappSection) whatsappSection.remove();
+      document.querySelector('.transport-settings')?.remove();
       const backLink = document.querySelector('.back-link');
       if (backLink) {
-        backLink.href = './admin-painel.html?v=20260806.50';
+        backLink.href = './admin-central.html?v=20260806.52';
         backLink.setAttribute('aria-label', 'Voltar ao painel do administrador');
       }
       const title = document.querySelector('.admin-header__text h1');
