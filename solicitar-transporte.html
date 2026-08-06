@@ -18,7 +18,7 @@
 </head>
 <body>
 <main class="page">
-  <header class="top"><button class="back" type="button" onclick="history.back()" aria-label="Voltar">‹</button><div><h1>Solicitação de Transporte</h1><p>Preencha os dados para encaminhar à equipe de transporte.</p></div></header>
+  <header class="top"><button class="back" type="button" onclick="location.replace('./comando.html?v=20260806.52')" aria-label="Voltar">‹</button><div><h1>Solicitação de Transporte</h1><p>Preencha os dados para encaminhar à equipe de transporte.</p></div></header>
   <form id="transportForm" class="card" novalidate><div class="grid">
     <label>Nome do paciente<input id="patientName" required autocomplete="off"></label>
     <label>Data de nascimento<div class="smart-field"><input id="birthDateText" class="manual" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" required><button class="picker-button" type="button" data-picker="birthDateNative">📅</button><button class="clear-button" type="button" data-clear="birthDateText,birthDateNative">×</button></div><input id="birthDateNative" class="native-picker" type="date"></label>
@@ -33,20 +33,19 @@
     <label>Motivo da transferência<select id="transferReason" required><option value="">Selecione o motivo</option><option value="transferencia">Transferência</option><option value="exame_procedimento">Exame/Procedimento</option><option value="consulta">Consulta</option></select></label>
     <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
     <label>Foto ou Documento<input id="attachments" class="native-attachment" type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.txt" multiple><span id="attachmentSummary" class="attachment-summary">Nenhum arquivo selecionado.</span><button id="clearAttachments" class="clear-attachments hidden" type="button">Limpar anexos</button><span class="hint">Até 20 MB por arquivo. É possível adicionar várias fotos e documentos.</span></label>
-    <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.replace('./comando.html?v=20260806.47')">Voltar à tela de comando</button></div>
+    <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.replace('./comando.html?v=20260806.52')">Voltar à tela de comando</button></div>
     <div id="formMessage" class="message" role="status"></div>
     <div id="postActions" class="post-actions hidden">
       <div class="completion-heading"><div class="completion-icon">✓</div><h2>Solicitação enviada!</h2><p>O pedido já foi cadastrado e encaminhado para a equipe de transporte.</p></div>
       <button id="sharePdfButton" class="pdf-button" type="button">Gerar / Compartilhar PDF</button>
       <button id="openWhatsappButton" class="whatsapp-button" type="button">Enviar PDF pelo WhatsApp</button>
-      <a class="home-button" href="./comando.html?v=20260806.47" onclick="location.replace(this.href);return false;">Voltar para a tela de comando</a>
+      <a class="home-button" href="./comando.html?v=20260806.52" onclick="location.replace(this.href);return false;">Voltar para a tela de comando</a>
     </div>
   </div></form>
 </main>
-<script src="js/pdf-loader.js?v=20260806.47"></script>
-<script src="js/config.js?v=20260806.47"></script>
-<script src="js/solicitar-transporte.js?v=20260806.47" defer></script>
-<script src="js/solicitacao-local-anexos.js?v=20260806.47" defer></script>
-<script src="js/solicitacao-maiusculas.js?v=20260806.47" defer></script>
-<script src="js/solicitacao-concluida.js?v=20260806.47" defer></script>
+<script src="js/config.js?v=20260806.52"></script>
+<script src="js/pdf-loader.js?v=20260806.52"></script>
+<script src="js/picker-fix.js?v=20260806.52"></script>
+<script src="js/solicitar-transporte.js?v=20260806.52" defer></script>
+<script src="js/solicitacao-ui.js?v=20260806.52" defer></script>
 </body></html>
