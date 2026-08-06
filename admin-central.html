@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#073d9d">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Carregando painel administrativo</title>
+  <style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#073d9d;color:#fff}.loading{min-height:100vh;display:grid;place-items:center;padding:28px;text-align:center}.box{width:min(100%,380px)}.spinner{width:54px;height:54px;margin:0 auto 18px;border:6px solid rgba(255,255,255,.25);border-top-color:#caff56;border-radius:50%;animation:girar .8s linear infinite}.box h1{font-size:1.35rem;margin:0 0 8px}.box p{margin:0;opacity:.86}@keyframes girar{to{transform:rotate(360deg)}}</style>
+</head>
+<body>
+  <main class="loading"><div class="box"><div class="spinner"></div><h1>Atualizando painel administrativo</h1><p>Carregando a versão mais recente do sistema...</p></div></main>
+  <script>
+  (async()=>{
+    try{
+      const url=`./admin-painel.html?nocache=${Date.now()}`;
+      const response=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      if(!response.ok) throw new Error('Falha ao carregar o painel.');
+      const html=await response.text();
+      document.open();
+      document.write(html);
+      document.close();
+      history.replaceState(null,'','./admin-central.html');
+    }catch(error){
+      document.querySelector('.box').innerHTML=`<h1>Não foi possível atualizar</h1><p>${error.message}</p><p style="margin-top:18px"><button onclick="location.reload()" style="min-height:48px;padding:0 22px;border:0;border-radius:14px;background:#caff56;color:#073d9d;font-weight:900">Tentar novamente</button></p>`;
+    }
+  })();
+  </script>
+</body>
+</html>
