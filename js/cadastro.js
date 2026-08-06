@@ -2,11 +2,7 @@
   'use strict';
 
   const loadConfig = () => new Promise((resolve, reject) => {
-    if (window.HEURO) {
-      resolve(window.HEURO);
-      return;
-    }
-
+    if (window.HEURO) return resolve(window.HEURO);
     const script = document.createElement('script');
     script.src = 'js/config.js';
     script.onload = () => window.HEURO ? resolve(window.HEURO) : reject(new Error('Configuração não carregada.'));
@@ -16,7 +12,6 @@
 
   const start = async () => {
     const { SUPABASE_URL, SUPABASE_KEY } = await loadConfig();
-
     const form = document.getElementById('registrationForm');
     const institutionalLink = document.getElementById('institutionalLink');
     const heuroSectorField = document.getElementById('heuroSectorField');
@@ -24,7 +19,6 @@
     const transportCompanyField = document.getElementById('transportCompanyField');
     const transportCompany = document.getElementById('transportCompany');
     const accessTypeField = document.getElementById('accessTypeField');
-    const accessOptions = document.querySelector('.access-options');
     const cpf = document.getElementById('cpf');
     const phone = document.getElementById('phone');
     const birthDateText = document.getElementById('birthDateText');
@@ -35,14 +29,6 @@
     const confirmPassword = document.getElementById('confirmPassword');
     const message = document.getElementById('registrationMessage');
     const submitButton = form?.querySelector('button[type="submit"]');
-
-    if (accessOptions && !accessOptions.querySelector('[value="solicitante_executante"]')) {
-      const combinedOption = document.createElement('label');
-      combinedOption.className = 'access-option access-option--combined';
-      combinedOption.innerHTML = '<input type="radio" name="accessType" value="solicitante_executante"><span class="access-icon">S+E</span><span><strong>Solicitante e Executante</strong><small>Pode solicitar, executar e registrar transportes.</small></span>';
-      accessOptions.appendChild(combinedOption);
-    }
-
     const accessInputs = Array.from(document.querySelectorAll('input[name="accessType"]'));
     const onlyDigits = (value) => value.replace(/\D/g, '');
     const selectedAccess = () => accessInputs.find((input) => input.checked)?.value || '';
@@ -61,7 +47,6 @@
         heuroSector.required = isHeuro;
         if (!isHeuro) heuroSector.value = '';
       }
-
       if (transportCompany) {
         transportCompany.required = isCompany;
         if (!isCompany) transportCompany.value = '';
@@ -133,18 +118,13 @@
       event.preventDefault();
       updateInstitutionalFields();
       if (message) message.textContent = '';
-
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
+      if (!form.checkValidity()) return form.reportValidity();
 
       if (!/^\d{2}\/\d{2}\/\d{4}$/.test(birthDateText?.value || '')) {
         message.textContent = 'Informe a data de nascimento no formato DD/MM/AAAA.';
         birthDateText?.focus();
         return;
       }
-
       if (password?.value !== confirmPassword?.value) {
         message.textContent = 'As senhas informadas não coincidem.';
         confirmPassword?.focus();
@@ -155,7 +135,6 @@
       const email = String(data.get('email') || '').trim().toLowerCase();
       const displayName = String(data.get('displayName') || '').trim();
       const redirectUrl = new URL('login.html', window.location.href).href;
-
       const payload = {
         email,
         password: String(data.get('password') || ''),
@@ -176,24 +155,17 @@
 
       setSubmitting(true);
       message.textContent = 'Enviando cadastro com segurança...';
-
       try {
         const response = await fetch(`${SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent(redirectUrl)}`, {
           method: 'POST',
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-          },
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.msg || result.message || result.error_description || 'Não foi possível criar o cadastro.');
-
         form.reset();
         updateInstitutionalFields();
-        message.textContent = 'Cadastro enviado. Abra o seu e-mail e confirme a conta. Depois volte ao aplicativo.';
+        message.textContent = 'Cadastro enviado. Aguarde a análise e a aprovação do administrador.';
       } catch (error) {
         console.error('Erro ao criar cadastro:', error);
         message.textContent = `Falha ao enviar o cadastro: ${error.message}`;
