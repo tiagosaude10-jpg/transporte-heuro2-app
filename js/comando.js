@@ -103,14 +103,13 @@
     const permissionDialog = document.getElementById('permissionDialog');
     const permissionClose = document.getElementById('permissionClose');
     const permissionMessage = document.getElementById('permissionMessage');
+    const requestLink = document.getElementById('requestTransportLink');
     const adminLink = document.getElementById('adminPanelLink');
     const logoutButton = document.getElementById('logoutButton');
     let loggingOut = false;
 
-    const showDenied = () => {
-      if (permissionMessage) {
-        permissionMessage.textContent = 'Você não possui permissão para acessar esta função. Esta opção exige perfil Administrador Geral.';
-      }
+    const showDenied = (text) => {
+      if (permissionMessage) permissionMessage.textContent = text;
       if (permissionDialog) permissionDialog.hidden = false;
     };
 
@@ -122,6 +121,16 @@
       if (event.target === permissionDialog) permissionDialog.hidden = true;
     });
 
+    requestLink?.addEventListener('click', (event) => {
+      requestLink.classList.add('is-pressed');
+      window.setTimeout(() => requestLink.classList.remove('is-pressed'), 140);
+      const canRequest = ['solicitante', 'solicitante_executante', 'administrador_geral'].includes(session.access);
+      if (!canRequest) {
+        event.preventDefault();
+        showDenied('Seu perfil não possui permissão para criar solicitações de transporte.');
+      }
+    });
+
     adminLink?.addEventListener('click', (event) => {
       adminLink.classList.add('is-pressed');
       window.setTimeout(() => adminLink.classList.remove('is-pressed'), 120);
@@ -129,7 +138,7 @@
       const isAdministrator = session.status === 'aprovado' && session.access === 'administrador_geral';
       if (!isAdministrator) {
         event.preventDefault();
-        showDenied();
+        showDenied('Você não possui permissão para acessar esta função. Esta opção exige perfil Administrador Geral.');
       }
     });
 
