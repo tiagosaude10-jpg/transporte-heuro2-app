@@ -60,7 +60,7 @@
     const commandUserName = document.getElementById('commandUserName');
     const displayName = String(session.display_name || '').trim();
     if (commandUserName) {
-      commandUserName.textContent = displayName ? `${displayName}!` : '';
+      commandUserName.textContent = displayName ? `Olá, ${displayName}!` : 'Olá!';
       commandUserName.title = displayName;
     }
 
