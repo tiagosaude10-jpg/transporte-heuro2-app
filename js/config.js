@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.28';
+  const APP_VERSION = '20260806.29';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -42,10 +42,7 @@
 
   const apiUrl = (path) => `${SUPABASE_URL}${path}`;
 
-  const publicHeaders = () => ({
-    apikey: SUPABASE_KEY,
-    Accept: 'application/json'
-  });
+  const publicHeaders = () => ({ apikey: SUPABASE_KEY, Accept: 'application/json' });
 
   const authenticatedHeaders = (token, includeJson = true) => ({
     apikey: SUPABASE_KEY,
@@ -61,18 +58,5 @@
     Accept: 'application/json'
   });
 
-  window.HEURO = Object.freeze({
-    APP_VERSION,
-    SUPABASE_URL,
-    SUPABASE_KEY,
-    SESSION_KEY,
-    readSession,
-    saveSession,
-    clearSession,
-    clearLegacyCaches,
-    apiUrl,
-    publicHeaders,
-    authenticatedHeaders,
-    jsonHeaders
-  });
+  window.HEURO = Object.freeze({ APP_VERSION, SUPABASE_URL, SUPABASE_KEY, SESSION_KEY, readSession, saveSession, clearSession, clearLegacyCaches, apiUrl, publicHeaders, authenticatedHeaders, jsonHeaders });
 })();
