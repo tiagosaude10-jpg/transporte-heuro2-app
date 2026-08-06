@@ -107,9 +107,16 @@ input { font: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 
-.login-control::placeholder {
-  color: #8b94ad;
-  opacity: 1;
+.login-control::placeholder,
+.login-control::-webkit-input-placeholder {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  opacity: 0 !important;
+}
+
+.login-control:placeholder-shown:not(:focus) {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .login-control:focus,
@@ -118,6 +125,8 @@ input { font: inherit; }
   outline: 0;
   box-shadow: inset 0 0 0 2px rgba(20, 91, 204, .18);
   background: rgba(255,255,255,.10);
+  color: #173c8e;
+  -webkit-text-fill-color: #173c8e;
 }
 
 .login-control--identifier {
