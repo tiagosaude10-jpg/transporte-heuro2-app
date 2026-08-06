@@ -37,7 +37,7 @@
       return;
     }
     const script = document.createElement('script');
-    script.src = 'js/config.js';
+    script.src = `js/config.js?ts=${Date.now()}`;
     script.onload = () => window.HEURO ? resolve(window.HEURO) : reject(new Error('Configuração não carregada.'));
     script.onerror = () => reject(new Error('Falha ao carregar a configuração.'));
     document.head.appendChild(script);
@@ -122,13 +122,16 @@
     });
 
     requestLink?.addEventListener('click', (event) => {
+      event.preventDefault();
       requestLink.classList.add('is-pressed');
       window.setTimeout(() => requestLink.classList.remove('is-pressed'), 140);
       const canRequest = ['solicitante', 'solicitante_executante', 'administrador_geral'].includes(session.access);
       if (!canRequest) {
-        event.preventDefault();
         showDenied('Seu perfil não possui permissão para criar solicitações de transporte.');
+        return;
       }
+      const freshUrl = `./solicitar-transporte.html?fresh=${Date.now()}`;
+      window.setTimeout(() => window.location.assign(freshUrl), 100);
     });
 
     adminLink?.addEventListener('click', (event) => {
