@@ -10,6 +10,10 @@
 
   if (!sector || !locationInput || !attachments) return;
 
+  const attachmentLabel = attachments.closest('label');
+  const attachmentHint = attachmentLabel?.querySelector('.hint');
+  if (attachmentHint) attachmentHint.textContent = 'ATÉ 20 MB POR ARQUIVO. É POSSÍVEL ADICIONAR VÁRIAS FOTOS E DOCUMENTOS.';
+
   const actualSizes = new WeakMap();
   let accumulatedFiles = [];
   let internalChange = false;
@@ -63,7 +67,7 @@
           get: () => 10 * 1024 * 1024
         });
       } catch (_) {
-        // O navegador pode impedir a redefinição; o limite real do bucket permanece em 20 MB.
+        // Alguns navegadores não permitem redefinir essa propriedade.
       }
     }
 
