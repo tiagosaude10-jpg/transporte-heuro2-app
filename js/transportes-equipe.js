@@ -1,0 +1,80 @@
+(() => {
+'use strict';
+const app=window.HEURO, session=app?.readSession?.();
+if(!app||!session?.access_token||!session?.user_id){location.replace('./login.html');return;}
+if(!['executante','solicitante_executante','administrador_geral'].includes(session.access)){location.replace('./comando.html?motivo=sem_permissao_equipe');return;}
+const $=id=>document.getElementById(id);
+const list=$('requestList'),search=$('searchInput'),modal=$('actionModal'),modalContent=$('modalContent'),modalTitle=$('modalTitle'),modalSubtitle=$('modalSubtitle'),confirmButton=$('modalConfirm');
+let requests=[],vehicles=[],activeTab='pending',modalAction=null,selectedRequest=null;
+const ACTIVE_TERMINAL=new Set(['concluido','cancelado','recusado']);
+const labels={
+ pendente:'Pendente',solicitado:'Solicitado',aguardando:'Aguardando',aceito:'Aceito',preparando_saida:'Preparando saída',a_caminho_origem:'A caminho da origem',no_local_origem:'No local de origem',paciente_embarcado:'Paciente embarcado',a_caminho_destino:'A caminho do destino',no_destino:'No destino',paciente_entregue:'Paciente entregue',concluido:'Concluído',suspenso:'Suspenso',cancelado:'Cancelado',recusado:'Recusado',aguardando_ambulancia:'Aguardando ambulância',aguardando_equipe:'Aguardando equipe',
+ basico:'Suporte Básico',avancado_uti:'Suporte Avançado / UTI',emergencia:'Emergência',urgencia:'Urgência',eletivo:'Eletivo'
+};
+const statusOptions=['aceito','preparando_saida','a_caminho_origem','no_local_origem','paciente_embarcado','a_caminho_destino','no_destino','paciente_entregue','concluido','aguardando_ambulancia','aguardando_equipe','suspenso','cancelado','recusado'];
+const auth=()=>app.authenticatedHeaders(session.access_token);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const norm=v=>String(v||'').trim().toLowerCase();
+const date=v=>v?String(v).slice(0,10).split('-').reverse().join('/'):'Não informada';
+const time=v=>String(v||'').slice(0,5)||'Não informado';
+const executionOf=r=>Array.isArray(r.transport_executions)?r.transport_executions[0]:r.transport_executions;
+const category=r=>{const e=executionOf(r),s=norm(e?.status||r.status);if(s==='concluido')return'completed';if(e&&!ACTIVE_TERMINAL.has(s))return'active';return'pending';};
+const stamp=r=>{const e=executionOf(r);if(category(r)==='completed')return new Date(e?.completed_at||r.updated_at||0).getTime();if(category(r)==='active')return new Date(e?.accepted_at||r.updated_at||0).getTime();const d=`${r.transport_date||'9999-12-31'}T${String(r.destination_time||'23:59').slice(0,5)}:00`;return new Date(d).getTime();};
+const priority=r=>Number(r.priority_rank||({emergencia:1,urgencia:2,eletivo:3}[r.priority]||3));
+async function fetchJson(path,options={}){const res=await fetch(app.apiUrl(path),{...options,headers:{...auth(),...(options.headers||{})}});const data=await res.json().catch(()=>null);if(!res.ok)throw new Error(data?.message||data?.hint||data?.details||'Falha ao carregar dados.');return data;}
+async function load(){
+ $('refreshButton').disabled=true;
+ try{
+  const [r,v]=await Promise.all([
+   fetchJson('/rest/v1/transport_requests?select=id,protocol,status,patient_name,birth_date,origin_sector,origin_location,destination,support_type,priority,priority_rank,transport_date,destination_time,transfer_reason,oxygen_required,oxygen_details,observations,attachment_paths,requester_name,created_at,updated_at,transport_executions(*)&order=created_at.desc'),
+   fetchJson('/rest/v1/transport_vehicles?active=eq.true&select=id,code,display_name,support_type&order=code')
+  ]);
+  requests=Array.isArray(r)?r:[];vehicles=Array.isArray(v)?v:[];render();
+ }catch(e){list.innerHTML=`<div class="error">${esc(e.message)}</div>`}
+ finally{$('refreshButton').disabled=false;}
+}
+function render(){
+ $('pendingCount').textContent=requests.filter(r=>category(r)==='pending').length;
+ $('activeCount').textContent=requests.filter(r=>category(r)==='active').length;
+ $('completedCount').textContent=requests.filter(r=>category(r)==='completed').length;
+ const term=norm(search.value);
+ const data=requests.filter(r=>category(r)===activeTab&&(!term||norm(`${r.patient_name} ${r.protocol} ${r.destination} ${r.origin_sector}`).includes(term))).sort((a,b)=>{
+  if(activeTab==='pending'){const p=priority(a)-priority(b);if(p)return p;return stamp(a)-stamp(b);}return stamp(b)-stamp(a);
+ });
+ if(!data.length){list.innerHTML='<div class="empty">Nenhum transporte nesta categoria.</div>';return;}
+ list.innerHTML=data.map(cardHtml).join('');
+ list.querySelectorAll('[data-details]').forEach(b=>b.onclick=()=>openDetails(b.dataset.details));
+ list.querySelectorAll('[data-accept]').forEach(b=>b.onclick=()=>openAccept(b.dataset.accept));
+ list.querySelectorAll('[data-status]').forEach(b=>b.onclick=()=>openStatus(b.dataset.status));
+}
+function cardHtml(r){const e=executionOf(r),cat=category(r),status=norm(e?.status||r.status)||'pendente';return `<article class="card ${cat==='active'?'accepted':cat==='completed'?'completed':''} ${esc(r.priority)}">
+ <div class="card-head"><div class="badges"><span class="badge ${esc(r.priority)}">${esc(labels[r.priority]||r.priority)}</span><span class="badge">${esc(labels[r.support_type]||r.support_type)}</span><span class="badge">${esc(labels[status]||status)}</span></div></div>
+ <h2>${esc(r.patient_name)}</h2><div class="protocol">${esc(r.protocol||'SEM PROTOCOLO')}</div>
+ <div class="route"><b>${esc(r.origin_sector)}</b>${r.origin_location?` — ${esc(r.origin_location)}`:''} → <b>${esc(r.destination)}</b></div>
+ <div class="meta"><span><b>Destino:</b> ${date(r.transport_date)} às ${time(r.destination_time)}</span><span><b>Solicitante:</b> ${esc(r.requester_name)}</span>${e?`<span><b>Responsável:</b> ${esc(e.responsible_name)}</span><span><b>Viatura:</b> ${esc(e.vehicle_code||'Não definida')}</span>`:''}</div>
+ <div class="actions"><button class="details" data-details="${r.id}" type="button">Ver detalhes</button>${cat==='pending'?`<button class="accept" data-accept="${r.id}" type="button">Aceitar transporte</button>`:cat==='active'?`<button class="status-button" data-status="${r.id}" type="button">Alterar status</button>`:''}</div>
+ </article>`;}
+function getRequest(id){return requests.find(r=>r.id===id);}
+function showModal(){modal.classList.add('show');}
+function closeModal(){modal.classList.remove('show');modalAction=null;selectedRequest=null;}
+function openAccept(id){selectedRequest=getRequest(id);if(!selectedRequest)return;modalAction='accept';modalTitle.textContent='Aceitar transporte';modalSubtitle.textContent=selectedRequest.protocol||'';const compatible=vehicles.filter(v=>v.support_type===selectedRequest.support_type);modalContent.innerHTML=`<div class="sheet-grid"><div class="field full"><label>Ambulância</label><select id="vehicleSelect"><option value="">Aceitar sem definir agora</option>${compatible.map(v=>`<option value="${v.id}">${esc(v.display_name)}</option>`).join('')}</select></div><div class="field full"><label>Identificação da equipe</label><input id="teamName" maxlength="80" placeholder="Ex.: Equipe plantão manhã"></div></div>`;confirmButton.textContent='Confirmar aceite';showModal();}
+function openStatus(id){selectedRequest=getRequest(id);if(!selectedRequest)return;modalAction='status';const e=executionOf(selectedRequest);modalTitle.textContent='Alterar status';modalSubtitle.textContent=selectedRequest.protocol||'';modalContent.innerHTML=`<div class="sheet-grid"><div class="field full"><label>Novo status</label><select id="newStatus">${statusOptions.map(s=>`<option value="${s}" ${s===e?.status?'selected':''}>${esc(labels[s])}</option>`).join('')}</select></div><div class="field full"><label>Observação / justificativa</label><textarea id="statusNotes" rows="3" placeholder="Obrigatória para suspensão, cancelamento ou recusa"></textarea></div></div>`;confirmButton.textContent='Salvar status';showModal();}
+async function openDetails(id){selectedRequest=getRequest(id);if(!selectedRequest)return;modalAction='details';const r=selectedRequest,e=executionOf(r);modalTitle.textContent=r.patient_name;modalSubtitle.textContent=r.protocol||'';let events=[];try{events=await fetchJson(`/rest/v1/transport_execution_events?request_id=eq.${encodeURIComponent(r.id)}&select=event_type,previous_status,new_status,actor_name,notes,created_at&order=created_at.desc`)}catch(_){events=[]}
+ modalContent.innerHTML=`<div class="sheet-grid"><div class="field"><label>Status</label><div>${esc(labels[norm(e?.status||r.status)]||e?.status||r.status)}</div></div><div class="field"><label>Prioridade</label><div>${esc(labels[r.priority]||r.priority)}</div></div><div class="field"><label>Origem</label><div>${esc(r.origin_sector)} ${esc(r.origin_location||'')}</div></div><div class="field"><label>Destino</label><div>${esc(r.destination)}</div></div><div class="field"><label>Data e hora</label><div>${date(r.transport_date)} às ${time(r.destination_time)}</div></div><div class="field"><label>Tipo</label><div>${esc(labels[r.support_type]||r.support_type)}</div></div><div class="field full"><label>Observações</label><div>${esc(r.observations||'Sem observações')}</div></div></div><div class="timeline">${events.length?events.map(ev=>`<div class="event"><b>${esc(labels[ev.new_status]||ev.event_type)}</b> — ${esc(ev.actor_name)}<br><small>${new Date(ev.created_at).toLocaleString('pt-BR')}${ev.notes?` · ${esc(ev.notes)}`:''}</small></div>`).join(''):'<div class="event">Nenhum evento operacional registrado.</div>'}</div>`;
+ confirmButton.classList.add('hidden');showModal();}
+async function confirm(){if(!selectedRequest)return;confirmButton.disabled=true;try{
+ if(modalAction==='accept'){
+  const vehicle_id=$('vehicleSelect').value||null,team_name=$('teamName').value.trim()||null;
+  await fetchJson('/rest/v1/rpc/accept_transport_request',{method:'POST',body:JSON.stringify({p_request_id:selectedRequest.id,p_vehicle_id:vehicle_id,p_team_name:team_name})});activeTab='active';
+ }else if(modalAction==='status'){
+  const newStatus=$('newStatus').value,notes=$('statusNotes').value.trim();
+  if(['suspenso','cancelado','recusado'].includes(newStatus)&&!notes)throw new Error('Informe a justificativa para este status.');
+  await fetchJson('/rest/v1/rpc/change_transport_execution_status',{method:'POST',body:JSON.stringify({p_request_id:selectedRequest.id,p_new_status:newStatus,p_notes:notes||null})});activeTab=newStatus==='concluido'?'completed':ACTIVE_TERMINAL.has(newStatus)?'pending':'active';
+ }
+ closeModal();await load();setActiveTab(activeTab);
+ }catch(e){alert(e.message)}finally{confirmButton.disabled=false;}}
+function setActiveTab(tab){activeTab=tab;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));render();}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setActiveTab(b.dataset.tab));
+search.addEventListener('input',render);$('refreshButton').onclick=load;$('modalCancel').onclick=closeModal;confirmButton.onclick=confirm;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});modal.addEventListener('transitionend',()=>{if(modalAction!=='details')confirmButton.classList.remove('hidden')});
+load();setInterval(()=>{if(!document.hidden)load()},45000);
+})();
