@@ -33,18 +33,18 @@
     <label>Motivo da transferência<select id="transferReason" required><option value="">Selecione o motivo</option><option value="transferencia">Transferência</option><option value="exame_procedimento">Exame/Procedimento</option><option value="consulta">Consulta</option></select></label>
     <label>Observações<textarea id="observations" placeholder="Informações clínicas ou operacionais importantes"></textarea></label>
     <label>Foto ou Documento<input id="attachments" class="native-attachment" type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.txt" multiple><span id="attachmentSummary" class="attachment-summary">Nenhum arquivo selecionado.</span><button id="clearAttachments" class="clear-attachments hidden" type="button">Limpar anexos</button><span class="hint">Até 10 MB por arquivo.</span></label>
-    <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.href='./comando.html'">Voltar à tela de comando</button></div>
+    <div class="actions"><button id="submitButton" class="primary" type="submit">Enviar solicitação</button><button class="secondary" type="button" onclick="location.replace('./comando.html?v=20260806.41')">Voltar à tela de comando</button></div>
     <div id="formMessage" class="message" role="status"></div>
     <div id="postActions" class="post-actions hidden">
       <div class="completion-heading"><div class="completion-icon">✓</div><h2>Solicitação enviada!</h2><p>O pedido já foi cadastrado e encaminhado para a equipe de transporte.</p></div>
       <button id="sharePdfButton" class="pdf-button" type="button">Gerar / Compartilhar PDF</button>
       <button id="openWhatsappButton" class="whatsapp-button" type="button">Enviar PDF pelo WhatsApp</button>
-      <a class="home-button" href="./comando.html">Voltar para a tela inicial</a>
+      <a class="home-button" href="./comando.html?v=20260806.41" onclick="location.replace(this.href);return false;">Voltar para a tela de comando</a>
     </div>
   </div></form>
 </main>
-<script src="js/pdf-loader.js?v=20260806.40"></script>
-<script src="js/config.js?v=20260806.40"></script>
-<script src="js/solicitar-transporte.js?v=20260806.40" defer></script>
-<script src="js/solicitacao-concluida.js?v=20260806.40" defer></script>
+<script src="js/pdf-loader.js?v=20260806.41"></script>
+<script src="js/config.js?v=20260806.41"></script>
+<script src="js/solicitar-transporte.js?v=20260806.41" defer></script>
+<script src="js/solicitacao-concluida.js?v=20260806.41" defer></script>
 </body></html>
