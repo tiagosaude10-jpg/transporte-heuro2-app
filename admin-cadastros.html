@@ -6,116 +6,57 @@
   <meta name="theme-color" content="#073d9d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="HEURO Transportes">
-  <title>Gerenciar cadastros — HEURO Transportes</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Painel do Administrador — HEURO Transportes</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png">
-  <link rel="stylesheet" href="css/admin-cadastros.css?v=20260805.1">
+  <link rel="stylesheet" href="css/admin-cadastros.css?v=20260806.36">
+  <style>
+    .transport-settings{margin:16px 0;padding:18px;border-radius:20px;background:#fff;box-shadow:0 12px 32px rgba(9,52,119,.13);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.transport-settings__head{display:flex;align-items:flex-start;gap:12px;margin-bottom:15px}.transport-settings__icon{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:14px;background:#e8fff0;font-size:27px}.transport-settings h2{margin:0;color:#0b347d;font-size:1.18rem}.transport-settings p{margin:5px 0 0;color:#62789b;line-height:1.4}.transport-settings form{display:grid;gap:14px}.transport-settings label{display:grid;gap:7px;color:#17365f;font-weight:800}.transport-settings input{width:100%;min-height:52px;border:1px solid #c7d7eb;border-radius:13px;padding:0 14px;font:inherit;font-size:16px;color:#18395f;background:#fff;outline:none}.transport-settings input:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}.transport-settings small{font-weight:500;color:#7185a3}.transport-settings button{min-height:52px;border:0;border-radius:14px;background:#159447;color:#fff;font:inherit;font-weight:900;font-size:1rem}.transport-settings button:disabled{opacity:.6}.settings-message{display:none;margin:0;padding:12px;border-radius:12px;font-weight:800}.settings-message.success{display:block;background:#e8f8ee;color:#17663a}.settings-message.error{display:block;background:#fdecec;color:#982525}
+  </style>
 </head>
 <body>
   <main class="admin-page">
     <header class="admin-header">
       <a class="back-link" href="comando.html" aria-label="Voltar à tela de comando">←</a>
-      <div class="brand-mark" aria-hidden="true">
-        <img src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt="">
-      </div>
-      <div class="admin-header__text">
-        <p>PAINEL DO ADMINISTRADOR</p>
-        <h1>Gerenciar cadastros</h1>
-        <span>Controle os acessos e as situações dos usuários do HEURO Transportes.</span>
-      </div>
+      <div class="brand-mark" aria-hidden="true"><img src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt=""></div>
+      <div class="admin-header__text"><p>PAINEL DO ADMINISTRADOR</p><h1>Gerenciar cadastros</h1><span>Controle os acessos e as configurações do HEURO Transportes.</span></div>
     </header>
 
-    <section class="dashboard-card" aria-live="polite">
-      <div class="dashboard-card__count">
-        <span class="dashboard-card__icon" aria-hidden="true">👥</span>
-        <div>
-          <strong id="userCount">0</strong>
-          <span id="countLabel">Cadastros</span>
-        </div>
-      </div>
-      <button id="refreshButton" type="button"><span aria-hidden="true">↻</span> Atualizar</button>
+    <section class="transport-settings" aria-labelledby="transportSettingsTitle">
+      <div class="transport-settings__head"><span class="transport-settings__icon" aria-hidden="true">📱</span><div><h2 id="transportSettingsTitle">WhatsApp dos transportes</h2><p>Cadastre os contatos usados automaticamente para Suporte Básico e Suporte Avançado / UTI.</p></div></div>
+      <form id="transportWhatsappForm" novalidate>
+        <label>WhatsApp do Suporte Básico
+          <input id="basicWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="+55 (69) 99999-9999" required>
+          <small>Inclua código do Brasil, DDD e número.</small>
+        </label>
+        <label>WhatsApp do Suporte Avançado / UTI
+          <input id="advancedWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="+55 (69) 99999-9999" required>
+          <small>Este contato será usado quando o tipo escolhido for Avançado / UTI.</small>
+        </label>
+        <p id="whatsappSettingsMessage" class="settings-message" role="status"></p>
+        <button id="saveWhatsappSettings" type="submit">Salvar números do WhatsApp</button>
+      </form>
     </section>
 
-    <section class="filters-panel" aria-labelledby="filterTitle">
-      <div class="filters-panel__heading">
-        <div><span class="eyebrow">VISUALIZAÇÃO</span><h2 id="filterTitle">Escolha uma categoria</h2></div>
-        <span class="filters-panel__hint">Toque para filtrar</span>
-      </div>
+    <section class="dashboard-card" aria-live="polite"><div class="dashboard-card__count"><span class="dashboard-card__icon" aria-hidden="true">👥</span><div><strong id="userCount">0</strong><span id="countLabel">Cadastros</span></div></div><button id="refreshButton" type="button"><span aria-hidden="true">↻</span> Atualizar</button></section>
 
-      <nav class="status-filters" aria-label="Filtrar cadastros">
-        <button type="button" data-status="pendente" class="filter-pending is-active">
-          <span class="filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12"/><path d="M8 2v5c0 2 1.2 3.5 4 5-2.8 1.5-4 3-4 5v5"/><path d="M16 2v5c0 2-1.2 3.5-4 5 2.8 1.5 4 3 4 5v5"/></svg></span>
-          <span>Pendentes</span>
-        </button>
-        <button type="button" data-status="aprovado" class="filter-approved">
-          <span class="filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 2.2 3.2-.2.9 3 2.7 1.7-1.3 2.9 1.3 2.9-2.7 1.7-.9 3-3.2-.2L12 22l-2.4-2.2-3.2.2-.9-3-2.7-1.7 1.3-2.9-1.3-2.9 2.7-1.7.9-3 3.2.2L12 2z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>
-          <span>Aprovados</span>
-        </button>
-        <button type="button" data-status="bloqueado" class="filter-blocked">
-          <span class="filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1"/></svg></span>
-          <span>Bloqueados</span>
-        </button>
-        <button type="button" data-status="todos" class="filter-all">
-          <span class="filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
-          <span>Todos</span>
-        </button>
-      </nav>
-    </section>
+    <section class="filters-panel" aria-labelledby="filterTitle"><div class="filters-panel__heading"><div><span class="eyebrow">VISUALIZAÇÃO</span><h2 id="filterTitle">Escolha uma categoria</h2></div><span class="filters-panel__hint">Toque para filtrar</span></div><nav class="status-filters" aria-label="Filtrar cadastros">
+      <button type="button" data-status="pendente" class="filter-pending is-active"><span class="filter-icon">⌛</span><span>Pendentes</span></button>
+      <button type="button" data-status="aprovado" class="filter-approved"><span class="filter-icon">✓</span><span>Aprovados</span></button>
+      <button type="button" data-status="bloqueado" class="filter-blocked"><span class="filter-icon">🔒</span><span>Bloqueados</span></button>
+      <button type="button" data-status="todos" class="filter-all"><span class="filter-icon">☷</span><span>Todos</span></button>
+    </nav></section>
 
     <p id="adminMessage" class="admin-message" role="alert"></p>
     <section id="userList" class="pending-list" aria-label="Lista de cadastros"></section>
 
-    <template id="userCardTemplate">
-      <article class="user-card">
-        <div class="user-card__top">
-          <div class="avatar" aria-hidden="true"></div>
-          <div><h2 class="user-name"></h2><p class="user-email"></p></div>
-          <span class="status-badge"></span>
-        </div>
-        <dl class="user-details">
-          <div><dt>Vínculo</dt><dd data-field="institutional_link"></dd></div>
-          <div><dt>Setor / Empresa</dt><dd data-field="organization"></dd></div>
-          <div><dt>Cargo</dt><dd data-field="job_role"></dd></div>
-          <div><dt>Acesso solicitado</dt><dd data-field="requested_access"></dd></div>
-          <div><dt>Acesso autorizado</dt><dd data-field="authorized_access"></dd></div>
-          <div><dt>CPF</dt><dd data-field="cpf"></dd></div>
-          <div><dt>Telefone</dt><dd data-field="phone"></dd></div>
-          <div><dt>Cadastrado em</dt><dd data-field="created_at"></dd></div>
-        </dl>
-        <label class="access-select-label pending-control">Acesso a conceder
-          <select class="access-select">
-            <option value="solicitante">Solicitante</option>
-            <option value="executante">Executante</option>
-            <option value="solicitante_executante">Solicitante e Executante</option>
-          </select>
-        </label>
-        <label class="notes-label">Observação administrativa
-          <textarea class="decision-notes" rows="2" placeholder="Opcional"></textarea>
-        </label>
-        <div class="decision-actions">
-          <button class="approve-button pending-action" type="button">Aprovar</button>
-          <button class="reject-button pending-action" type="button">Rejeitar e excluir</button>
-          <button class="block-button block-action" type="button">Bloquear</button>
-          <button class="reactivate-button reactivate-action" type="button">Reativar</button>
-          <button class="resubmit-button resubmit-action" type="button">Reenviar para análise</button>
-          <button class="delete-button delete-action" type="button">Excluir definitivamente</button>
-        </div>
-      </article>
-    </template>
+    <template id="userCardTemplate"><article class="user-card"><div class="user-card__top"><div class="avatar" aria-hidden="true"></div><div><h2 class="user-name"></h2><p class="user-email"></p></div><span class="status-badge"></span></div><dl class="user-details"><div><dt>Vínculo</dt><dd data-field="institutional_link"></dd></div><div><dt>Setor / Empresa</dt><dd data-field="organization"></dd></div><div><dt>Cargo</dt><dd data-field="job_role"></dd></div><div><dt>Acesso solicitado</dt><dd data-field="requested_access"></dd></div><div><dt>Acesso autorizado</dt><dd data-field="authorized_access"></dd></div><div><dt>CPF</dt><dd data-field="cpf"></dd></div><div><dt>Telefone</dt><dd data-field="phone"></dd></div><div><dt>Cadastrado em</dt><dd data-field="created_at"></dd></div></dl><label class="access-select-label pending-control">Acesso a conceder<select class="access-select"><option value="solicitante">Solicitante</option><option value="executante">Executante</option><option value="solicitante_executante">Solicitante e Executante</option></select></label><label class="notes-label">Observação administrativa<textarea class="decision-notes" rows="2" placeholder="Opcional"></textarea></label><div class="decision-actions"><button class="approve-button pending-action" type="button">Aprovar</button><button class="reject-button pending-action" type="button">Rejeitar e excluir</button><button class="block-button block-action" type="button">Bloquear</button><button class="reactivate-button reactivate-action" type="button">Reativar</button><button class="resubmit-button resubmit-action" type="button">Reenviar para análise</button><button class="delete-button delete-action" type="button">Excluir definitivamente</button></div></article></template>
 
-    <dialog id="confirmDialog" class="confirm-dialog">
-      <form method="dialog" class="confirm-box">
-        <h2 id="confirmTitle">Confirmar ação</h2>
-        <p id="confirmText"></p>
-        <div>
-          <button value="cancel" class="cancel-confirm">Cancelar</button>
-          <button id="confirmActionButton" value="default" class="confirm-action">Confirmar</button>
-        </div>
-      </form>
-    </dialog>
+    <dialog id="confirmDialog" class="confirm-dialog"><form method="dialog" class="confirm-box"><h2 id="confirmTitle">Confirmar ação</h2><p id="confirmText"></p><div><button value="cancel" class="cancel-confirm">Cancelar</button><button id="confirmActionButton" value="default" class="confirm-action">Confirmar</button></div></form></dialog>
   </main>
-
-  <script src="js/config.js?v=20260805.1"></script>
-  <script src="js/admin-cadastros.js?v=20260805.1" defer></script>
+  <script src="js/config.js?v=20260806.36"></script>
+  <script src="js/admin-cadastros.js?v=20260806.36" defer></script>
+  <script src="js/admin-whatsapp.js?v=20260806.36" defer></script>
 </body>
 </html>
