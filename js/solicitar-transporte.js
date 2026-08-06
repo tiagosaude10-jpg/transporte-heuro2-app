@@ -88,7 +88,7 @@
     try {
       const supportType = form.elements.supportType.value;
       const priority = form.elements.priority.value;
-      if (!supportType || !priority) throw new Error('Selecione o tipo de suporte e a prioridade do transporte.');
+      if (!supportType || !priority) throw new Error('Selecione o tipo de transporte e a prioridade.');
 
       const attachmentPaths = await uploadFiles();
       const payload = {
@@ -102,6 +102,8 @@
         origin_sector: sector.value,
         origin_location: locationInput.value.trim() || null,
         destination: document.getElementById('destination').value.trim(),
+        transport_date: document.getElementById('transportDate').value,
+        destination_time: document.getElementById('destinationTime').value,
         oxygen_required: oxygenRequired.checked,
         oxygen_details: oxygenDetails.value.trim() || null,
         observations: document.getElementById('observations').value.trim() || null,
