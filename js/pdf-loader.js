@@ -8,6 +8,7 @@
   ];
 
   let loadingPromise = null;
+  let replayingClick = false;
 
   const hasJsPdf = () => Boolean(window.jspdf && window.jspdf.jsPDF);
 
@@ -35,11 +36,45 @@
           lastError = error;
         }
       }
+      loadingPromise = null;
       throw lastError || new Error('Não foi possível carregar o gerador de PDF.');
     })();
 
     return loadingPromise;
   };
+
+  const showLoadingMessage = (text, error = false) => {
+    const message = document.getElementById('formMessage');
+    if (!message) return;
+    message.textContent = text;
+    message.className = `message ${error ? 'error' : 'ok'}`;
+  };
+
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest?.('#sharePdfButton');
+    if (!button || hasJsPdf() || replayingClick) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    button.disabled = true;
+    const originalText = button.textContent;
+    button.textContent = 'Carregando gerador de PDF...';
+    showLoadingMessage('Preparando o gerador de PDF. Aguarde alguns segundos.');
+
+    try {
+      await loadJsPdf();
+      replayingClick = true;
+      button.disabled = false;
+      button.textContent = originalText;
+      button.click();
+    } catch (_) {
+      button.disabled = false;
+      button.textContent = originalText;
+      showLoadingMessage('Não foi possível carregar o gerador de PDF. Verifique a internet e tente novamente.', true);
+    } finally {
+      window.setTimeout(() => { replayingClick = false; }, 50);
+    }
+  }, true);
 
   window.HEURO_PDF = Object.freeze({ loadJsPdf, isReady: hasJsPdf });
   loadJsPdf().catch(() => {});
