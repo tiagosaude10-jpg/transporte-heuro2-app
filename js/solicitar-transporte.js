@@ -59,6 +59,7 @@
       `Prioridade: ${labels[r.priority]}\n`+
       `Motivo: ${labels[r.transfer_reason]}\n`+
       `Oxigênio: ${oxygenText(r)}\n`+
+      `Solicitante: ${r.requester_name || 'Não informado'}\n`+
       `${docs.length?`Documento(s): ${docs.join(', ')}\n`:''}`+
       `Observações: ${r.observations||'Sem observações'}\n\n`+
       `Solicitação registrada no aplicativo Transporte HEURO.`;
@@ -76,6 +77,7 @@
 
   const createPdf=async()=>{
     if(!lastRequest)throw new Error('Envie a solicitação antes de gerar o PDF.');
+    if(window.HEURO_PDF?.loadJsPdf) await window.HEURO_PDF.loadJsPdf();
     if(!window.jspdf?.jsPDF)throw new Error('O gerador de PDF não foi carregado.');
     const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4',compress:true});
     const navy=[5,32,88];
@@ -84,20 +86,11 @@
 
     let y=34;
     const rows=[
-      ['PR','Protocolo',lastRequest.protocol],
-      ['ST','Status','Solicitado'],
-      ['PA','Paciente',lastRequest.patient_name],
-      ['DN','Nascimento',isoToDate(lastRequest.birth_date)],
-      ['OR','Origem',originText(lastRequest)],
-      ['DE','Destino',lastRequest.destination],
-      ['DH','Data e hora',`${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`],
-      ['AM','Ambulância',labels[lastRequest.support_type]],
-      ['PI','Prioridade',labels[lastRequest.priority]],
-      ['MO','Motivo',labels[lastRequest.transfer_reason]],
-      ['O2','Oxigênio',oxygenText(lastRequest)],
-      ['SO','Solicitante',lastRequest.requester_name],
-      ['EX','Executante','Não definido'],
-      ['OB','Observações',lastRequest.observations||'Sem observações']
+      ['PR','Protocolo',lastRequest.protocol],['ST','Status','Solicitado'],['PA','Paciente',lastRequest.patient_name],
+      ['DN','Nascimento',isoToDate(lastRequest.birth_date)],['OR','Origem',originText(lastRequest)],['DE','Destino',lastRequest.destination],
+      ['DH','Data e hora',`${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`],['AM','Ambulância',labels[lastRequest.support_type]],
+      ['PI','Prioridade',labels[lastRequest.priority]],['MO','Motivo',labels[lastRequest.transfer_reason]],['O2','Oxigênio',oxygenText(lastRequest)],
+      ['SO','Solicitante',lastRequest.requester_name],['EX','Executante','Não definido'],['OB','Observações',lastRequest.observations||'Sem observações']
     ];
     for(const [icon,label,value] of rows){const h=drawRow(doc,{y,icon,label,value});y+=h;if(y>282)break;}
 
@@ -113,20 +106,41 @@
     return doc;
   };
 
+  const createPdfFile=async()=>{
+    const doc=await createPdf();
+    const fileName=`Transporte HEURO - ${lastRequest.protocol}.pdf`;
+    const file=new File([doc.output('blob')],fileName,{type:'application/pdf'});
+    return {doc,file,fileName};
+  };
+
   sharePdfButton.addEventListener('click',async()=>{
     try{
-      const doc=await createPdf();const blob=doc.output('blob');const fileName=`Transporte HEURO - ${lastRequest.protocol}.pdf`;const file=new File([blob],fileName,{type:'application/pdf'});const text=buildWhatsappText(lastRequest);
-      if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:`Transporte HEURO - ${lastRequest.protocol}`,text});
+      sharePdfButton.disabled=true;sharePdfButton.textContent='Gerando PDF...';
+      const {doc,file,fileName}=await createPdfFile();
+      if(navigator.canShare?.({files:[file]})) await navigator.share({files:[file],title:`Transporte HEURO - ${lastRequest.protocol}`});
       else doc.save(fileName);
-    }catch(e){showMessage(e.message||'Não foi possível gerar o PDF.');}
+    }catch(e){if(e?.name!=='AbortError')showMessage(e.message||'Não foi possível gerar o PDF.');}
+    finally{sharePdfButton.disabled=false;sharePdfButton.textContent='Gerar / Compartilhar PDF';}
   });
 
   openWhatsappButton.addEventListener('click',async()=>{
     try{
-      const settings=await loadSettings();const number=lastRequest.support_type==='basico'?settings.basic_whatsapp:settings.advanced_uti_whatsapp;
+      openWhatsappButton.disabled=true;openWhatsappButton.textContent='Preparando PDF e WhatsApp...';
+      const settings=await loadSettings();
+      const number=lastRequest.support_type==='basico'?settings.basic_whatsapp:settings.advanced_uti_whatsapp;
       if(!number)throw new Error('O número de WhatsApp deste tipo de transporte ainda não foi cadastrado.');
-      const phone=String(number).replace(/\D/g,'');const text=buildWhatsappText(lastRequest);location.href=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-    }catch(e){showMessage(e.message||'Não foi possível abrir o WhatsApp.');}
+      const text=buildWhatsappText(lastRequest);
+      const {file}=await createPdfFile();
+
+      if(navigator.canShare?.({files:[file]})){
+        await navigator.share({files:[file],title:`Transporte HEURO - ${lastRequest.protocol}`,text});
+        showMessage('PDF e resumo preparados. Selecione o WhatsApp e confirme o contato do transporte.',true);
+      }else{
+        const phone=String(number).replace(/\D/g,'');
+        location.href=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      }
+    }catch(e){if(e?.name!=='AbortError')showMessage(e.message||'Não foi possível abrir o WhatsApp.');}
+    finally{openWhatsappButton.disabled=false;openWhatsappButton.textContent='Abrir WhatsApp do transporte';}
   });
 
   form.addEventListener('submit',async(event)=>{
@@ -138,7 +152,7 @@
       const files=[...(attachments.files||[])];const payload={requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};
       const r=await fetch(app.apiUrl('/rest/v1/transport_requests'),{method:'POST',headers:{...app.authenticatedHeaders(session.access_token),Prefer:'return=representation'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.message||'Não foi possível registrar a solicitação.');
       lastRequest={...payload,id:Array.isArray(d)&&d[0]?.id?d[0].id:null,protocol:makeProtocol(),local_files:files};
-      showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou abrir o WhatsApp do transporte.',true);postActions.classList.remove('hidden');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+      showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou enviar pelo WhatsApp.',true);postActions.classList.remove('hidden');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
     }catch(e){showMessage(e.message||'Falha ao enviar a solicitação.');}
     finally{submitButton.disabled=false;submitButton.textContent='Enviar solicitação';}
   });
