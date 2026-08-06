@@ -1,247 +1,47 @@
 (() => {
   'use strict';
-
   const app = window.HEURO;
   const session = app?.readSession?.();
-  if (!app || !session?.access_token || !session?.user_id) {
-    window.location.replace('./login.html');
-    return;
-  }
+  if (!app || !session?.access_token || !session?.user_id) { location.replace('./login.html'); return; }
+  if (!['solicitante','solicitante_executante','administrador_geral'].includes(session.access)) { location.replace('./comando.html?motivo=sem_permissao_solicitar'); return; }
 
-  const allowed = ['solicitante', 'solicitante_executante', 'administrador_geral'];
-  if (!allowed.includes(session.access)) {
-    window.location.replace('./comando.html?motivo=sem_permissao_solicitar');
-    return;
-  }
+  const $ = (id) => document.getElementById(id);
+  const form = $('transportForm'), sector = $('originSector'), locationLabel = $('originLocationLabel'), locationInput = $('originLocation');
+  const oxygenRequired = $('oxygenRequired'), oxygenDetailsLabel = $('oxygenDetailsLabel'), oxygenDetails = $('oxygenDetails');
+  const attachments = $('attachments'), attachmentSummary = $('attachmentSummary'), clearAttachments = $('clearAttachments');
+  const submitButton = $('submitButton'), message = $('formMessage'), postActions = $('postActions');
+  const sharePdfButton = $('sharePdfButton'), openWhatsappButton = $('openWhatsappButton');
+  const priorityRank = Object.freeze({ emergencia:1, urgencia:2, eletivo:3 });
+  const labels = { basico:'Suporte Básico', avancado_uti:'Suporte Avançado / UTI', emergencia:'Emergência', urgencia:'Urgência', eletivo:'Eletivo', transferencia:'Transferência', exame_procedimento:'Exame para procedimento', consulta:'Consulta' };
+  let lastRequest = null;
 
-  const form = document.getElementById('transportForm');
-  const sector = document.getElementById('originSector');
-  const locationLabel = document.getElementById('originLocationLabel');
-  const locationInput = document.getElementById('originLocation');
-  const oxygenRequired = document.getElementById('oxygenRequired');
-  const oxygenDetailsLabel = document.getElementById('oxygenDetailsLabel');
-  const oxygenDetails = document.getElementById('oxygenDetails');
-  const submitButton = document.getElementById('submitButton');
-  const message = document.getElementById('formMessage');
-  const attachments = document.getElementById('attachments');
-  const attachmentSummary = document.getElementById('attachmentSummary');
-  const clearAttachments = document.getElementById('clearAttachments');
-  const priorityRank = Object.freeze({ emergencia: 1, urgencia: 2, eletivo: 3 });
+  const showMessage = (text, ok=false) => { message.textContent=text; message.className=`message ${ok?'ok':'error'}`; };
+  const updateOriginLabel = () => { const box=['UTI','Sala Vermelha'].includes(sector.value); locationLabel.firstChild.textContent=box?'Box':'Enfermaria / Leito'; locationInput.placeholder=box?'Informe o box':'Informe a enfermaria e o leito'; };
+  const maskDate = (v) => { const d=v.replace(/\D/g,'').slice(0,8); return d.length<=2?d:d.length<=4?`${d.slice(0,2)}/${d.slice(2)}`:`${d.slice(0,2)}/${d.slice(2,4)}/${d.slice(4)}`; };
+  const maskTime = (v) => { const d=v.replace(/\D/g,'').slice(0,4); return d.length<=2?d:`${d.slice(0,2)}:${d.slice(2)}`; };
+  const dateToIso = (v) => { const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v); if(!m)return null; const [,d,mo,y]=m, dt=new Date(+y,+mo-1,+d); return dt.getFullYear()===+y&&dt.getMonth()===+mo-1&&dt.getDate()===+d?`${y}-${mo}-${d}`:null; };
+  const isoToDate = (v) => { const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?`${m[3]}/${m[2]}/${m[1]}`:''; };
+  const normalizeTime = (v) => { const m=/^(\d{2}):(\d{2})$/.exec(v); return m&&+m[1]<24&&+m[2]<60?v:null; };
 
-  const showMessage = (text, ok = false) => {
-    message.textContent = text;
-    message.className = `message ${ok ? 'ok' : 'error'}`;
-  };
+  document.querySelectorAll('.manual').forEach(i=>i.addEventListener('input',()=>{i.value=i.id.includes('Time')?maskTime(i.value):maskDate(i.value);i.setCustomValidity('');}));
+  document.querySelectorAll('[data-picker]').forEach(b=>b.addEventListener('click',()=>{const p=$(b.dataset.picker); if(typeof p?.showPicker==='function')p.showPicker(); else p?.click();}));
+  document.querySelectorAll('.native-picker').forEach(p=>p.addEventListener('change',()=>{const t=$(p.id.replace('Native','Text')); if(t)t.value=p.type==='date'?isoToDate(p.value):p.value;}));
+  document.querySelectorAll('[data-clear]').forEach(b=>b.addEventListener('click',()=>b.dataset.clear.split(',').forEach(id=>{const e=$(id);if(e)e.value='';})));
 
-  const updateOriginLabel = () => {
-    const value = sector.value;
-    if (value === 'UTI' || value === 'Sala Vermelha') {
-      locationLabel.firstChild.textContent = 'Box';
-      locationInput.placeholder = 'Informe o box';
-    } else {
-      locationLabel.firstChild.textContent = 'Enfermaria / Leito';
-      locationInput.placeholder = 'Informe a enfermaria e o leito';
-    }
-  };
+  const updateAttachmentSummary=()=>{const f=[...(attachments.files||[])]; attachmentSummary.textContent=f.length?`${f.length} arquivo(s) selecionado(s) — ${(f.reduce((s,x)=>s+x.size,0)/1048576).toFixed(1)} MB`:'Nenhum arquivo selecionado.'; clearAttachments.classList.toggle('hidden',!f.length);};
+  attachments.addEventListener('change',updateAttachmentSummary); clearAttachments.addEventListener('click',()=>{attachments.value='';updateAttachmentSummary();});
+  sector.addEventListener('change',updateOriginLabel); oxygenRequired.addEventListener('change',()=>{oxygenDetailsLabel.classList.toggle('hidden',!oxygenRequired.checked);oxygenDetails.required=oxygenRequired.checked;if(!oxygenRequired.checked)oxygenDetails.value='';});
 
-  const maskDate = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 8);
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
-  };
+  const uploadFiles=async()=>{const paths=[];for(const file of [...(attachments.files||[])]){if(file.size>10485760)throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);const ext=(file.name.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'').toLowerCase();const path=`${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;const r=await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`),{method:'POST',headers:{apikey:app.SUPABASE_KEY,Authorization:`Bearer ${session.access_token}`,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file});if(!r.ok)throw new Error(`Não foi possível enviar ${file.name}.`);paths.push(path);}return paths;};
+  const loadSettings=async()=>{const r=await fetch(app.apiUrl('/rest/v1/transport_app_settings?id=eq.1&select=basic_whatsapp,advanced_uti_whatsapp'),{headers:app.authenticatedHeaders(session.access_token)});const d=await r.json().catch(()=>[]);return Array.isArray(d)&&d[0]?d[0]:{};};
+  const fileToDataUrl=(file)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
 
-  const maskTime = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 4);
-    if (digits.length <= 2) return digits;
-    return `${digits.slice(0, 2)}:${digits.slice(2)}`;
-  };
+  const createPdf=async()=>{if(!lastRequest)throw new Error('Envie a solicitação antes de gerar o PDF.');if(!window.jspdf?.jsPDF)throw new Error('O gerador de PDF não foi carregado.');const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=18;doc.setFontSize(17);doc.text('HEURO — Solicitação de Transporte',105,y,{align:'center'});y+=12;doc.setFontSize(10);const lines=[['Paciente',lastRequest.patient_name],['Data de nascimento',isoToDate(lastRequest.birth_date)],['Tipo de transporte',labels[lastRequest.support_type]],['Prioridade',labels[lastRequest.priority]],['Origem',`${lastRequest.origin_sector} — ${lastRequest.origin_location||''}`],['Destino',lastRequest.destination],['Data / horário',`${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`],['Motivo',labels[lastRequest.transfer_reason]],['Oxigênio',lastRequest.oxygen_required?`Sim — ${lastRequest.oxygen_details||'sem detalhes'}`:'Não'],['Solicitante',lastRequest.requester_name],['Observações',lastRequest.observations||'Sem observações']];for(const [k,v] of lines){doc.setFont(undefined,'bold');doc.text(`${k}:`,15,y);doc.setFont(undefined,'normal');const wrapped=doc.splitTextToSize(String(v||''),150);doc.text(wrapped,55,y);y+=Math.max(7,wrapped.length*5);if(y>270){doc.addPage();y=18;}}
+    const images=[...(lastRequest.local_files||[])].filter(f=>f.type.startsWith('image/'));for(const img of images){const data=await fileToDataUrl(img);if(y>190){doc.addPage();y=18;}doc.addImage(data,img.type.includes('png')?'PNG':'JPEG',15,y,180,120,undefined,'FAST');y+=128;}return doc;};
 
-  const dateToIso = (value) => {
-    const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
-    if (!match) return null;
-    const [, day, month, year] = match;
-    const date = new Date(Number(year), Number(month) - 1, Number(day));
-    if (date.getFullYear() !== Number(year) || date.getMonth() !== Number(month) - 1 || date.getDate() !== Number(day)) return null;
-    return `${year}-${month}-${day}`;
-  };
+  sharePdfButton.addEventListener('click',async()=>{try{const doc=await createPdf();const blob=doc.output('blob');const file=new File([blob],`solicitacao-transporte-${lastRequest.patient_name.replace(/\s+/g,'-')}.pdf`,{type:'application/pdf'});if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:'Solicitação de Transporte HEURO'});else doc.save(file.name);}catch(e){showMessage(e.message||'Não foi possível gerar o PDF.');}});
+  openWhatsappButton.addEventListener('click',async()=>{try{const settings=await loadSettings();const number=lastRequest.support_type==='basico'?settings.basic_whatsapp:settings.advanced_uti_whatsapp;if(!number)throw new Error('O número de WhatsApp deste tipo de transporte ainda não foi cadastrado.');const phone=String(number).replace(/\D/g,'');const text=`Solicitação de transporte HEURO\nPaciente: ${lastRequest.patient_name}\nTipo: ${labels[lastRequest.support_type]}\nPrioridade: ${labels[lastRequest.priority]}\nDestino: ${lastRequest.destination}\nData: ${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`;location.href=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;}catch(e){showMessage(e.message||'Não foi possível abrir o WhatsApp.');}});
 
-  const isoToDate = (value) => {
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
-    return match ? `${match[3]}/${match[2]}/${match[1]}` : '';
-  };
-
-  const normalizeTime = (value) => {
-    const match = /^(\d{2}):(\d{2})$/.exec(value);
-    if (!match) return null;
-    const hour = Number(match[1]);
-    const minute = Number(match[2]);
-    if (hour > 23 || minute > 59) return null;
-    return `${match[1]}:${match[2]}`;
-  };
-
-  const bindSmartFields = () => {
-    document.querySelectorAll('.manual').forEach((input) => {
-      input.addEventListener('input', () => {
-        input.value = input.id.includes('Time') ? maskTime(input.value) : maskDate(input.value);
-        input.setCustomValidity('');
-      });
-    });
-
-    document.querySelectorAll('[data-picker]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const picker = document.getElementById(button.dataset.picker);
-        if (!picker) return;
-        if (typeof picker.showPicker === 'function') picker.showPicker();
-        else picker.click();
-      });
-    });
-
-    document.querySelectorAll('.native-picker').forEach((picker) => {
-      picker.addEventListener('change', () => {
-        const textId = picker.id.replace('Native', 'Text');
-        const textInput = document.getElementById(textId);
-        if (!textInput) return;
-        textInput.value = picker.type === 'date' ? isoToDate(picker.value) : picker.value;
-        textInput.setCustomValidity('');
-      });
-    });
-
-    document.querySelectorAll('[data-clear]').forEach((button) => {
-      button.addEventListener('click', () => {
-        button.dataset.clear.split(',').forEach((id) => {
-          const element = document.getElementById(id);
-          if (element) {
-            element.value = '';
-            element.setCustomValidity?.('');
-          }
-        });
-      });
-    });
-  };
-
-  const updateAttachmentSummary = () => {
-    const files = Array.from(attachments.files || []);
-    if (files.length === 0) {
-      attachmentSummary.className = 'attachment-summary';
-      attachmentSummary.textContent = 'Nenhum arquivo selecionado.';
-      clearAttachments.classList.add('hidden');
-      return;
-    }
-    const totalMb = (files.reduce((sum, file) => sum + file.size, 0) / (1024 * 1024)).toFixed(1);
-    attachmentSummary.className = 'attachment-summary has-files';
-    attachmentSummary.textContent = `${files.length} arquivo(s) selecionado(s) — ${totalMb} MB`;
-    clearAttachments.classList.remove('hidden');
-  };
-
-  attachments.addEventListener('change', updateAttachmentSummary);
-  clearAttachments.addEventListener('click', () => {
-    attachments.value = '';
-    updateAttachmentSummary();
-  });
-
-  sector.addEventListener('change', updateOriginLabel);
-  oxygenRequired.addEventListener('change', () => {
-    oxygenDetailsLabel.classList.toggle('hidden', !oxygenRequired.checked);
-    oxygenDetails.required = oxygenRequired.checked;
-    if (!oxygenRequired.checked) oxygenDetails.value = '';
-  });
-
-  const uploadFiles = async () => {
-    const paths = [];
-    const files = Array.from(attachments.files || []);
-    for (const file of files) {
-      if (file.size > 10 * 1024 * 1024) throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);
-      const extension = (file.name.split('.').pop() || 'bin').replace(/[^a-z0-9]/gi, '').toLowerCase();
-      const path = `${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
-      const response = await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`), {
-        method: 'POST',
-        headers: {
-          apikey: app.SUPABASE_KEY,
-          Authorization: `Bearer ${session.access_token}`,
-          'Content-Type': file.type || 'application/octet-stream',
-          'x-upsert': 'false'
-        },
-        body: file
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.message || `Não foi possível enviar ${file.name}.`);
-      }
-      paths.push(path);
-    }
-    return paths;
-  };
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    message.className = 'message';
-
-    const birthDateInput = document.getElementById('birthDateText');
-    const transportDateInput = document.getElementById('transportDateText');
-    const timeInput = document.getElementById('destinationTimeText');
-    const birthDate = dateToIso(birthDateInput.value);
-    const transportDate = dateToIso(transportDateInput.value);
-    const destinationTime = normalizeTime(timeInput.value);
-
-    birthDateInput.setCustomValidity(birthDate ? '' : 'Informe uma data válida no formato DD/MM/AAAA.');
-    transportDateInput.setCustomValidity(transportDate ? '' : 'Informe uma data válida no formato DD/MM/AAAA.');
-    timeInput.setCustomValidity(destinationTime ? '' : 'Informe um horário válido no formato HH:MM.');
-
-    if (!form.reportValidity()) return;
-    submitButton.disabled = true;
-    submitButton.textContent = 'Enviando...';
-
-    try {
-      const supportType = form.elements.supportType.value;
-      const priority = form.elements.priority.value;
-      if (!supportType || !priority) throw new Error('Selecione o tipo de transporte e a prioridade.');
-
-      const attachmentPaths = await uploadFiles();
-      const payload = {
-        requester_id: session.user_id,
-        requester_name: session.display_name || 'Usuário',
-        support_type: supportType,
-        priority,
-        priority_rank: priorityRank[priority],
-        patient_name: document.getElementById('patientName').value.trim(),
-        birth_date: birthDate,
-        origin_sector: sector.value,
-        origin_location: locationInput.value.trim() || null,
-        destination: document.getElementById('destination').value.trim(),
-        transport_date: transportDate,
-        destination_time: destinationTime,
-        oxygen_required: oxygenRequired.checked,
-        oxygen_details: oxygenDetails.value.trim() || null,
-        observations: document.getElementById('observations').value.trim() || null,
-        attachment_paths: attachmentPaths
-      };
-
-      const response = await fetch(app.apiUrl('/rest/v1/transport_requests'), {
-        method: 'POST',
-        headers: { ...app.authenticatedHeaders(session.access_token), Prefer: 'return=representation' },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a solicitação.');
-
-      form.reset();
-      attachments.value = '';
-      document.querySelectorAll('.native-picker').forEach((picker) => { picker.value = ''; });
-      updateAttachmentSummary();
-      updateOriginLabel();
-      oxygenDetailsLabel.classList.add('hidden');
-      showMessage('Solicitação enviada com sucesso para a equipe de transporte.', true);
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    } catch (error) {
-      showMessage(error instanceof Error ? error.message : 'Falha ao enviar a solicitação.');
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = 'Enviar solicitação';
-    }
-  });
-
-  bindSmartFields();
-  updateAttachmentSummary();
-  updateOriginLabel();
+  form.addEventListener('submit',async(event)=>{event.preventDefault();message.className='message';postActions.classList.add('hidden');const bd=$('birthDateText'),td=$('transportDateText'),ti=$('destinationTimeText');const birth=dateToIso(bd.value),transport=dateToIso(td.value),time=normalizeTime(ti.value);bd.setCustomValidity(birth?'':'Informe uma data válida.');td.setCustomValidity(transport?'':'Informe uma data válida.');ti.setCustomValidity(time?'':'Informe um horário válido.');if(!form.reportValidity())return;submitButton.disabled=true;submitButton.textContent='Enviando...';try{const files=[...(attachments.files||[])];const payload={requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};const r=await fetch(app.apiUrl('/rest/v1/transport_requests'),{method:'POST',headers:{...app.authenticatedHeaders(session.access_token),Prefer:'return=representation'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.message||'Não foi possível registrar a solicitação.');lastRequest={...payload,id:Array.isArray(d)&&d[0]?.id?d[0].id:null,local_files:files};showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou abrir o WhatsApp do transporte.',true);postActions.classList.remove('hidden');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}catch(e){showMessage(e.message||'Falha ao enviar a solicitação.');}finally{submitButton.disabled=false;submitButton.textContent='Enviar solicitação';}});
+  updateAttachmentSummary();updateOriginLabel();
 })();
