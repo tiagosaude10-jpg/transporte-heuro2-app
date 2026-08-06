@@ -39,7 +39,7 @@
   const updateOriginLabel = () => {
     const box = ['UTI', 'Sala Vermelha'].includes(sector.value);
     locationLabel.firstChild.textContent = box ? 'Box' : 'Enfermaria / Leito';
-    locationInput.placeholder = box ? 'Informe o box' : 'Informe a enfermaria e o leito';
+    locationInput.placeholder = box ? '00' : '00/00';
   };
 
   const maskDate = (value) => {
@@ -101,7 +101,7 @@
   const uploadFiles = async () => {
     const paths = [];
     for (const file of [...(attachments.files || [])]) {
-      if (file.size > 10485760) throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);
+      if (file.size > 20971520) throw new Error(`O arquivo ${file.name} ultrapassa 20 MB.`);
       const ext = (file.name.split('.').pop() || 'bin').replace(/[^a-z0-9]/gi, '').toLowerCase();
       const path = `${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
       const response = await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`), {
@@ -122,7 +122,16 @@
   };
   const fileToDataUrl = (file) => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
   const imageSize = (data) => new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight }); img.onerror = reject; img.src = data; });
-  const makeProtocol = () => { const now = new Date(); return `HEURO-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Date.now()).slice(-5)}`; };
+  const makeProtocol = (date = new Date()) => {
+    const pad = (value) => String(value).padStart(2, '0');
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    return `HEURO-${day}${month}${year}-${hours}${minutes}${seconds}`;
+  };
   const originText = (r) => `${r.origin_sector}${r.origin_location ? ` - ${['UTI','Sala Vermelha'].includes(r.origin_sector) ? 'Box' : 'Enfermaria/Leito'} ${r.origin_location}` : ''}`;
   const oxygenText = (r) => r.oxygen_required ? `Sim${r.oxygen_details ? ` - ${r.oxygen_details}` : ''}` : 'Não';
   const fileNames = (r) => [...(r.local_files || [])].map((file) => file.name);
@@ -257,11 +266,12 @@
     submitButton.disabled=true; submitButton.textContent='Enviando...';
     try {
       const files=[...(attachments.files||[])];
-      const payload={requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};
+      const protocol=makeProtocol(new Date());
+      const payload={protocol,requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};
       const response=await fetch(app.apiUrl('/rest/v1/transport_requests'),{method:'POST',headers:{...app.authenticatedHeaders(session.access_token),Prefer:'return=representation'},body:JSON.stringify(payload)});
       const data=await response.json().catch(()=>null); if(!response.ok) throw new Error(data?.message||'Não foi possível registrar a solicitação.');
-      lastRequest={...payload,id:Array.isArray(data)&&data[0]?.id?data[0].id:null,protocol:makeProtocol(),local_files:files};
-      showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou enviar pelo WhatsApp.',true); postActions.classList.remove('hidden'); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+      lastRequest={...payload,id:Array.isArray(data)&&data[0]?.id?data[0].id:null,local_files:files};
+      showMessage(`Solicitação enviada com sucesso. Protocolo: ${protocol}`,true); postActions.classList.remove('hidden'); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
     } catch(error) { showMessage(error.message||'Falha ao enviar a solicitação.'); }
     finally { submitButton.disabled=false; submitButton.textContent='Enviar solicitação'; }
   });
