@@ -1,10 +1,11 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260805.1';
+  const APP_VERSION = '20260806.1';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
+  const CACHE_CLEANUP_KEY = `heuro_cache_cleaned_${APP_VERSION}`;
 
   const readSession = () => {
     try {
@@ -23,33 +24,9 @@
     sessionStorage.clear();
   };
 
-  const apiUrl = (path) => `${SUPABASE_URL}${path}`;
-
-  const publicHeaders = (extra = {}) => ({
-    apikey: SUPABASE_KEY,
-    ...extra
-  });
-
-  const authenticatedHeaders = (accessToken, extra = {}) => ({
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${accessToken}`,
-    ...extra
-  });
-
-  const jsonHeaders = (accessToken = '', extra = {}) => {
-    const base = accessToken
-      ? authenticatedHeaders(accessToken)
-      : publicHeaders();
-
-    return {
-      ...base,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...extra
-    };
-  };
-
   const clearLegacyCaches = async () => {
+    if (localStorage.getItem(CACHE_CLEANUP_KEY) === '1') return;
+
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations().catch(() => []);
       await Promise.all(registrations.map((registration) => registration.unregister().catch(() => false)));
@@ -59,7 +36,30 @@
       const names = await caches.keys().catch(() => []);
       await Promise.all(names.map((name) => caches.delete(name).catch(() => false)));
     }
+
+    localStorage.setItem(CACHE_CLEANUP_KEY, '1');
   };
+
+  const apiUrl = (path) => `${SUPABASE_URL}${path}`;
+
+  const publicHeaders = () => ({
+    apikey: SUPABASE_KEY,
+    Accept: 'application/json'
+  });
+
+  const authenticatedHeaders = (token, includeJson = true) => ({
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+    ...(includeJson ? { 'Content-Type': 'application/json' } : {})
+  });
+
+  const jsonHeaders = () => ({
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
+  });
 
   window.HEURO = Object.freeze({
     APP_VERSION,
@@ -69,10 +69,10 @@
     readSession,
     saveSession,
     clearSession,
+    clearLegacyCaches,
     apiUrl,
     publicHeaders,
     authenticatedHeaders,
-    jsonHeaders,
-    clearLegacyCaches
+    jsonHeaders
   });
 })();
