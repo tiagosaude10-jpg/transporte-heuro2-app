@@ -8,16 +8,17 @@
   const togglePasswordButton = document.getElementById('togglePassword');
   const loginForm = document.getElementById('loginForm');
   const submitButton = loginForm?.querySelector('button[type="submit"]');
+  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
   const firstRegistrationLink = document.getElementById('firstRegistrationLink');
 
   const message = document.createElement('p');
   message.id = 'loginMessage';
   message.setAttribute('role', 'alert');
   message.style.cssText = [
-    'position:absolute','left:8%','right:8%','top:64%','z-index:8','margin:0',
-    'padding:10px 12px','border-radius:12px','background:rgba(255,255,255,.95)',
+    'position:absolute','left:8%','right:8%','top:68.4%','z-index:20','margin:0',
+    'padding:10px 12px','border-radius:12px','background:rgba(255,255,255,.96)',
     'color:#9b1c1c','font:700 14px/1.3 system-ui,-apple-system,sans-serif',
-    'text-align:center','display:none'
+    'text-align:center','display:none','box-shadow:0 5px 18px rgba(0,35,95,.22)'
   ].join(';');
   loginForm?.appendChild(message);
 
@@ -58,6 +59,12 @@
     submitButton.setAttribute('aria-busy', String(loading));
     submitButton.classList.toggle('is-pressed', loading);
     submitButton.style.opacity = '';
+  };
+
+  const navigateWithFeedback = (link) => {
+    if (!link) return;
+    link.classList.add('is-pressed');
+    window.setTimeout(() => window.location.assign(link.href), 150);
   };
 
   togglePasswordButton?.addEventListener('click', () => {
@@ -137,10 +144,14 @@
     }
   });
 
+  forgotPasswordLink?.addEventListener('click', (event) => {
+    event.preventDefault();
+    navigateWithFeedback(forgotPasswordLink);
+  });
+
   firstRegistrationLink?.addEventListener('click', (event) => {
     event.preventDefault();
-    firstRegistrationLink.classList.add('is-pressed');
-    window.setTimeout(() => window.location.assign(firstRegistrationLink.href), 140);
+    navigateWithFeedback(firstRegistrationLink);
   });
 
   clearLegacyCaches();
