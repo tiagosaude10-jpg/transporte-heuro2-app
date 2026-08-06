@@ -16,7 +16,7 @@
   loginForm?.appendChild(message);
   const showMessage = (text, isSuccess = false) => { message.textContent = text; message.style.color = isSuccess ? '#0b6b35' : '#9b1c1c'; message.style.display = 'block'; };
   const translateAuthError = (rawMessage = '') => { const normalized = String(rawMessage).trim().toLowerCase(); if (normalized.includes('email not confirmed')) return 'Cadastro pendente de confirmação de e-mail. Procure o administrador do sistema.'; if (normalized.includes('invalid login credentials')) return 'E-mail, CPF ou senha incorretos. Confira os dados e tente novamente.'; if (normalized.includes('too many requests') || normalized.includes('rate limit')) return 'Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente.'; if (normalized.includes('user not found')) return 'Usuário não encontrado. Verifique o e-mail ou CPF informado.'; return rawMessage || 'Não foi possível entrar no sistema. Tente novamente.'; };
-  const setLoading = (loading) => { if (!submitButton) return; submitButton.disabled = loading; submitButton.setAttribute('aria-busy', String(loading)); submitButton.classList.toggle('is-pressed', loading); submitButton.style.opacity = ''; };
+  const setLoading = (loading) => { if (!submitButton) return; submitButton.disabled = loading; submitButton.setAttribute('aria-busy', String(loading)); submitButton.classList.toggle('is-pressed', loading); };
   const pressSubmit = () => submitButton?.classList.add('is-pressed');
   const releaseSubmit = () => { if (submitButton?.getAttribute('aria-busy') !== 'true') window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 220); };
   ['pointerdown', 'touchstart'].forEach((type) => submitButton?.addEventListener(type, pressSubmit, { passive: true }));
@@ -38,7 +38,7 @@
       const profile = profiles[0]; if (profile.status === 'pendente') throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.'); if (profile.status === 'bloqueado') throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.'); if (profile.status !== 'aprovado' || !profile.authorized_access) throw new Error('Seu perfil ainda não possui autorização de acesso.');
       saveSession({ access_token: accessToken, refresh_token: authData.refresh_token || '', expires_at: authData.expires_at || 0, user_id: userId, display_name: profile.display_name || '', access: profile.authorized_access, status: profile.status });
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.replace(`./comando-v56.html?fresh=${Date.now()}`), 350);
+      window.setTimeout(() => window.location.replace(`./comando-oficial.html?fresh=${Date.now()}`), 350);
     } catch (error) { showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.'); setLoading(false); releaseSubmit(); }
   });
   forgotPasswordLink?.addEventListener('click', (event) => { event.preventDefault(); navigateWithFeedback(forgotPasswordLink); });
