@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.36';
+  const APP_VERSION = '20260806.37';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -32,5 +32,10 @@
     pickerFix.src = `js/picker-fix.js?v=${APP_VERSION}`;
     pickerFix.defer = false;
     document.head.appendChild(pickerFix);
+
+    const pdfLoader = document.createElement('script');
+    pdfLoader.src = `js/pdf-loader.js?v=${APP_VERSION}`;
+    pdfLoader.defer = false;
+    document.head.appendChild(pdfLoader);
   }
 })();
