@@ -12,7 +12,11 @@
   const submitButton = $('submitButton'), message = $('formMessage'), postActions = $('postActions');
   const sharePdfButton = $('sharePdfButton'), openWhatsappButton = $('openWhatsappButton');
   const priorityRank = Object.freeze({ emergencia:1, urgencia:2, eletivo:3 });
-  const labels = { basico:'Suporte Básico', avancado_uti:'Suporte Avançado / UTI', emergencia:'Emergência', urgencia:'Urgência', eletivo:'Eletivo', transferencia:'Transferência', exame_procedimento:'Exame para procedimento', consulta:'Consulta' };
+  const labels = {
+    basico:'Suporte Básico', avancado_uti:'Suporte Avançado / UTI',
+    emergencia:'Emergência', urgencia:'Urgência', eletivo:'Eletivo',
+    transferencia:'Transferência', exame_procedimento:'Exame/Procedimento', consulta:'Consulta'
+  };
   let lastRequest = null;
 
   const showMessage = (text, ok=false) => { message.textContent=text; message.className=`message ${ok?'ok':'error'}`; };
@@ -35,13 +39,108 @@
   const uploadFiles=async()=>{const paths=[];for(const file of [...(attachments.files||[])]){if(file.size>10485760)throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);const ext=(file.name.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'').toLowerCase();const path=`${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;const r=await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`),{method:'POST',headers:{apikey:app.SUPABASE_KEY,Authorization:`Bearer ${session.access_token}`,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file});if(!r.ok)throw new Error(`Não foi possível enviar ${file.name}.`);paths.push(path);}return paths;};
   const loadSettings=async()=>{const r=await fetch(app.apiUrl('/rest/v1/transport_app_settings?id=eq.1&select=basic_whatsapp,advanced_uti_whatsapp'),{headers:app.authenticatedHeaders(session.access_token)});const d=await r.json().catch(()=>[]);return Array.isArray(d)&&d[0]?d[0]:{};};
   const fileToDataUrl=(file)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
+  const imageSize=(data)=>new Promise((res,rej)=>{const img=new Image();img.onload=()=>res({width:img.naturalWidth,height:img.naturalHeight});img.onerror=rej;img.src=data;});
+  const makeProtocol=()=>{const now=new Date();const y=now.getFullYear();const m=String(now.getMonth()+1).padStart(2,'0');const d=String(now.getDate()).padStart(2,'0');return `HEURO-${y}${m}${d}-${String(Date.now()).slice(-5)}`;};
+  const originText=(r)=>`${r.origin_sector}${r.origin_location?` - ${['UTI','Sala Vermelha'].includes(r.origin_sector)?'Box':'Enfermaria/Leito'} ${r.origin_location}`:''}`;
+  const oxygenText=(r)=>r.oxygen_required?`Sim${r.oxygen_details?` - ${r.oxygen_details}`:''}`:'Não';
+  const fileNames=(r)=>[...(r.local_files||[])].map(f=>f.name);
 
-  const createPdf=async()=>{if(!lastRequest)throw new Error('Envie a solicitação antes de gerar o PDF.');if(!window.jspdf?.jsPDF)throw new Error('O gerador de PDF não foi carregado.');const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=18;doc.setFontSize(17);doc.text('HEURO — Solicitação de Transporte',105,y,{align:'center'});y+=12;doc.setFontSize(10);const lines=[['Paciente',lastRequest.patient_name],['Data de nascimento',isoToDate(lastRequest.birth_date)],['Tipo de transporte',labels[lastRequest.support_type]],['Prioridade',labels[lastRequest.priority]],['Origem',`${lastRequest.origin_sector} — ${lastRequest.origin_location||''}`],['Destino',lastRequest.destination],['Data / horário',`${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`],['Motivo',labels[lastRequest.transfer_reason]],['Oxigênio',lastRequest.oxygen_required?`Sim — ${lastRequest.oxygen_details||'sem detalhes'}`:'Não'],['Solicitante',lastRequest.requester_name],['Observações',lastRequest.observations||'Sem observações']];for(const [k,v] of lines){doc.setFont(undefined,'bold');doc.text(`${k}:`,15,y);doc.setFont(undefined,'normal');const wrapped=doc.splitTextToSize(String(v||''),150);doc.text(wrapped,55,y);y+=Math.max(7,wrapped.length*5);if(y>270){doc.addPage();y=18;}}
-    const images=[...(lastRequest.local_files||[])].filter(f=>f.type.startsWith('image/'));for(const img of images){const data=await fileToDataUrl(img);if(y>190){doc.addPage();y=18;}doc.addImage(data,img.type.includes('png')?'PNG':'JPEG',15,y,180,120,undefined,'FAST');y+=128;}return doc;};
+  const buildWhatsappText=(r)=>{
+    const docs=fileNames(r);
+    return `SOLICITAÇÃO DE TRANSPORTE HEURO\n\n`+
+      `Protocolo:\n${r.protocol}\n`+
+      `Paciente: ${r.patient_name}\n`+
+      `Data de nascimento: ${isoToDate(r.birth_date)}\n`+
+      `Setor de origem: ${r.origin_sector}\n`+
+      `${r.origin_location?`${['UTI','Sala Vermelha'].includes(r.origin_sector)?'Box':'Enfermaria/Leito'}: ${r.origin_location}\n`:''}`+
+      `Destino: ${r.destination}\n`+
+      `Data: ${isoToDate(r.transport_date)} às ${r.destination_time}\n`+
+      `Ambulância: ${labels[r.support_type]}\n`+
+      `Prioridade: ${labels[r.priority]}\n`+
+      `Motivo: ${labels[r.transfer_reason]}\n`+
+      `Oxigênio: ${oxygenText(r)}\n`+
+      `${docs.length?`Documento(s): ${docs.join(', ')}\n`:''}`+
+      `Observações: ${r.observations||'Sem observações'}\n\n`+
+      `Solicitação registrada no aplicativo Transporte HEURO.`;
+  };
 
-  sharePdfButton.addEventListener('click',async()=>{try{const doc=await createPdf();const blob=doc.output('blob');const file=new File([blob],`solicitacao-transporte-${lastRequest.patient_name.replace(/\s+/g,'-')}.pdf`,{type:'application/pdf'});if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:'Solicitação de Transporte HEURO'});else doc.save(file.name);}catch(e){showMessage(e.message||'Não foi possível gerar o PDF.');}});
-  openWhatsappButton.addEventListener('click',async()=>{try{const settings=await loadSettings();const number=lastRequest.support_type==='basico'?settings.basic_whatsapp:settings.advanced_uti_whatsapp;if(!number)throw new Error('O número de WhatsApp deste tipo de transporte ainda não foi cadastrado.');const phone=String(number).replace(/\D/g,'');const text=`Solicitação de transporte HEURO\nPaciente: ${lastRequest.patient_name}\nTipo: ${labels[lastRequest.support_type]}\nPrioridade: ${labels[lastRequest.priority]}\nDestino: ${lastRequest.destination}\nData: ${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`;location.href=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;}catch(e){showMessage(e.message||'Não foi possível abrir o WhatsApp.');}});
+  const drawRow=(doc,{y,icon,label,value,maxWidth=121})=>{
+    const navy=[5,32,88];
+    doc.setDrawColor(225,229,236);doc.setLineWidth(.35);doc.line(10,y+14.5,200,y+14.5);
+    doc.setDrawColor(...navy);doc.setLineWidth(.8);doc.circle(16,y+7,4.6);
+    doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(icon,16,y+8.5,{align:'center'});
+    doc.setTextColor(0,0,0);doc.setFontSize(11.5);doc.setFont('helvetica','bold');doc.text(`${label}:`,28,y+9);
+    doc.setFont('helvetica','normal');doc.setFontSize(11);const wrapped=doc.splitTextToSize(String(value||''),maxWidth);doc.text(wrapped,88,y+9);
+    return Math.max(16,wrapped.length*5.2+8);
+  };
 
-  form.addEventListener('submit',async(event)=>{event.preventDefault();message.className='message';postActions.classList.add('hidden');const bd=$('birthDateText'),td=$('transportDateText'),ti=$('destinationTimeText');const birth=dateToIso(bd.value),transport=dateToIso(td.value),time=normalizeTime(ti.value);bd.setCustomValidity(birth?'':'Informe uma data válida.');td.setCustomValidity(transport?'':'Informe uma data válida.');ti.setCustomValidity(time?'':'Informe um horário válido.');if(!form.reportValidity())return;submitButton.disabled=true;submitButton.textContent='Enviando...';try{const files=[...(attachments.files||[])];const payload={requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};const r=await fetch(app.apiUrl('/rest/v1/transport_requests'),{method:'POST',headers:{...app.authenticatedHeaders(session.access_token),Prefer:'return=representation'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.message||'Não foi possível registrar a solicitação.');lastRequest={...payload,id:Array.isArray(d)&&d[0]?.id?d[0].id:null,local_files:files};showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou abrir o WhatsApp do transporte.',true);postActions.classList.remove('hidden');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}catch(e){showMessage(e.message||'Falha ao enviar a solicitação.');}finally{submitButton.disabled=false;submitButton.textContent='Enviar solicitação';}});
+  const createPdf=async()=>{
+    if(!lastRequest)throw new Error('Envie a solicitação antes de gerar o PDF.');
+    if(!window.jspdf?.jsPDF)throw new Error('O gerador de PDF não foi carregado.');
+    const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4',compress:true});
+    const navy=[5,32,88];
+    doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text('TRANSPORTE HEURO',105,23,{align:'center'});
+    doc.setDrawColor(...navy);doc.setLineWidth(1.1);doc.line(38,28,182,28);
+
+    let y=34;
+    const rows=[
+      ['PR','Protocolo',lastRequest.protocol],
+      ['ST','Status','Solicitado'],
+      ['PA','Paciente',lastRequest.patient_name],
+      ['DN','Nascimento',isoToDate(lastRequest.birth_date)],
+      ['OR','Origem',originText(lastRequest)],
+      ['DE','Destino',lastRequest.destination],
+      ['DH','Data e hora',`${isoToDate(lastRequest.transport_date)} às ${lastRequest.destination_time}`],
+      ['AM','Ambulância',labels[lastRequest.support_type]],
+      ['PI','Prioridade',labels[lastRequest.priority]],
+      ['MO','Motivo',labels[lastRequest.transfer_reason]],
+      ['O2','Oxigênio',oxygenText(lastRequest)],
+      ['SO','Solicitante',lastRequest.requester_name],
+      ['EX','Executante','Não definido'],
+      ['OB','Observações',lastRequest.observations||'Sem observações']
+    ];
+    for(const [icon,label,value] of rows){const h=drawRow(doc,{y,icon,label,value});y+=h;if(y>282)break;}
+
+    const images=[...(lastRequest.local_files||[])].filter(f=>f.type.startsWith('image/'));
+    let index=1;
+    for(const img of images){
+      const data=await fileToDataUrl(img);const size=await imageSize(data);doc.addPage();
+      doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text(`ANEXO ${index}`,105,17,{align:'center'});doc.setDrawColor(...navy);doc.line(20,22,190,22);
+      const maxW=180,maxH=250,ratio=size.width/size.height;let w=maxW,h=w/ratio;if(h>maxH){h=maxH;w=h*ratio;}const x=(210-w)/2;const yy=30+(maxH-h)/2;
+      doc.addImage(data,img.type.includes('png')?'PNG':'JPEG',x,yy,w,h,undefined,'FAST');
+      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(90);doc.text(img.name,105,288,{align:'center'});index++;
+    }
+    return doc;
+  };
+
+  sharePdfButton.addEventListener('click',async()=>{
+    try{
+      const doc=await createPdf();const blob=doc.output('blob');const fileName=`Transporte HEURO - ${lastRequest.protocol}.pdf`;const file=new File([blob],fileName,{type:'application/pdf'});const text=buildWhatsappText(lastRequest);
+      if(navigator.canShare?.({files:[file]}))await navigator.share({files:[file],title:`Transporte HEURO - ${lastRequest.protocol}`,text});
+      else doc.save(fileName);
+    }catch(e){showMessage(e.message||'Não foi possível gerar o PDF.');}
+  });
+
+  openWhatsappButton.addEventListener('click',async()=>{
+    try{
+      const settings=await loadSettings();const number=lastRequest.support_type==='basico'?settings.basic_whatsapp:settings.advanced_uti_whatsapp;
+      if(!number)throw new Error('O número de WhatsApp deste tipo de transporte ainda não foi cadastrado.');
+      const phone=String(number).replace(/\D/g,'');const text=buildWhatsappText(lastRequest);location.href=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    }catch(e){showMessage(e.message||'Não foi possível abrir o WhatsApp.');}
+  });
+
+  form.addEventListener('submit',async(event)=>{
+    event.preventDefault();message.className='message';postActions.classList.add('hidden');
+    const bd=$('birthDateText'),td=$('transportDateText'),ti=$('destinationTimeText');const birth=dateToIso(bd.value),transport=dateToIso(td.value),time=normalizeTime(ti.value);
+    bd.setCustomValidity(birth?'':'Informe uma data válida.');td.setCustomValidity(transport?'':'Informe uma data válida.');ti.setCustomValidity(time?'':'Informe um horário válido.');if(!form.reportValidity())return;
+    submitButton.disabled=true;submitButton.textContent='Enviando...';
+    try{
+      const files=[...(attachments.files||[])];const payload={requester_id:session.user_id,requester_name:session.display_name||'Usuário',support_type:$('supportType').value,priority:$('priority').value,priority_rank:priorityRank[$('priority').value],patient_name:$('patientName').value.trim(),birth_date:birth,origin_sector:sector.value,origin_location:locationInput.value.trim()||null,destination:$('destination').value.trim(),transport_date:transport,destination_time:time,oxygen_required:oxygenRequired.checked,oxygen_details:oxygenDetails.value.trim()||null,transfer_reason:$('transferReason').value,observations:$('observations').value.trim()||null,attachment_paths:await uploadFiles()};
+      const r=await fetch(app.apiUrl('/rest/v1/transport_requests'),{method:'POST',headers:{...app.authenticatedHeaders(session.access_token),Prefer:'return=representation'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.message||'Não foi possível registrar a solicitação.');
+      lastRequest={...payload,id:Array.isArray(d)&&d[0]?.id?d[0].id:null,protocol:makeProtocol(),local_files:files};
+      showMessage('Solicitação enviada com sucesso. Agora você pode gerar o PDF ou abrir o WhatsApp do transporte.',true);postActions.classList.remove('hidden');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+    }catch(e){showMessage(e.message||'Falha ao enviar a solicitação.');}
+    finally{submitButton.disabled=false;submitButton.textContent='Enviar solicitação';}
+  });
   updateAttachmentSummary();updateOriginLabel();
 })();
