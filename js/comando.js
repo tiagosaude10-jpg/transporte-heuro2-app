@@ -107,15 +107,18 @@
       loggingOut = true;
       logoutButton?.classList.add('is-pressed');
       const token = session.access_token;
-      app.clearSession();
 
-      fetch(app.apiUrl('/auth/v1/logout'), {
-        method: 'POST',
-        keepalive: true,
-        headers: app.authenticatedHeaders(token)
-      }).catch(() => {});
+      window.setTimeout(() => {
+        app.clearSession();
 
-      window.location.replace('./login.html?logout=1');
+        fetch(app.apiUrl('/auth/v1/logout'), {
+          method: 'POST',
+          keepalive: true,
+          headers: app.authenticatedHeaders(token)
+        }).catch(() => {});
+
+        window.location.replace('./login.html?logout=1');
+      }, 180);
     };
 
     ['click', 'pointerup', 'touchend'].forEach((type) => {
