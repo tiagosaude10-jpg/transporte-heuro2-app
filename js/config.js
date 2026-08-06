@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.49';
+  const APP_VERSION = '20260806.50';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -46,7 +46,7 @@
       if (whatsappSection) whatsappSection.remove();
       const backLink = document.querySelector('.back-link');
       if (backLink) {
-        backLink.href = './admin-painel.html?v=20260806.49';
+        backLink.href = './admin-painel.html?v=20260806.50';
         backLink.setAttribute('aria-label', 'Voltar ao painel do administrador');
       }
       const title = document.querySelector('.admin-header__text h1');
