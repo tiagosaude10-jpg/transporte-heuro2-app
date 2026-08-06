@@ -24,7 +24,6 @@
   const attachments = document.getElementById('attachments');
   const submitButton = document.getElementById('submitButton');
   const message = document.getElementById('formMessage');
-
   const priorityRank = Object.freeze({ emergencia: 1, urgencia: 2, eletivo: 3 });
 
   const showMessage = (text, ok = false) => {
@@ -43,6 +42,82 @@
     }
   };
 
+  const maskDate = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+  };
+
+  const maskTime = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  };
+
+  const dateToIso = (value) => {
+    const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+    if (!match) return null;
+    const [, day, month, year] = match;
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    if (date.getFullYear() !== Number(year) || date.getMonth() !== Number(month) - 1 || date.getDate() !== Number(day)) return null;
+    return `${year}-${month}-${day}`;
+  };
+
+  const isoToDate = (value) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : '';
+  };
+
+  const normalizeTime = (value) => {
+    const match = /^(\d{2}):(\d{2})$/.exec(value);
+    if (!match) return null;
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    if (hour > 23 || minute > 59) return null;
+    return `${match[1]}:${match[2]}`;
+  };
+
+  const bindSmartFields = () => {
+    document.querySelectorAll('.manual').forEach((input) => {
+      input.addEventListener('input', () => {
+        input.value = input.id.includes('Time') ? maskTime(input.value) : maskDate(input.value);
+        input.setCustomValidity('');
+      });
+    });
+
+    document.querySelectorAll('[data-picker]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const picker = document.getElementById(button.dataset.picker);
+        if (!picker) return;
+        if (typeof picker.showPicker === 'function') picker.showPicker();
+        else picker.click();
+      });
+    });
+
+    document.querySelectorAll('.native-picker').forEach((picker) => {
+      picker.addEventListener('change', () => {
+        const textId = picker.id.replace('Native', 'Text');
+        const textInput = document.getElementById(textId);
+        if (!textInput) return;
+        textInput.value = picker.type === 'date' ? isoToDate(picker.value) : picker.value;
+        textInput.setCustomValidity('');
+      });
+    });
+
+    document.querySelectorAll('[data-clear]').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.dataset.clear.split(',').forEach((id) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.value = '';
+            element.setCustomValidity?.('');
+          }
+        });
+      });
+    });
+  };
+
   sector.addEventListener('change', updateOriginLabel);
   oxygenRequired.addEventListener('change', () => {
     oxygenDetailsLabel.classList.toggle('hidden', !oxygenRequired.checked);
@@ -53,19 +128,13 @@
   const uploadFiles = async () => {
     const files = Array.from(attachments.files || []);
     const paths = [];
-
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);
       const extension = (file.name.split('.').pop() || 'bin').replace(/[^a-z0-9]/gi, '').toLowerCase();
       const path = `${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
       const response = await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`), {
         method: 'POST',
-        headers: {
-          apikey: app.SUPABASE_KEY,
-          Authorization: `Bearer ${session.access_token}`,
-          'Content-Type': file.type || 'application/octet-stream',
-          'x-upsert': 'false'
-        },
+        headers: { apikey: app.SUPABASE_KEY, Authorization: `Bearer ${session.access_token}`, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'false' },
         body: file
       });
       if (!response.ok) {
@@ -81,6 +150,17 @@
     event.preventDefault();
     message.className = 'message';
 
+    const birthDateInput = document.getElementById('birthDateText');
+    const transportDateInput = document.getElementById('transportDateText');
+    const timeInput = document.getElementById('destinationTimeText');
+    const birthDate = dateToIso(birthDateInput.value);
+    const transportDate = dateToIso(transportDateInput.value);
+    const destinationTime = normalizeTime(timeInput.value);
+
+    birthDateInput.setCustomValidity(birthDate ? '' : 'Informe uma data válida no formato DD/MM/AAAA.');
+    transportDateInput.setCustomValidity(transportDate ? '' : 'Informe uma data válida no formato DD/MM/AAAA.');
+    timeInput.setCustomValidity(destinationTime ? '' : 'Informe um horário válido no formato HH:MM.');
+
     if (!form.reportValidity()) return;
     submitButton.disabled = true;
     submitButton.textContent = 'Enviando...';
@@ -89,7 +169,6 @@
       const supportType = form.elements.supportType.value;
       const priority = form.elements.priority.value;
       if (!supportType || !priority) throw new Error('Selecione o tipo de transporte e a prioridade.');
-
       const attachmentPaths = await uploadFiles();
       const payload = {
         requester_id: session.user_id,
@@ -98,12 +177,12 @@
         priority,
         priority_rank: priorityRank[priority],
         patient_name: document.getElementById('patientName').value.trim(),
-        birth_date: document.getElementById('birthDate').value,
+        birth_date: birthDate,
         origin_sector: sector.value,
         origin_location: locationInput.value.trim() || null,
         destination: document.getElementById('destination').value.trim(),
-        transport_date: document.getElementById('transportDate').value,
-        destination_time: document.getElementById('destinationTime').value,
+        transport_date: transportDate,
+        destination_time: destinationTime,
         oxygen_required: oxygenRequired.checked,
         oxygen_details: oxygenDetails.value.trim() || null,
         observations: document.getElementById('observations').value.trim() || null,
@@ -112,16 +191,14 @@
 
       const response = await fetch(app.apiUrl('/rest/v1/transport_requests'), {
         method: 'POST',
-        headers: {
-          ...app.authenticatedHeaders(session.access_token),
-          Prefer: 'return=representation'
-        },
+        headers: { ...app.authenticatedHeaders(session.access_token), Prefer: 'return=representation' },
         body: JSON.stringify(payload)
       });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a solicitação.');
 
       form.reset();
+      document.querySelectorAll('.native-picker').forEach((picker) => { picker.value = ''; });
       updateOriginLabel();
       oxygenDetailsLabel.classList.add('hidden');
       showMessage('Solicitação enviada com sucesso para a equipe de transporte.', true);
@@ -134,5 +211,6 @@
     }
   });
 
+  bindSmartFields();
   updateOriginLabel();
 })();
