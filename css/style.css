@@ -48,8 +48,8 @@ input { font: inherit; }
 }
 
 .login-screen {
-  width: min(100vw, calc(100svh * 864 / 1536));
-  aspect-ratio: 864 / 1536;
+  width: min(100vw, calc(100svh * 832 / 1792));
+  aspect-ratio: 832 / 1792;
 }
 
 .app-screen__image {
@@ -89,11 +89,11 @@ input { font: inherit; }
   position: absolute;
   z-index: 2;
   display: block;
-  height: 4.35%;
+  height: 4.25%;
   margin: 0;
-  padding: 0 1.4%;
+  padding: 0 2.2%;
   border: 0;
-  border-radius: 0;
+  border-radius: 10px;
   outline: 0;
   background: #ffffff;
   box-shadow: none;
@@ -116,73 +116,70 @@ input { font: inherit; }
 .login-control:focus-visible {
   border: 0;
   outline: 0;
-  box-shadow: none;
+  box-shadow: inset 0 0 0 2px rgba(20, 91, 204, .16);
 }
 
 .login-control--identifier {
-  left: 15.8%;
-  top: 39.32%;
+  left: 15.9%;
+  top: 36.35%;
   width: 68.2%;
 }
 
 .login-control--password {
-  left: 15.8%;
-  top: 50.82%;
-  width: 64.2%;
+  left: 15.9%;
+  top: 45.62%;
+  width: 64.5%;
 }
 
 .login-screen__toggle {
-  z-index: 3;
-  left: 78.5%;
-  top: 50.45%;
-  width: 8.5%;
-  height: 5.2%;
+  z-index: 5;
+  left: 79.7%;
+  top: 45.35%;
+  width: 8.8%;
+  height: 4.9%;
+  border-radius: 12px;
 }
 
-.login-screen__submit {
-  z-index: 4;
-  left: 12.5%;
-  top: 57.7%;
-  width: 75%;
-  height: 5.4%;
+.login-screen__submit,
+.login-screen__forgot,
+.login-screen__register {
+  z-index: 10;
+  left: 11.7%;
+  width: 76.6%;
   border-radius: 14px;
   pointer-events: auto;
   touch-action: manipulation;
   transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease, filter .12s ease, opacity .12s ease;
 }
 
-.login-screen__submit:active,
-.login-screen__submit.is-pressed,
-.login-screen__submit[aria-busy="true"] {
-  background: rgba(21, 98, 224, .30);
-  box-shadow:
-    inset 0 0 0 3px rgba(14, 76, 190, .88),
-    0 0 0 2px rgba(255, 255, 255, .78),
-    0 0 20px rgba(27, 99, 219, .46);
-  transform: scale(.975);
-  filter: saturate(1.14) brightness(.98);
-  opacity: 1 !important;
+.login-screen__submit {
+  top: 52.0%;
+  height: 4.75%;
+}
+
+.login-screen__forgot {
+  top: 58.05%;
+  height: 4.05%;
 }
 
 .login-screen__register {
-  z-index: 10;
-  left: 12.5%;
-  top: 67.3%;
-  width: 75%;
-  height: 4.7%;
-  border-radius: 12px;
-  pointer-events: auto;
-  touch-action: manipulation;
-  transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease, filter .12s ease;
+  top: 63.45%;
+  height: 4.05%;
 }
 
+.login-screen__submit:active,
+.login-screen__submit.is-pressed,
+.login-screen__submit[aria-busy="true"],
+.login-screen__forgot:active,
+.login-screen__forgot.is-pressed,
 .login-screen__register:active,
 .login-screen__register.is-pressed {
-  background: rgba(21, 98, 224, .28);
+  background: rgba(21, 98, 224, .24);
   box-shadow:
-    inset 0 0 0 3px rgba(14, 76, 190, .82),
-    0 0 0 2px rgba(255, 255, 255, .72),
-    0 0 18px rgba(27, 99, 219, .38);
+    inset 0 0 0 3px rgba(14, 76, 190, .86),
+    0 0 0 2px rgba(255, 255, 255, .76),
+    0 0 20px rgba(27, 99, 219, .44);
   transform: scale(.975);
   filter: saturate(1.12) brightness(.98);
+  opacity: 1 !important;
 }
