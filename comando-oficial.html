@@ -9,20 +9,20 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Tela de comando — HEURO Transportes</title>
-  <link rel="manifest" href="manifest.json?v=20260806.61">
+  <link rel="manifest" href="manifest.json?v=20260806.62">
   <style>
     *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}.command-screen{position:fixed;inset:0;display:grid;place-items:center;background:#fff;overflow:hidden}.command-stage{position:relative;width:min(100vw,calc(100vh * 768 / 1664));aspect-ratio:768/1664;overflow:visible}.command-image{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}.hotspot{position:absolute;z-index:20;display:block;border:0;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}.request{left:3.4%;top:28.6%;width:93.2%;height:10.8%;border-radius:20px;background:transparent}.team-real{left:3.4%;top:40.2%;width:93.2%;height:10.9%;border-radius:21px;background:linear-gradient(135deg,#14b84d,#078b36);box-shadow:0 8px 18px rgba(0,117,53,.20);display:flex;align-items:center;padding:0 4.2%;gap:4%;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}.team-real__icon{width:17%;aspect-ratio:1;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:clamp(29px,8vw,54px);flex:0 0 auto}.team-real__text{min-width:0;flex:1}.team-real__text strong{display:block;font-size:clamp(15px,4.1vw,27px);line-height:1.1;font-weight:850;white-space:nowrap}.team-real__text span{display:block;margin-top:5%;font-size:clamp(12px,3.35vw,22px);line-height:1.28;color:#f4fff7}.team-real__arrow{font-size:clamp(29px,7vw,48px);font-weight:900;line-height:1}.team-real:active,.team-real.is-pressed{transform:scale(.985);filter:brightness(1.13);box-shadow:inset 0 0 0 3px rgba(255,255,255,.95),0 7px 18px rgba(0,117,53,.25)}.request:active{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 3px rgba(255,255,255,.9)}.logout{left:75.2%;top:5%;width:20.5%;height:4.25%;border-radius:10px;background:transparent}.admin{left:78.4%;top:93.1%;width:17.2%;height:6.2%;border-radius:16px;background:transparent}.user-name{position:absolute;z-index:15;left:20.7%;top:13.35%;max-width:37%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font:900 clamp(15px,4vw,27px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;text-shadow:0 2px 5px rgba(0,20,75,.45);pointer-events:none}
   </style>
 </head>
 <body>
   <main class="command-screen"><div class="command-stage">
-    <img class="command-image" src="2AEAA123-F06C-4510-A36B-F98600DFC210.png?v=20260806.61" alt="Tela de comando do HEURO Transportes">
+    <img class="command-image" src="2AEAA123-F06C-4510-A36B-F98600DFC210.png?v=20260806.62" alt="Tela de comando do HEURO Transportes">
     <span id="commandUserName" class="user-name"></span>
-    <a class="hotspot request" href="./solicitar-transporte.html?fresh=2026080661" aria-label="Abrir solicitação de transporte"></a>
-    <a id="teamTransportButton" class="hotspot team-real" href="./transportes-equipe-v61.html?fresh=2026080661" aria-label="Abrir Transportes da Equipe"><span class="team-real__icon" aria-hidden="true">🚑</span><span class="team-real__text"><strong>TRANSPORTES DA EQUIPE</strong><span>Visualizar e acompanhar<br>transportes da equipe</span></span><span class="team-real__arrow" aria-hidden="true">›</span></a>
-    <a class="hotspot admin" href="./admin-central.html?fresh=2026080661" aria-label="Abrir painel do administrador"></a>
+    <a class="hotspot request" href="./solicitar-transporte.html?fresh=2026080662" aria-label="Abrir solicitação de transporte"></a>
+    <a id="teamTransportButton" class="hotspot team-real" href="./transportes-equipe-v62.html?fresh=2026080662" aria-label="Abrir Transportes da Equipe"><span class="team-real__icon" aria-hidden="true">🚑</span><span class="team-real__text"><strong>TRANSPORTES DA EQUIPE</strong><span>Visualizar e acompanhar<br>transportes da equipe</span></span><span class="team-real__arrow" aria-hidden="true">›</span></a>
+    <a class="hotspot admin" href="./admin-central.html?fresh=2026080662" aria-label="Abrir painel do administrador"></a>
     <button id="logoutButton" class="hotspot logout" type="button" aria-label="Sair do sistema"></button>
   </div></main>
-  <script src="js/config.js?v=20260806.61"></script>
+  <script src="js/config.js?v=20260806.62"></script>
   <script>(()=>{const app=window.HEURO;const session=app?.readSession?.();if(!session?.access_token||!session?.user_id){location.replace('./login.html');return;}const name=document.getElementById('commandUserName');if(name)name.textContent=session.display_name?session.display_name+'!':'';document.getElementById('teamTransportButton')?.addEventListener('click',e=>e.currentTarget.classList.add('is-pressed'));document.getElementById('logoutButton')?.addEventListener('click',()=>{app.clearSession();location.replace('./login.html?logout=1')});})();</script>
 </body></html>
