@@ -23,15 +23,10 @@
   const oxygenDetails = document.getElementById('oxygenDetails');
   const submitButton = document.getElementById('submitButton');
   const message = document.getElementById('formMessage');
-  const attachmentSheet = document.getElementById('attachmentSheet');
-  const openAttachmentMenu = document.getElementById('openAttachmentMenu');
-  const closeAttachmentMenu = document.getElementById('closeAttachmentMenu');
-  const cameraInput = document.getElementById('cameraInput');
-  const photoInput = document.getElementById('photoInput');
-  const documentInput = document.getElementById('documentInput');
+  const attachments = document.getElementById('attachments');
   const attachmentSummary = document.getElementById('attachmentSummary');
+  const clearAttachments = document.getElementById('clearAttachments');
   const priorityRank = Object.freeze({ emergencia: 1, urgencia: 2, eletivo: 3 });
-  let selectedFiles = [];
 
   const showMessage = (text, ok = false) => {
     message.textContent = text;
@@ -125,57 +120,25 @@
     });
   };
 
-  const closeSheet = () => {
-    attachmentSheet.hidden = true;
-  };
-
   const updateAttachmentSummary = () => {
-    if (selectedFiles.length === 0) {
+    const files = Array.from(attachments.files || []);
+    if (files.length === 0) {
       attachmentSummary.className = 'attachment-summary';
       attachmentSummary.textContent = 'Nenhum arquivo selecionado.';
+      clearAttachments.classList.add('hidden');
       return;
     }
-    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
-    const totalMb = (totalSize / (1024 * 1024)).toFixed(1);
+    const totalMb = (files.reduce((sum, file) => sum + file.size, 0) / (1024 * 1024)).toFixed(1);
     attachmentSummary.className = 'attachment-summary has-files';
-    attachmentSummary.innerHTML = `${selectedFiles.length} arquivo(s) selecionado(s) — ${totalMb} MB <button type="button" id="clearAttachments">Limpar</button>`;
-    document.getElementById('clearAttachments')?.addEventListener('click', () => {
-      selectedFiles = [];
-      [cameraInput, photoInput, documentInput].forEach((input) => { input.value = ''; });
-      updateAttachmentSummary();
-    });
+    attachmentSummary.textContent = `${files.length} arquivo(s) selecionado(s) — ${totalMb} MB`;
+    clearAttachments.classList.remove('hidden');
   };
 
-  const addSelectedFiles = (input) => {
-    const incoming = Array.from(input.files || []);
-    incoming.forEach((file) => {
-      const duplicate = selectedFiles.some((current) => current.name === file.name && current.size === file.size && current.lastModified === file.lastModified);
-      if (!duplicate) selectedFiles.push(file);
-    });
+  attachments.addEventListener('change', updateAttachmentSummary);
+  clearAttachments.addEventListener('click', () => {
+    attachments.value = '';
     updateAttachmentSummary();
-    closeSheet();
-  };
-
-  openAttachmentMenu.addEventListener('click', () => {
-    attachmentSheet.hidden = false;
   });
-  closeAttachmentMenu.addEventListener('click', closeSheet);
-  attachmentSheet.addEventListener('click', (event) => {
-    if (event.target === attachmentSheet) closeSheet();
-  });
-
-  document.querySelectorAll('[data-attachment-source]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const source = button.dataset.attachmentSource;
-      if (source === 'camera') cameraInput.click();
-      if (source === 'photo') photoInput.click();
-      if (source === 'document') documentInput.click();
-    });
-  });
-
-  cameraInput.addEventListener('change', () => addSelectedFiles(cameraInput));
-  photoInput.addEventListener('change', () => addSelectedFiles(photoInput));
-  documentInput.addEventListener('change', () => addSelectedFiles(documentInput));
 
   sector.addEventListener('change', updateOriginLabel);
   oxygenRequired.addEventListener('change', () => {
@@ -186,13 +149,19 @@
 
   const uploadFiles = async () => {
     const paths = [];
-    for (const file of selectedFiles) {
+    const files = Array.from(attachments.files || []);
+    for (const file of files) {
       if (file.size > 10 * 1024 * 1024) throw new Error(`O arquivo ${file.name} ultrapassa 10 MB.`);
       const extension = (file.name.split('.').pop() || 'bin').replace(/[^a-z0-9]/gi, '').toLowerCase();
       const path = `${session.user_id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
       const response = await fetch(app.apiUrl(`/storage/v1/object/transport-attachments/${encodeURIComponent(path)}`), {
         method: 'POST',
-        headers: { apikey: app.SUPABASE_KEY, Authorization: `Bearer ${session.access_token}`, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'false' },
+        headers: {
+          apikey: app.SUPABASE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'false'
+        },
         body: file
       });
       if (!response.ok) {
@@ -227,6 +196,7 @@
       const supportType = form.elements.supportType.value;
       const priority = form.elements.priority.value;
       if (!supportType || !priority) throw new Error('Selecione o tipo de transporte e a prioridade.');
+
       const attachmentPaths = await uploadFiles();
       const payload = {
         requester_id: session.user_id,
@@ -256,8 +226,7 @@
       if (!response.ok) throw new Error(data?.message || data?.error || 'Não foi possível registrar a solicitação.');
 
       form.reset();
-      selectedFiles = [];
-      [cameraInput, photoInput, documentInput].forEach((input) => { input.value = ''; });
+      attachments.value = '';
       document.querySelectorAll('.native-picker').forEach((picker) => { picker.value = ''; });
       updateAttachmentSummary();
       updateOriginLabel();
