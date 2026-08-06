@@ -32,22 +32,16 @@
     const normalized = String(rawMessage).trim().toLowerCase();
 
     if (normalized.includes('email not confirmed')) {
-      return 'Cadastro pendente de confirmação de e-mail. Acesse o e-mail informado no cadastro e confirme sua conta para liberar o acesso ao sistema.';
+      return 'Cadastro pendente de confirmação de e-mail. Procure o administrador do sistema.';
     }
     if (normalized.includes('invalid login credentials')) {
-      return 'E-mail ou senha incorretos. Confira os dados e tente novamente.';
-    }
-    if (normalized.includes('user already registered') || normalized.includes('already been registered')) {
-      return 'Já existe um cadastro com este e-mail. Faça o login ou procure o administrador do sistema.';
+      return 'E-mail, CPF ou senha incorretos. Confira os dados e tente novamente.';
     }
     if (normalized.includes('too many requests') || normalized.includes('rate limit')) {
       return 'Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente.';
     }
     if (normalized.includes('user not found')) {
-      return 'Usuário não encontrado. Verifique o e-mail informado ou realize o primeiro cadastro.';
-    }
-    if (normalized.includes('signup is disabled')) {
-      return 'Novos cadastros estão temporariamente indisponíveis. Procure o administrador do sistema.';
+      return 'Usuário não encontrado. Verifique o e-mail ou CPF informado.';
     }
 
     return rawMessage || 'Não foi possível entrar no sistema. Tente novamente.';
@@ -61,10 +55,52 @@
     submitButton.style.opacity = '';
   };
 
+  const pressSubmit = () => submitButton?.classList.add('is-pressed');
+  const releaseSubmit = () => {
+    if (submitButton?.getAttribute('aria-busy') !== 'true') {
+      window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 220);
+    }
+  };
+
+  ['pointerdown', 'touchstart'].forEach((type) => {
+    submitButton?.addEventListener(type, pressSubmit, { passive: true });
+  });
+  ['pointerup', 'pointercancel', 'touchend', 'touchcancel'].forEach((type) => {
+    submitButton?.addEventListener(type, releaseSubmit, { passive: true });
+  });
+
   const navigateWithFeedback = (link) => {
     if (!link) return;
     link.classList.add('is-pressed');
     window.setTimeout(() => window.location.assign(link.href), 150);
+  };
+
+  const resolveEmailFromCpf = async (cpfValue) => {
+    const digits = cpfValue.replace(/\D/g, '');
+    if (digits.length !== 11) {
+      throw new Error('Informe um CPF válido com 11 números.');
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/resolve_login_email`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({ login_cpf: digits })
+    });
+
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error('Não foi possível consultar o CPF. Tente novamente.');
+    }
+
+    if (!data || typeof data !== 'string') {
+      throw new Error('CPF não localizado entre os usuários aprovados.');
+    }
+
+    return data.trim().toLowerCase();
   };
 
   togglePasswordButton?.addEventListener('click', () => {
@@ -79,8 +115,8 @@
     message.style.display = 'none';
 
     if (!loginForm.checkValidity()) {
-      submitButton?.classList.add('is-pressed');
-      window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 180);
+      pressSubmit();
+      releaseSubmit();
       loginForm.reportValidity();
       return;
     }
@@ -88,21 +124,17 @@
     const identifier = identifierInput?.value.trim() || '';
     const password = passwordInput?.value || '';
 
-    if (!identifier.includes('@')) {
-      submitButton?.classList.add('is-pressed');
-      window.setTimeout(() => submitButton?.classList.remove('is-pressed'), 180);
-      showMessage('Neste momento, entre usando o e-mail cadastrado. O acesso por CPF será ativado depois.');
-      identifierInput?.focus();
-      return;
-    }
-
     setLoading(true);
 
     try {
+      const loginEmail = identifier.includes('@')
+        ? identifier.toLowerCase()
+        : await resolveEmailFromCpf(identifier);
+
       const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
         method: 'POST',
         headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: identifier, password })
+        body: JSON.stringify({ email: loginEmail, password })
       });
       const authData = await authResponse.json();
       if (!authResponse.ok) {
@@ -119,12 +151,16 @@
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${accessToken}`, Accept: 'application/json' } }
       );
       const profiles = await profileResponse.json();
-      if (!profileResponse.ok || !Array.isArray(profiles) || profiles.length === 0) throw new Error('Seu perfil não foi localizado. Procure o administrador do sistema.');
+      if (!profileResponse.ok || !Array.isArray(profiles) || profiles.length === 0) {
+        throw new Error('Seu perfil não foi localizado. Procure o administrador do sistema.');
+      }
 
       const profile = profiles[0];
       if (profile.status === 'pendente') throw new Error('Seu cadastro ainda está aguardando aprovação do administrador.');
       if (profile.status === 'bloqueado') throw new Error('Seu acesso está bloqueado. Procure o administrador do sistema.');
-      if (profile.status !== 'aprovado' || !profile.authorized_access) throw new Error('Seu perfil ainda não possui autorização de acesso.');
+      if (profile.status !== 'aprovado' || !profile.authorized_access) {
+        throw new Error('Seu perfil ainda não possui autorização de acesso.');
+      }
 
       saveSession({
         access_token: accessToken,
@@ -137,10 +173,11 @@
       });
 
       showMessage('Acesso autorizado. Abrindo a tela de comando…', true);
-      window.setTimeout(() => window.location.replace('./comando.html'), 180);
+      window.setTimeout(() => window.location.replace('./comando.html'), 350);
     } catch (error) {
       showMessage(error instanceof Error ? error.message : 'Não foi possível entrar.');
       setLoading(false);
+      releaseSubmit();
     }
   });
 
