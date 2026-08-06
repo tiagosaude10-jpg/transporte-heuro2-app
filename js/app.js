@@ -27,6 +27,31 @@
     message.style.display = 'block';
   };
 
+  const translateAuthError = (rawMessage = '') => {
+    const normalized = String(rawMessage).trim().toLowerCase();
+
+    if (normalized.includes('email not confirmed')) {
+      return 'Cadastro pendente de confirmação de e-mail. Acesse o e-mail informado no cadastro e confirme sua conta para liberar o acesso ao sistema.';
+    }
+    if (normalized.includes('invalid login credentials')) {
+      return 'E-mail ou senha incorretos. Confira os dados e tente novamente.';
+    }
+    if (normalized.includes('user already registered') || normalized.includes('already been registered')) {
+      return 'Já existe um cadastro com este e-mail. Faça o login ou procure o administrador do sistema.';
+    }
+    if (normalized.includes('too many requests') || normalized.includes('rate limit')) {
+      return 'Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente.';
+    }
+    if (normalized.includes('user not found')) {
+      return 'Usuário não encontrado. Verifique o e-mail informado ou realize o primeiro cadastro.';
+    }
+    if (normalized.includes('signup is disabled')) {
+      return 'Novos cadastros estão temporariamente indisponíveis. Procure o administrador do sistema.';
+    }
+
+    return rawMessage || 'Não foi possível entrar no sistema. Tente novamente.';
+  };
+
   const setLoading = (loading) => {
     if (!submitButton) return;
     submitButton.disabled = loading;
@@ -73,7 +98,10 @@
         body: JSON.stringify({ email: identifier, password })
       });
       const authData = await authResponse.json();
-      if (!authResponse.ok) throw new Error(authData?.error_description || authData?.msg || 'E-mail ou senha incorretos.');
+      if (!authResponse.ok) {
+        const technicalMessage = authData?.error_description || authData?.msg || authData?.message || '';
+        throw new Error(translateAuthError(technicalMessage));
+      }
 
       const userId = authData?.user?.id;
       const accessToken = authData?.access_token;
