@@ -4,7 +4,7 @@
   const loadConfig = () => new Promise((resolve, reject) => {
     if (window.HEURO) return resolve(window.HEURO);
     const script = document.createElement('script');
-    script.src = 'js/config.js';
+    script.src = 'js/config.js?v=20260806.8';
     script.onload = () => window.HEURO ? resolve(window.HEURO) : reject(new Error('Configuração não carregada.'));
     script.onerror = () => reject(new Error('Não foi possível carregar a configuração do aplicativo.'));
     document.head.appendChild(script);
@@ -19,6 +19,12 @@
     const transportCompanyField = document.getElementById('transportCompanyField');
     const transportCompany = document.getElementById('transportCompany');
     const accessTypeField = document.getElementById('accessTypeField');
+    const accessOptions = document.querySelector('.access-options');
+
+    accessOptions?.querySelectorAll('input[name="accessType"]').forEach((input) => {
+      if (!['solicitante', 'executante'].includes(input.value)) input.closest('.access-option')?.remove();
+    });
+
     const cpf = document.getElementById('cpf');
     const phone = document.getElementById('phone');
     const birthDateText = document.getElementById('birthDateText');
@@ -41,7 +47,10 @@
 
       if (heuroSectorField) heuroSectorField.hidden = !isHeuro;
       if (transportCompanyField) transportCompanyField.hidden = !isCompany;
-      if (accessTypeField) accessTypeField.hidden = isAdmin;
+      if (accessTypeField) {
+        accessTypeField.hidden = isAdmin;
+        accessTypeField.style.display = isAdmin ? 'none' : '';
+      }
 
       if (heuroSector) {
         heuroSector.required = isHeuro;
