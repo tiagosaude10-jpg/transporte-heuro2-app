@@ -13,9 +13,11 @@
     .top{max-width:720px;margin:auto;color:#fff;display:flex;align-items:center;gap:12px;padding:4px 2px 18px}
     .back{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.16);color:#fff;border-radius:12px;min-width:48px;height:44px;font-size:24px}
     .top h1{font-size:1.25rem;margin:0}.top p{margin:3px 0 0;font-size:.9rem;opacity:.9}
-    .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16)}
-    .grid{display:grid;gap:15px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    label{display:grid;gap:7px;font-weight:750;font-size:.92rem}input,select,textarea{width:100%;border:1px solid #c7d7eb;border-radius:12px;padding:13px 14px;font:inherit;color:#18395f;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}textarea{min-height:96px;resize:vertical}
+    .card{max-width:720px;margin:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 16px 40px rgba(16,54,105,.16);overflow:hidden}
+    .grid{display:grid;gap:15px;min-width:0}.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0}.row>*{min-width:0}
+    label{display:grid;gap:7px;min-width:0;font-weight:750;font-size:.92rem}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;border:1px solid #c7d7eb;border-radius:12px;padding:13px 14px;font:inherit;color:#18395f;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:#1474cf;box-shadow:0 0 0 3px rgba(20,116,207,.13)}textarea{min-height:96px;resize:vertical}
+    input[type="date"],input[type="time"]{width:100%;max-width:100%;min-width:0;height:48px;padding:0 12px;font-size:16px;line-height:48px;overflow:hidden}
+    input[type="date"]::-webkit-date-and-time-value,input[type="time"]::-webkit-date-and-time-value{text-align:left;margin:0}
     .check{display:flex;align-items:center;gap:10px;background:#f5f9fe;border:1px solid #d8e5f4;border-radius:12px;padding:12px}.check input{width:22px;height:22px}
     .hint{font-size:.8rem;color:#617a9b;font-weight:500}.hidden{display:none!important}
     .actions{display:grid;gap:10px;margin-top:8px}.primary,.secondary{min-height:52px;border:0;border-radius:14px;font-weight:850;font-size:1rem}.primary{background:#0a55c4;color:#fff}.secondary{background:#e7f0fb;color:#174d8c}
@@ -69,7 +71,7 @@
       </div>
     </form>
   </main>
-  <script src="js/config.js?v=20260806.26"></script>
-  <script src="js/solicitar-transporte.js?v=20260806.26" defer></script>
+  <script src="js/config.js?v=20260806.28"></script>
+  <script src="js/solicitar-transporte.js?v=20260806.28" defer></script>
 </body>
 </html>
