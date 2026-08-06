@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '20260806.44';
+  const APP_VERSION = '20260806.45';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
@@ -27,16 +27,12 @@
   const authenticatedHeaders = (token, includeJson = true) => ({ apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, Accept: 'application/json', ...(includeJson ? { 'Content-Type': 'application/json' } : {}) });
   const jsonHeaders = () => ({ apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Accept: 'application/json' });
   window.HEURO = Object.freeze({ APP_VERSION, SUPABASE_URL, SUPABASE_KEY, SESSION_KEY, readSession, saveSession, clearSession, clearLegacyCaches, apiUrl, publicHeaders, authenticatedHeaders, jsonHeaders });
+
   if (/solicitar-transporte\.html$/i.test(location.pathname)) {
     const pickerFix = document.createElement('script');
     pickerFix.src = `js/picker-fix.js?v=${APP_VERSION}`;
     pickerFix.defer = false;
     document.head.appendChild(pickerFix);
-
-    const locationAttachments = document.createElement('script');
-    locationAttachments.src = `js/solicitacao-local-anexos.js?v=${APP_VERSION}`;
-    locationAttachments.defer = false;
-    document.head.appendChild(locationAttachments);
 
     const pdfLoader = document.createElement('script');
     pdfLoader.src = `js/pdf-loader.js?v=${APP_VERSION}`;
