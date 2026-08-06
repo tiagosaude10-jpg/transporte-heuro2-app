@@ -3,6 +3,7 @@
 
   const sector = document.getElementById('originSector');
   const locationInput = document.getElementById('originLocation');
+  const locationLabel = document.getElementById('originLocationLabel');
   const attachments = document.getElementById('attachments');
   const attachmentSummary = document.getElementById('attachmentSummary');
   const clearAttachments = document.getElementById('clearAttachments');
@@ -11,6 +12,16 @@
   if (!sector || !locationInput) return;
 
   const isBoxSector = () => ['UTI', 'Sala Vermelha'].includes(sector.value);
+
+  const setLabelText = (text) => {
+    if (!locationLabel) return;
+    for (const node of locationLabel.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        node.textContent = text;
+        return;
+      }
+    }
+  };
 
   const formatLocation = () => {
     const digits = String(locationInput.value || '').replace(/\D/g, '');
@@ -24,17 +35,23 @@
     locationInput.setAttribute('spellcheck', 'false');
 
     if (box) {
-      locationInput.maxLength = 3;
-      locationInput.pattern = '[0-9]{1,3}';
-      locationInput.placeholder = 'NÚMERO DO BOX';
-      locationInput.value = digits.slice(0, 3);
+      setLabelText('Box');
+      locationInput.maxLength = 2;
+      locationInput.pattern = '[0-9]{2}';
+      locationInput.placeholder = '00';
+      locationInput.setAttribute('aria-label', 'Box com dois dígitos');
+      locationInput.value = digits.slice(0, 2);
     } else {
+      setLabelText('Enfermaria / Leito');
       locationInput.maxLength = 5;
       locationInput.pattern = '[0-9]{2}/[0-9]{2}';
       locationInput.placeholder = '00/00';
+      locationInput.setAttribute('aria-label', 'Enfermaria e leito no formato dois dígitos barra dois dígitos');
       const value = digits.slice(0, 4);
       locationInput.value = value.length <= 2 ? value : `${value.slice(0, 2)}/${value.slice(2)}`;
     }
+
+    locationInput.setCustomValidity('');
   };
 
   const configureLocation = (clear = false) => {
@@ -43,7 +60,9 @@
   };
 
   sector.addEventListener('change', () => configureLocation(true), true);
+  locationInput.addEventListener('focus', formatLocation, true);
   locationInput.addEventListener('input', formatLocation, true);
+  locationInput.addEventListener('change', formatLocation, true);
   locationInput.addEventListener('paste', () => setTimeout(formatLocation, 0), true);
   locationInput.addEventListener('beforeinput', (event) => {
     if (event.inputType?.startsWith('delete')) return;
@@ -53,6 +72,15 @@
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     const allowed = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter'];
     if (!allowed.includes(event.key) && !/^\d$/.test(event.key)) event.preventDefault();
+  }, true);
+  locationInput.addEventListener('blur', () => {
+    formatLocation();
+    const value = locationInput.value;
+    if (!value) return;
+    const valid = isBoxSector() ? /^\d{2}$/.test(value) : /^\d{2}\/\d{2}$/.test(value);
+    locationInput.setCustomValidity(valid ? '' : isBoxSector()
+      ? 'Informe o box com dois dígitos.'
+      : 'Informe enfermaria e leito no formato 00/00.');
   }, true);
 
   configureLocation(false);
