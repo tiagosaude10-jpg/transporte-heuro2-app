@@ -57,6 +57,13 @@
       return;
     }
 
+    const commandUserName = document.getElementById('commandUserName');
+    const displayName = String(session.display_name || '').trim();
+    if (commandUserName) {
+      commandUserName.textContent = displayName ? `${displayName}!` : '';
+      commandUserName.title = displayName;
+    }
+
     const permissionDialog = document.getElementById('permissionDialog');
     const permissionClose = document.getElementById('permissionClose');
     const permissionMessage = document.getElementById('permissionMessage');
