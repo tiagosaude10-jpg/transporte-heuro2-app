@@ -1,32 +1,171 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#073d9d">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Painel do Administrador — HEURO</title>
-  <style>
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#edf4ff;color:#0b347d}.page{min-height:100vh;background:linear-gradient(180deg,#073d9d 0,#1768c2 310px,#edf4ff 310px);padding:env(safe-area-inset-top) 16px calc(30px + env(safe-area-inset-bottom))}.header{max-width:760px;margin:auto;color:#fff;display:grid;grid-template-columns:58px 70px 1fr;gap:14px;align-items:center;padding:18px 2px 32px}.back{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.3);color:#fff;text-decoration:none;font-size:34px;font-weight:700}.logo{width:70px;height:70px;border-radius:18px;object-fit:cover}.header p{margin:0;color:#caff56;font-weight:900;letter-spacing:.15em;font-size:.78rem}.header h1{margin:4px 0 5px;font-size:2rem;line-height:1.03}.header span{font-size:.96rem;line-height:1.4;opacity:.94}.panel{max-width:760px;margin:auto;background:#fff;border-radius:28px;padding:20px;box-shadow:0 20px 50px rgba(17,60,120,.18)}.panel-head{margin:0 0 17px}.panel-head h2{margin:0;font-size:1.3rem}.panel-head p{margin:6px 0 0;color:#6b7f9f;line-height:1.4}.menu{display:grid;gap:13px}.menu-button{position:relative;display:grid;grid-template-columns:58px 1fr 28px;gap:14px;align-items:center;min-height:92px;padding:14px 16px;border:1px solid #dce8f7;border-radius:20px;background:#fff;color:#0b347d;text-align:left;text-decoration:none;box-shadow:0 7px 20px rgba(20,75,145,.08);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,filter .12s ease;overflow:hidden;-webkit-tap-highlight-color:transparent}.menu-button:active,.menu-button.is-pressed{transform:scale(.975);box-shadow:0 3px 10px rgba(20,75,145,.14),inset 0 0 0 3px rgba(31,111,220,.22);filter:brightness(.98)}.menu-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:17px;font-size:29px}.menu-copy strong{display:block;font-size:1.05rem}.menu-copy small{display:block;margin-top:5px;color:#6980a2;font-size:.87rem;line-height:1.35}.arrow{font-size:28px;font-weight:900}.approval .menu-icon{background:#fff1d7}.whatsapp .menu-icon{background:#e4f9eb}.users .menu-icon{background:#e8f1ff}.settings .menu-icon{background:#eee9ff}.teams .menu-icon{background:#e5f8fb}.history .menu-icon{background:#fff0e8}.reports .menu-icon{background:#edf8e7}.badge{position:absolute;right:14px;top:10px;min-width:26px;height:26px;padding:0 8px;border-radius:13px;background:#e52d3b;color:#fff;font-size:.78rem;font-weight:900;display:none;place-items:center}.badge.show{display:grid}.dialog{position:fixed;inset:0;display:none;place-items:center;padding:24px;background:rgba(3,18,58,.58);z-index:10}.dialog.show{display:grid}.dialog-box{width:min(100%,390px);padding:24px;border-radius:22px;background:#fff;text-align:center;box-shadow:0 22px 55px rgba(0,0,0,.28)}.dialog-box h2{margin:0 0 10px}.dialog-box p{margin:0 0 20px;color:#637898;line-height:1.5}.dialog-box button{width:100%;min-height:52px;border:0;border-radius:14px;background:#0a55c4;color:#fff;font:inherit;font-weight:900}@media(max-width:480px){.page{padding-left:10px;padding-right:10px}.header{grid-template-columns:52px 62px 1fr;gap:10px}.back{width:52px;height:52px}.logo{width:62px;height:62px}.header h1{font-size:1.7rem}.panel{padding:15px}.menu-button{grid-template-columns:52px 1fr 22px;padding:12px}.menu-icon{width:52px;height:52px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#073d9d">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Painel do Administrador — HEURO</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#edf4ff;color:#0b347d}
+button,a{-webkit-tap-highlight-color:transparent}
+.page{min-height:100vh;background:linear-gradient(180deg,#073d9d 0,#1768c2 360px,#edf4ff 360px);padding:env(safe-area-inset-top) 14px calc(30px + env(safe-area-inset-bottom))}
+.header{max-width:760px;margin:auto;color:#fff;display:grid;grid-template-columns:58px 70px 1fr;gap:14px;align-items:center;padding:18px 2px 24px}
+.back{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.3);color:#fff;text-decoration:none;font-size:34px;font-weight:700}
+.logo{width:70px;height:70px;border-radius:18px;object-fit:cover}
+.header p{margin:0;color:#caff56;font-weight:900;letter-spacing:.15em;font-size:.78rem}.header h1{margin:4px 0 5px;font-size:2rem;line-height:1.03}.header span{font-size:.96rem;line-height:1.4;opacity:.94}
+.metrics{max-width:760px;margin:0 auto 18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{min-height:112px;border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:14px;background:rgba(255,255,255,.96);box-shadow:0 12px 28px rgba(4,44,105,.16)}
+.metric-wide{grid-column:1/-1}.metric-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.metric-icon{font-size:25px}.metric strong{display:block;margin-top:8px;font-size:1.7rem;line-height:1;color:#0b347d}.metric small{display:block;margin-top:6px;color:#657a9c;font-weight:700;line-height:1.3}.metric.alert strong{color:#bd2733}.fleet-lines{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.fleet-pill{padding:8px;border-radius:12px;background:#edf5ff;font-size:.82rem;font-weight:900}.fleet-pill.danger{background:#feecee;color:#a6242e}
+.refresh-row{max-width:760px;margin:0 auto 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action-button{min-height:50px;border:0;border-radius:15px;font:inherit;font-weight:900;font-size:.92rem;cursor:pointer;transition:transform .12s ease,filter .12s ease,box-shadow .12s ease}
+.action-button:active,.action-button.is-pressed{transform:scale(.97);filter:brightness(.95);box-shadow:inset 0 0 0 3px rgba(255,255,255,.34)}
+.refresh{background:#0a55c4;color:#fff}.report{background:#159447;color:#fff}
+.alert-panel{max-width:760px;margin:0 auto 18px;padding:15px;border-radius:18px;background:#fff;border:1px solid #dce8f7;box-shadow:0 8px 22px rgba(20,75,145,.09)}
+.alert-panel h2{margin:0 0 10px;font-size:1rem}.alerts{display:grid;gap:8px}.alert-item{padding:10px 12px;border-radius:12px;background:#fff5e5;color:#7a4c00;font-size:.88rem;font-weight:750;line-height:1.35}.alert-item.danger{background:#feecee;color:#9e2530}.alert-item.ok{background:#e9f8ef;color:#17663a}
+.panel{max-width:760px;margin:auto;background:#fff;border-radius:28px;padding:20px;box-shadow:0 20px 50px rgba(17,60,120,.18)}
+.panel-head{margin:0 0 17px}.panel-head h2{margin:0;font-size:1.3rem}.panel-head p{margin:6px 0 0;color:#6b7f9f;line-height:1.4}
+.menu{display:grid;gap:13px}.menu-button{position:relative;display:grid;grid-template-columns:58px 1fr 28px;gap:14px;align-items:center;min-height:92px;padding:14px 16px;border:1px solid #dce8f7;border-radius:20px;background:#fff;color:#0b347d;text-align:left;text-decoration:none;box-shadow:0 7px 20px rgba(20,75,145,.08);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,filter .12s ease;overflow:hidden;cursor:pointer}
+.menu-button:active,.menu-button.is-pressed{transform:scale(.975);box-shadow:0 3px 10px rgba(20,75,145,.14),inset 0 0 0 3px rgba(31,111,220,.22);filter:brightness(.98)}
+.menu-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:17px;font-size:29px}.menu-copy strong{display:block;font-size:1.05rem}.menu-copy small{display:block;margin-top:5px;color:#6980a2;font-size:.87rem;line-height:1.35}.arrow{font-size:28px;font-weight:900}
+.approval .menu-icon{background:#fff1d7}.whatsapp .menu-icon{background:#e4f9eb}.users .menu-icon{background:#e8f1ff}.settings .menu-icon{background:#eee9ff}.teams .menu-icon{background:#e5f8fb}.history .menu-icon{background:#fff0e8}.reports .menu-icon{background:#edf8e7}
+.badge{position:absolute;right:14px;top:10px;min-width:26px;height:26px;padding:0 8px;border-radius:13px;background:#e52d3b;color:#fff;font-size:.78rem;font-weight:900;display:none;place-items:center}.badge.show{display:grid}
+.dialog{position:fixed;inset:0;display:none;place-items:center;padding:24px;background:rgba(3,18,58,.58);z-index:10}.dialog.show{display:grid}.dialog-box{width:min(100%,390px);padding:24px;border-radius:22px;background:#fff;text-align:center;box-shadow:0 22px 55px rgba(0,0,0,.28)}.dialog-box h2{margin:0 0 10px}.dialog-box p{margin:0 0 20px;color:#637898;line-height:1.5}.dialog-box button{width:100%;min-height:52px;border:0;border-radius:14px;background:#0a55c4;color:#fff;font:inherit;font-weight:900}
+@media(max-width:480px){.page{padding-left:10px;padding-right:10px}.header{grid-template-columns:52px 62px 1fr;gap:10px}.back{width:52px;height:52px}.logo{width:62px;height:62px}.header h1{font-size:1.7rem}.panel{padding:15px}.menu-button{grid-template-columns:52px 1fr 22px;padding:12px}.menu-icon{width:52px;height:52px}.metric{min-height:105px;padding:12px}}
+</style>
 </head>
 <body>
 <main class="page">
-  <header class="header"><a class="back" href="./comando.html" aria-label="Voltar">←</a><img class="logo" src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt=""><div><p>PAINEL DO ADMINISTRADOR</p><h1>Central de gerenciamento</h1><span>Escolha a função administrativa que deseja acessar.</span></div></header>
-  <section class="panel"><div class="panel-head"><h2>Funções administrativas</h2><p>Cada função possui uma área própria, sem misturar configurações.</p></div><nav class="menu" aria-label="Funções administrativas">
-    <a class="menu-button approval" href="./admin-cadastros.html"><span class="menu-icon">✅</span><span class="menu-copy"><strong>Aprovação de cadastros</strong><small>Analisar, aprovar, rejeitar, bloquear e reativar usuários.</small></span><span class="arrow">›</span><span id="pendingBadge" class="badge"></span></a>
-    <a class="menu-button whatsapp" href="./admin-whatsapp-config.html"><span class="menu-icon">📱</span><span class="menu-copy"><strong>WhatsApp dos transportes</strong><small>Cadastrar contatos do Suporte Básico e Avançado / UTI.</small></span><span class="arrow">›</span></a>
-    <button class="menu-button users future" type="button" data-title="Usuários"><span class="menu-icon">👥</span><span class="menu-copy"><strong>Usuários</strong><small>Consultar perfis e gerenciar permissões de acesso.</small></span><span class="arrow">›</span></button>
-    <button class="menu-button settings future" type="button" data-title="Configurações do sistema"><span class="menu-icon">⚙️</span><span class="menu-copy"><strong>Configurações do sistema</strong><small>Definir parâmetros gerais do aplicativo.</small></span><span class="arrow">›</span></button>
-    <button class="menu-button teams future" type="button" data-title="Equipes de transporte"><span class="menu-icon">🚑</span><span class="menu-copy"><strong>Equipes de transporte</strong><small>Cadastrar e organizar profissionais e equipes.</small></span><span class="arrow">›</span></button>
-    <button class="menu-button history future" type="button" data-title="Histórico administrativo"><span class="menu-icon">🕘</span><span class="menu-copy"><strong>Histórico administrativo</strong><small>Consultar ações e alterações realizadas no painel.</small></span><span class="arrow">›</span></button>
-    <button class="menu-button reports future" type="button" data-title="Relatórios"><span class="menu-icon">📊</span><span class="menu-copy"><strong>Relatórios</strong><small>Acompanhar solicitações, produtividade e indicadores.</small></span><span class="arrow">›</span></button>
-  </nav></section>
+<header class="header"><a class="back" href="./comando.html?v=20260806.49" aria-label="Voltar">←</a><img class="logo" src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt=""><div><p>PAINEL DO ADMINISTRADOR</p><h1>Central de gerenciamento</h1><span>Visão operacional e funções administrativas.</span></div></header>
+
+<section class="metrics" aria-label="Indicadores operacionais">
+<article class="metric"><div class="metric-top"><span>Cadastros pendentes</span><span class="metric-icon">👥</span></div><strong id="pendingUsers">0</strong><small>Aguardando análise</small></article>
+<article class="metric"><div class="metric-top"><span>Em andamento</span><span class="metric-icon">🚑</span></div><strong id="inProgress">0</strong><small>Transportes em execução</small></article>
+<article class="metric metric-wide"><div class="metric-top"><span>Ambulâncias disponíveis</span><span class="metric-icon">🟢</span></div><strong id="availableTotal">3/3</strong><div class="fleet-lines"><span id="basicAvailability" class="fleet-pill">Básicas: 2/2</span><span id="utiAvailability" class="fleet-pill">UTI: 1/1</span></div></article>
+<article class="metric"><div class="metric-top"><span>Fila de espera</span><span class="metric-icon">⏳</span></div><strong id="waitingQueue">0</strong><small>Solicitações pendentes</small></article>
+<article class="metric alert"><div class="metric-top"><span>Alertas do sistema</span><span class="metric-icon">⚠️</span></div><strong id="alertCount">0</strong><small>Conflitos e indisponibilidades</small></article>
+</section>
+
+<section class="refresh-row"><button id="refreshDashboard" class="action-button refresh" type="button">↻ Atualizar painel</button><button id="generateFleetReport" class="action-button report" type="button">📊 Gerar relatório de uso</button></section>
+<section class="alert-panel"><h2>Alertas operacionais</h2><div id="alertsList" class="alerts"><div class="alert-item ok">Carregando dados operacionais...</div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>Funções administrativas</h2><p>Cada função possui uma área própria, sem misturar configurações.</p></div><nav class="menu" aria-label="Funções administrativas">
+<a class="menu-button approval" href="./admin-cadastros.html?v=20260806.49"><span class="menu-icon">✅</span><span class="menu-copy"><strong>Aprovação de cadastros</strong><small>Analisar, aprovar, rejeitar, bloquear e reativar usuários.</small></span><span class="arrow">›</span><span id="pendingBadge" class="badge"></span></a>
+<a class="menu-button whatsapp" href="./admin-whatsapp-config.html?v=20260806.49"><span class="menu-icon">📱</span><span class="menu-copy"><strong>WhatsApp dos transportes</strong><small>Cadastrar contatos do Suporte Básico e Avançado / UTI.</small></span><span class="arrow">›</span></a>
+<button class="menu-button users future" type="button" data-title="Usuários"><span class="menu-icon">👥</span><span class="menu-copy"><strong>Usuários</strong><small>Consultar perfis e gerenciar permissões de acesso.</small></span><span class="arrow">›</span></button>
+<button class="menu-button settings future" type="button" data-title="Configurações do sistema"><span class="menu-icon">⚙️</span><span class="menu-copy"><strong>Configurações do sistema</strong><small>Definir parâmetros gerais do aplicativo.</small></span><span class="arrow">›</span></button>
+<button class="menu-button teams future" type="button" data-title="Equipes de transporte"><span class="menu-icon">🚑</span><span class="menu-copy"><strong>Equipes de transporte</strong><small>Cadastrar e organizar profissionais e equipes.</small></span><span class="arrow">›</span></button>
+<button class="menu-button history future" type="button" data-title="Histórico administrativo"><span class="menu-icon">🕘</span><span class="menu-copy"><strong>Histórico administrativo</strong><small>Consultar ações e alterações realizadas no painel.</small></span><span class="arrow">›</span></button>
+<button id="reportsButton" class="menu-button reports" type="button"><span class="menu-icon">📊</span><span class="menu-copy"><strong>Relatórios</strong><small>Gerar o relatório atual de uso da frota e indicadores.</small></span><span class="arrow">›</span></button>
+</nav></section>
 </main>
 <div id="dialog" class="dialog" role="dialog" aria-modal="true"><div class="dialog-box"><h2 id="dialogTitle">Função</h2><p>Esta função já está posicionada no painel e será ativada na etapa correspondente.</p><button id="dialogClose" type="button">Entendi</button></div></div>
-<script src="js/config.js?v=20260806.48"></script>
+<script src="js/config.js?v=20260806.49"></script>
 <script>
-(() => { const app=window.HEURO; const session=app?.readSession?.(); if(!session?.access_token||session.access!=='administrador_geral'){location.replace('./comando.html');return;} document.querySelectorAll('.menu-button').forEach(b=>{const press=()=>{b.classList.add('is-pressed');setTimeout(()=>b.classList.remove('is-pressed'),160)};b.addEventListener('pointerdown',press);}); const dialog=document.getElementById('dialog');document.querySelectorAll('.future').forEach(b=>b.addEventListener('click',()=>{document.getElementById('dialogTitle').textContent=b.dataset.title;dialog.classList.add('show')}));document.getElementById('dialogClose').addEventListener('click',()=>dialog.classList.remove('show'));dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.classList.remove('show')}); fetch(app.apiUrl('/rest/v1/profiles?status=eq.pendente&select=id'),{headers:app.authenticatedHeaders(session.access_token)}).then(r=>r.json()).then(d=>{if(Array.isArray(d)&&d.length){const badge=document.getElementById('pendingBadge');badge.textContent=d.length>99?'99+':d.length;badge.classList.add('show')}}).catch(()=>{});})();
+(() => {
+'use strict';
+const app=window.HEURO, session=app?.readSession?.();
+if(!session?.access_token||session.access!=='administrador_geral'){location.replace('./comando.html');return;}
+const CAPACITY={basico:2,avancado_uti:1};
+const ACTIVE=new Set(['aceito','aceita','em_andamento','em andamento','executando','em_transporte','em transporte']);
+const WAITING=new Set(['pendente','solicitado','aguardando']);
+let snapshot={requests:[],pendingUsers:0,alerts:[],generatedAt:new Date()};
+
+const press=(el)=>{el.classList.add('is-pressed');setTimeout(()=>el.classList.remove('is-pressed'),160)};
+document.querySelectorAll('.menu-button,.action-button').forEach(b=>b.addEventListener('pointerdown',()=>press(b)));
+const dialog=document.getElementById('dialog');
+document.querySelectorAll('.future').forEach(b=>b.addEventListener('click',()=>{document.getElementById('dialogTitle').textContent=b.dataset.title;dialog.classList.add('show')}));
+document.getElementById('dialogClose').addEventListener('click',()=>dialog.classList.remove('show'));
+dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.classList.remove('show')});
+
+const auth=()=>app.authenticatedHeaders(session.access_token);
+const normalizeStatus=s=>String(s||'').trim().toLowerCase();
+const escapeCsv=v=>`"${String(v??'').replaceAll('"','""')}"`;
+
+async function fetchJson(path){
+ const r=await fetch(app.apiUrl(path),{headers:auth()});
+ const data=await r.json().catch(()=>[]);
+ if(!r.ok) throw new Error(data?.message||'Falha ao carregar dados.');
+ return Array.isArray(data)?data:[];
+}
+function buildAlerts(requests, activeByType, waitingByType){
+ const alerts=[];
+ if(activeByType.basico>=CAPACITY.basico) alerts.push({level:'danger',text:'Todas as ambulâncias básicas estão em uso.'});
+ if(activeByType.avancado_uti>=CAPACITY.avancado_uti) alerts.push({level:'danger',text:'A ambulância UTI está em uso.'});
+ if(waitingByType.basico>0 && activeByType.basico>=CAPACITY.basico) alerts.push({level:'danger',text:`${waitingByType.basico} solicitação(ões) básica(s) aguardando sem viatura disponível.`});
+ if(waitingByType.avancado_uti>0 && activeByType.avancado_uti>=CAPACITY.avancado_uti) alerts.push({level:'danger',text:`${waitingByType.avancado_uti} solicitação(ões) UTI aguardando sem viatura disponível.`});
+ const emergency=requests.filter(r=>WAITING.has(normalizeStatus(r.status))&&r.priority==='emergencia').length;
+ if(emergency) alerts.push({level:'danger',text:`${emergency} emergência(s) aguardando atendimento prioritário.`});
+ const slots=new Map();
+ requests.filter(r=>WAITING.has(normalizeStatus(r.status))&&r.transport_date&&r.destination_time).forEach(r=>{
+   const key=`${r.support_type}|${r.transport_date}|${String(r.destination_time).slice(0,5)}`;
+   slots.set(key,(slots.get(key)||0)+1);
+ });
+ for(const [key,count] of slots){
+   const [type,date,time]=key.split('|'), cap=CAPACITY[type]||0;
+   if(cap && count>cap) alerts.push({level:'danger',text:`Conflito de horário: ${count} solicitações ${type==='basico'?'Básicas':'UTI'} em ${date.split('-').reverse().join('/')} às ${time}, acima da capacidade de ${cap}.`});
+ }
+ if(!alerts.length) alerts.push({level:'ok',text:'Nenhum conflito operacional identificado com os dados atuais.'});
+ return alerts;
+}
+function render(){
+ const requests=snapshot.requests;
+ const active={basico:0,avancado_uti:0}, waiting={basico:0,avancado_uti:0};
+ requests.forEach(r=>{const s=normalizeStatus(r.status);if(ACTIVE.has(s))active[r.support_type]=(active[r.support_type]||0)+1;if(WAITING.has(s))waiting[r.support_type]=(waiting[r.support_type]||0)+1});
+ const inProgress=active.basico+active.avancado_uti, queue=waiting.basico+waiting.avancado_uti;
+ const availBasic=Math.max(0,CAPACITY.basico-active.basico), availUti=Math.max(0,CAPACITY.avancado_uti-active.avancado_uti);
+ snapshot.alerts=buildAlerts(requests,active,waiting);
+ document.getElementById('pendingUsers').textContent=snapshot.pendingUsers;
+ document.getElementById('inProgress').textContent=inProgress;
+ document.getElementById('waitingQueue').textContent=queue;
+ document.getElementById('availableTotal').textContent=`${availBasic+availUti}/3`;
+ const bp=document.getElementById('basicAvailability'), up=document.getElementById('utiAvailability');
+ bp.textContent=`Básicas: ${availBasic}/2`;up.textContent=`UTI: ${availUti}/1`;
+ bp.classList.toggle('danger',availBasic===0);up.classList.toggle('danger',availUti===0);
+ document.getElementById('alertCount').textContent=snapshot.alerts.filter(a=>a.level==='danger').length;
+ const badge=document.getElementById('pendingBadge');badge.textContent=snapshot.pendingUsers>99?'99+':snapshot.pendingUsers;badge.classList.toggle('show',snapshot.pendingUsers>0);
+ document.getElementById('alertsList').innerHTML=snapshot.alerts.map(a=>`<div class="alert-item ${a.level}">${a.text}</div>`).join('');
+}
+async function loadDashboard(){
+ const btn=document.getElementById('refreshDashboard');btn.disabled=true;btn.textContent='Atualizando...';
+ try{
+   const [profiles,requests]=await Promise.all([
+    fetchJson('/rest/v1/profiles?status=eq.pendente&select=id'),
+    fetchJson('/rest/v1/transport_requests?select=protocol,status,support_type,priority,transport_date,destination_time,patient_name,destination,created_at&order=created_at.desc')
+   ]);
+   snapshot={requests,pendingUsers:profiles.length,alerts:[],generatedAt:new Date()};render();
+ }catch(e){document.getElementById('alertsList').innerHTML=`<div class="alert-item danger">${e.message}</div>`}
+ finally{btn.disabled=false;btn.textContent='↻ Atualizar painel'}
+}
+function generateReport(){
+ const requests=snapshot.requests;
+ const active=requests.filter(r=>ACTIVE.has(normalizeStatus(r.status))).length;
+ const waiting=requests.filter(r=>WAITING.has(normalizeStatus(r.status))).length;
+ const lines=[
+  ['RELATÓRIO DE USO DA FROTA - HEURO'],
+  ['Gerado em',snapshot.generatedAt.toLocaleString('pt-BR')],
+  ['Capacidade da frota','2 ambulâncias básicas e 1 ambulância UTI'],
+  ['Cadastros pendentes',snapshot.pendingUsers],
+  ['Solicitações em andamento',active],
+  ['Fila de espera',waiting],
+  ['Alertas identificados',snapshot.alerts.filter(a=>a.level==='danger').length],
+  [],
+  ['ALERTAS'],
+  ...snapshot.alerts.map(a=>[a.level==='danger'?'ALERTA':'OK',a.text]),
+  [],
+  ['SOLICITAÇÕES UTILIZADAS NO CÁLCULO'],
+  ['Protocolo','Status','Tipo','Prioridade','Data','Horário','Paciente','Destino','Criada em'],
+  ...requests.map(r=>[r.protocol,r.status,r.support_type,r.priority,r.transport_date,String(r.destination_time||'').slice(0,5),r.patient_name,r.destination,r.created_at])
+ ];
+ const csv='\ufeff'+lines.map(row=>row.map(escapeCsv).join(';')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+ a.href=url;a.download=`relatorio-uso-frota-${new Date().toISOString().slice(0,19).replaceAll(':','-')}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.getElementById('generateFleetReport').addEventListener('click',generateReport);
+document.getElementById('reportsButton').addEventListener('click',generateReport);
+document.getElementById('refreshDashboard').addEventListener('click',loadDashboard);
+loadDashboard();
+})();
 </script>
 </body>
 </html>
