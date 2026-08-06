@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f7fc">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Transportes da Equipe — HEURO</title>
+<link rel="stylesheet" href="css/transportes-equipe.css?v=20260806.60">
+</head>
+<body>
+<main class="page">
+<section id="teamMenu" class="team-menu" aria-label="Menu dos transportes da equipe">
+  <header class="menu-header">
+    <div class="menu-heading">
+      <span class="eyebrow">EQUIPE DE TRANSPORTE</span>
+      <h1>Transportes da equipe</h1>
+      <p>Acompanhe todas as solicitações registradas no sistema.</p>
+    </div>
+    <a class="menu-back" href="./comando-oficial.html?v=20260806.60">Voltar</a>
+  </header>
+
+  <section class="menu-search-panel" aria-label="Pesquisa global de transportes">
+    <label for="globalSearchInput">Pesquisar paciente ou protocolo</label>
+    <div class="menu-search-row">
+      <input id="globalSearchInput" type="search" placeholder="Digite o nome do paciente ou protocolo" autocomplete="off">
+      <button id="globalSearchClear" type="button" aria-label="Limpar pesquisa">×</button>
+    </div>
+    <div id="globalSearchResults" class="global-results" hidden></div>
+  </section>
+
+  <section class="menu-summary" aria-label="Resumo dos transportes">
+    <article class="menu-summary-card pending"><span>Pendentes</span><strong id="menuPendingCount">0</strong></article>
+    <article class="menu-summary-card active"><span>Aceitos</span><strong id="menuActiveCount">0</strong></article>
+    <article class="menu-summary-card completed"><span>Concluídos</span><strong id="menuCompletedCount">0</strong></article>
+    <article class="menu-summary-card total"><span>Total</span><strong id="menuTotalCount">0</strong></article>
+  </section>
+
+  <section class="menu-cards">
+    <button class="menu-card menu-card--pending" data-open-tab="pending" type="button">
+      <span class="menu-card__title">Transportes pendentes</span>
+      <span class="menu-card__description">Solicitações aguardando aceite da equipe.</span>
+    </button>
+    <button class="menu-card menu-card--accepted" data-open-tab="active" type="button">
+      <span class="menu-card__title">Transportes aceitos</span>
+      <span class="menu-card__description">Transportes aceitos ou atualmente em execução.</span>
+    </button>
+    <button class="menu-card menu-card--completed" data-open-tab="completed" type="button">
+      <span class="menu-card__title">Transportes concluídos</span>
+      <span class="menu-card__description">Visualize a planilha de hoje ou consulte os registros de outros dias.</span>
+    </button>
+  </section>
+</section>
+
+<section id="teamWorkspace" class="workspace" hidden>
+<header class="top"><button id="workspaceBack" class="back" type="button" aria-label="Voltar ao menu">←</button><div><h1>Transportes da Equipe</h1><p>Aceite, acompanhe e conclua os transportes.</p></div></header>
+<section class="metrics">
+<article class="metric"><span>Pendentes</span><strong id="pendingCount">0</strong></article>
+<article class="metric"><span>Aceitos / em andamento</span><strong id="activeCount">0</strong></article>
+<article class="metric"><span>Concluídos</span><strong id="completedCount">0</strong></article>
+</section>
+<section class="toolbar"><input id="searchInput" class="search" type="search" placeholder="Pesquisar paciente ou protocolo"><button id="refreshButton" class="refresh" type="button" aria-label="Atualizar">↻</button></section>
+<nav class="tabs" aria-label="Status dos transportes"><button class="tab active" data-tab="pending" type="button">Pendentes</button><button class="tab" data-tab="active" type="button">Aceitos</button><button class="tab" data-tab="completed" type="button">Concluídos</button></nav>
+<section id="requestList" class="list"><div class="empty">Carregando transportes...</div></section>
+</section>
+</main>
+<div id="actionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<section class="sheet"><h2 id="modalTitle">Transporte</h2><p id="modalSubtitle" class="protocol"></p><div id="modalContent"></div><div class="sheet-actions"><button id="modalCancel" class="cancel" type="button">Cancelar</button><button id="modalConfirm" class="confirm" type="button">Confirmar</button></div></section>
+</div>
+<script src="js/config.js?v=20260806.60"></script>
+<script src="js/transportes-equipe.js?v=20260806.60" defer></script>
+<script>
+(() => {
+  const menu=document.getElementById('teamMenu');
+  const workspace=document.getElementById('teamWorkspace');
+  const workspaceBack=document.getElementById('workspaceBack');
+  const openWorkspace=(tabName,button)=>{
+    button?.classList.add('is-pressed');
+    setTimeout(()=>button?.classList.remove('is-pressed'),160);
+    menu.hidden=true; workspace.hidden=false;
+    window.scrollTo({top:0,behavior:'instant'});
+    setTimeout(()=>document.querySelector(`.tab[data-tab="${tabName}"]`)?.click(),0);
+  };
+  document.querySelectorAll('[data-open-tab]').forEach(button=>button.addEventListener('click',()=>openWorkspace(button.dataset.openTab,button)));
+  window.addEventListener('open-team-workspace',event=>openWorkspace(event.detail?.tab||'pending'));
+  workspaceBack?.addEventListener('click',()=>{workspace.hidden=true;menu.hidden=false;window.scrollTo({top:0,behavior:'instant'});});
+})();
+</script>
+</body>
+</html>
