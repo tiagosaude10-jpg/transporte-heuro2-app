@@ -148,6 +148,46 @@ input { font: inherit; }
   width: 8.8%;
   height: 4.9%;
   border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #78839b;
+  transition: color .12s ease, transform .12s ease;
+}
+
+.login-screen__toggle::before {
+  content: "";
+  position: absolute;
+  width: 62%;
+  height: 62%;
+  border-radius: 10px;
+  background: rgba(251, 252, 255, .98);
+}
+
+.login-screen__toggle:active {
+  color: #0b4bb3;
+  transform: scale(.92);
+}
+
+.password-eye {
+  position: absolute;
+  width: 52%;
+  height: 52%;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  z-index: 1;
+}
+
+.password-eye--visible,
+.login-screen__toggle[aria-pressed="true"] .password-eye--hidden {
+  display: none;
+}
+
+.login-screen__toggle[aria-pressed="true"] .password-eye--visible {
+  display: block;
 }
 
 .login-screen__submit,
@@ -165,6 +205,30 @@ input { font: inherit; }
 .login-screen__submit {
   top: 52.0%;
   height: 4.75%;
+  overflow: visible;
+}
+
+.login-screen__submit .press-feedback {
+  position: absolute;
+  inset: -4px;
+  border: 3px solid #075bd8;
+  border-radius: 20px;
+  background: rgba(20, 105, 235, .34);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, .9),
+    0 0 24px rgba(0, 87, 220, .72),
+    inset 0 0 14px rgba(255, 255, 255, .45);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.02);
+  transition: opacity .08s ease, transform .08s ease;
+}
+
+.login-screen__submit:active .press-feedback,
+.login-screen__submit.is-pressed .press-feedback,
+.login-screen__submit[aria-busy="true"] .press-feedback {
+  opacity: 1;
+  transform: scale(.985);
 }
 
 .login-screen__forgot {
@@ -180,13 +244,6 @@ input { font: inherit; }
 .login-screen__submit:active,
 .login-screen__submit.is-pressed,
 .login-screen__submit[aria-busy="true"] {
-  background: rgba(255,255,255,.30);
-  box-shadow:
-    inset 0 0 0 4px rgba(255,255,255,.96),
-    0 0 0 5px rgba(0,145,255,.88),
-    0 0 28px 10px rgba(0,115,255,.65);
-  transform: scale(.965);
-  filter: saturate(1.28) brightness(1.12);
   opacity: 1 !important;
 }
 
