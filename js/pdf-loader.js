@@ -2,7 +2,7 @@
   'use strict';
 
   const sources = [
-    './vendor/jspdf.umd.min.js?v=20260807.82',
+    './vendor/jspdf.umd.min.js?v=20260807.83',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
     'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
     'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
