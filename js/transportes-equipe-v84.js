@@ -107,11 +107,19 @@
     if (execution) return 'active';
     return 'pending';
   };
+  const userCategory = (request) => {
+    const original = originalCategory(request);
+    if (original === 'completed' || !isCollectiveFlow(request)) return original;
+    const own = ownParticipation(request);
+    if (own?.report_status === 'assinado') return 'completed';
+    if (own) return 'active';
+    return original;
+  };
   const effectiveCategory = (request) => {
     const action = staged.get(String(request.id));
     if (action === 'accept') return 'active';
     if (action === 'complete') return 'completed';
-    return originalCategory(request);
+    return userCategory(request);
   };
   const stamp = (request) => {
     const execution = executionOf(request);
@@ -336,22 +344,22 @@
   }
 
   function renderPending(term = '') {
-    const conclusions = requests.filter((request) => originalCategory(request) === 'pending' && staged.get(String(request.id)) === 'complete' && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
-    const acceptances = requests.filter((request) => originalCategory(request) === 'pending' && staged.get(String(request.id)) === 'accept' && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
-    const waiting = requests.filter((request) => originalCategory(request) === 'pending' && !staged.has(String(request.id)) && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
+    const conclusions = requests.filter((request) => userCategory(request) === 'pending' && staged.get(String(request.id)) === 'complete' && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
+    const acceptances = requests.filter((request) => userCategory(request) === 'pending' && staged.get(String(request.id)) === 'accept' && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
+    const waiting = requests.filter((request) => userCategory(request) === 'pending' && !staged.has(String(request.id)) && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => priority(a) - priority(b) || stamp(a) - stamp(b));
     list.innerHTML = `${tableSection(conclusions, 'provisional-complete', 'Conclusões selecionadas')}${tableSection(acceptances, 'provisional-accept', 'Aceites selecionados')}${tableSection(waiting, 'pending')}` || '<div class="empty">Nenhum transporte pendente.</div>';
     bindActions();
   }
 
   function renderActive(term = '') {
-    const chosen = requests.filter((request) => staged.get(String(request.id)) === 'complete' && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
-    const active = requests.filter((request) => originalCategory(request) === 'active' && !staged.has(String(request.id)) && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
+    const chosen = requests.filter((request) => userCategory(request) === 'active' && staged.get(String(request.id)) === 'complete' && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
+    const active = requests.filter((request) => userCategory(request) === 'active' && !staged.has(String(request.id)) && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
     list.innerHTML = `${tableSection(chosen, 'provisional-complete', 'Conclusões selecionadas')}${tableSection(active, 'active')}` || '<div class="empty">Nenhum transporte aceito.</div>';
     bindActions();
   }
 
   function renderCompleted(term = '') {
-    const all = requests.filter((request) => originalCategory(request) === 'completed' && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
+    const all = requests.filter((request) => userCategory(request) === 'completed' && (!focusedRequestId || String(request.id) === String(focusedRequestId)) && matches(request, term)).sort((a, b) => stamp(b) - stamp(a));
     const statusOf = (request) => norm(executionOf(request)?.status || request.status);
     const completed = completedFilter === 'all' ? all : all.filter((request) => statusOf(request) === completedFilter);
     const filterLabels = { all: 'Todos', concluido: 'Concluídos', cancelado: 'Cancelados', suspenso: 'Suspensos', recusado: 'Recusados' };
@@ -798,7 +806,7 @@
           staged.delete(id);
           continue;
         }
-        if (action === 'complete' && originalCategory(request) === 'pending') {
+        if (action === 'complete' && originalCategory(request) === 'pending' && !ownParticipation(request)) {
           await actionRequest(id, 'accept');
         }
         await actionRequest(id, action);
@@ -849,7 +857,7 @@
   $('categoryBack').addEventListener('click', () => leaveScreen(showOverview));
   $('commandBack').addEventListener('click', (event) => {
     event.preventDefault();
-    leaveScreen(() => location.assign(`./comando.html?v=20260807.84&fresh=${Date.now()}`));
+    leaveScreen(() => location.assign(`./comando.html?v=20260807.87&fresh=${Date.now()}`));
   });
   searchForm.addEventListener('submit', (event) => {
     event.preventDefault();
