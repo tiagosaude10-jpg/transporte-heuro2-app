@@ -1,0 +1,38 @@
+/* Ações no fim real da planilha — build 20260807.84
+   Mantém o cabeçalho verticalmente fixo e remove a fixação lateral dos botões. */
+.table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+
+.transport-table th:last-child {
+  position: sticky;
+  top: 0;
+  right: auto;
+  z-index: 4;
+  box-shadow: none;
+}
+
+.transport-table td:last-child {
+  position: static;
+  right: auto;
+  z-index: auto;
+  box-shadow: none;
+}
+
+.transport-table th:last-child,
+.transport-table td:last-child {
+  min-width: 154px;
+  max-width: 154px;
+  border-left: 1px solid #d8e3f1;
+}
+
+@media (max-width: 560px) {
+  .transport-table th:last-child,
+  .transport-table td:last-child {
+    min-width: 132px;
+    max-width: 132px;
+  }
+}
