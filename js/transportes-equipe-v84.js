@@ -523,7 +523,6 @@
   }
 
   function bindActions() {
-    list.querySelectorAll('[data-details]').forEach((button) => { button.onclick = () => openDetails(button.dataset.details); });
     list.querySelectorAll('[data-stage-accept]').forEach((button) => { button.onclick = () => stageAction(button.dataset.stageAccept, 'accept'); });
     list.querySelectorAll('[data-stage-complete]').forEach((button) => { button.onclick = () => stageAction(button.dataset.stageComplete, 'complete'); });
     list.querySelectorAll('[data-open-report]').forEach((button) => { button.onclick = () => openReport(button.dataset.openReport); });
@@ -555,44 +554,6 @@
   const getRequest = (id) => requests.find((request) => String(request.id) === String(id));
   function showModal() { modal.classList.add('show'); }
   function closeModal() { modal.classList.remove('show'); selectedRequest = null; confirmButton.classList.remove('hidden'); confirmButton.onclick = null; }
-
-  async function openDetails(id) {
-    selectedRequest = getRequest(id);
-    if (!selectedRequest) return;
-    const request = selectedRequest;
-    const execution = executionOf(request);
-    const participants = participantsOf(request);
-    const teamSummary = Array.isArray(execution?.required_reports)
-      ? `<div class="field full"><label>Participações obrigatórias</label><div class="participant-list">${execution.required_reports.map((role) => {
-          const participant = participants.find((item) => item.professional_role === role);
-          const state = participant?.report_status === 'assinado' ? 'done' : participant ? 'accepted' : 'waiting';
-          const description = participant?.report_status === 'assinado' ? 'relatório assinado' : participant ? 'relatório pendente' : 'aguardando aceite';
-          return `<span class="participant ${state}"><b>${esc(labels[role] || role)}:</b> ${participant ? esc(participant.user_name) : 'não definido'} — ${description}</span>`;
-        }).join('')}</div></div>`
-      : '';
-    modalTitle.textContent = request.patient_name;
-    modalSubtitle.textContent = request.protocol || '';
-    modalContent.innerHTML = `<div class="sheet-grid">
-      <div class="field"><label>Status</label><div>${esc(labels[norm(execution?.status || request.status)] || execution?.status || request.status)}</div></div>
-      <div class="field"><label>Prioridade</label><div>${esc(labels[request.priority] || request.priority)}</div></div>
-      <div class="field"><label>Nascimento</label><div>${date(request.birth_date)}</div></div>
-      <div class="field"><label>Origem</label><div>${esc(originText(request))}</div></div>
-      <div class="field"><label>Destino</label><div>${esc(request.destination)}</div></div>
-      <div class="field"><label>Data e hora no destino</label><div>${date(request.transport_date)} às ${time(request.destination_time)}</div></div>
-      <div class="field"><label>Ambulância</label><div>${esc(labels[request.support_type] || request.support_type)}</div></div>
-      <div class="field"><label>Motivo</label><div>${esc(labels[request.transfer_reason] || request.transfer_reason)}</div></div>
-      <div class="field"><label>Oxigênio</label><div>${esc(oxygenText(request))}</div></div>
-      <div class="field"><label>Solicitante</label><div>${esc(request.requester_name || 'Não informado')}</div></div>
-      <div class="field"><label>Solicitado em</label><div>${dateTime(request.created_at)}</div></div>
-      <div class="field"><label>Aceito em</label><div>${dateTime(execution?.accepted_at)}</div></div>
-      <div class="field"><label>Concluído em</label><div>${dateTime(execution?.completed_at)}</div></div>
-      <div class="field"><label>Documentos</label><div>${esc(attachmentText(request))}</div></div>
-      <div class="field full"><label>Observações</label><div>${esc(request.observations || 'Sem observações')}</div></div>
-      ${teamSummary}
-    </div>`;
-    confirmButton.classList.add('hidden');
-    showModal();
-  }
 
   async function changeStatusNow(id, status, notes) {
     try {
