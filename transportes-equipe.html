@@ -8,14 +8,14 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Transportes da Equipe — HEURO</title>
-  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.74">
-  <link rel="stylesheet" href="css/transportes-equipe-visual-v74.css?v=20260807.74">
+  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.76">
+  <link rel="stylesheet" href="css/transportes-equipe-visual-v76.css?v=20260807.76">
 </head>
-<body data-build="20260807.74">
+<body data-build="20260807.76">
   <main class="app-shell">
     <section id="overviewPanel" class="overview-screen">
       <header class="overview-header">
-        <a class="header-back" href="./comando.html?v=20260806.70" aria-label="Voltar à tela de comando">←</a>
+        <a class="header-back" href="./comando.html?v=20260807.76" aria-label="Voltar à tela de comando">←</a>
         <div>
           <span class="eyebrow">EQUIPE DE TRANSPORTE</span>
           <h1>Transportes da Equipe</h1>
@@ -91,28 +91,23 @@
 
     <section id="categoryPanel" class="category-screen" hidden>
       <header id="categoryHeader" class="category-header category-pending">
-        <div class="category-main-row">
-          <button id="categoryBack" class="category-back" type="button" aria-label="Voltar às categorias">←</button>
+        <div class="category-compact-row">
+          <nav class="category-navigation" aria-label="Navegação da tela">
+            <button id="categoryBack" class="category-nav-button" type="button" aria-label="Voltar para Transportes da Equipe">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+              <span>Equipe</span>
+            </button>
+            <a id="commandBack" class="category-nav-button category-nav-button--home" href="./comando.html?v=20260807.76" aria-label="Voltar para a tela de comando">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7"/><path d="M6.5 10v10h11V10M10 20v-6h4v6"/></svg>
+              <span>Início</span>
+            </a>
+          </nav>
           <div class="category-main-copy">
             <span class="category-eyebrow">EQUIPE DE TRANSPORTE</span>
             <h1>Transportes da Equipe</h1>
-            <p id="categoryMainSubtitle">Aceite e acompanhe as solicitações.</p>
-          </div>
-        </div>
-        <div class="category-summary">
-          <span id="categoryIcon" class="category-summary-icon">◷</span>
-          <div class="category-summary-copy">
-            <span class="category-label">SOLICITAÇÕES</span>
-            <h2 id="categoryTitle">Transportes pendentes</h2>
-            <p id="categorySubtitle">Aceitos acima e aguardando aceite abaixo.</p>
           </div>
           <div id="categoryCounter" class="category-counter"><strong>0</strong><span>Pendentes</span></div>
         </div>
-        <nav class="category-tabs" aria-label="Alternar categoria">
-          <button class="category-tab" data-tab="pending" type="button">Pendentes</button>
-          <button class="category-tab" data-tab="active" type="button">Aceitos</button>
-          <button class="category-tab" data-tab="completed" type="button">Concluídos</button>
-        </nav>
       </header>
 
       <section class="category-content">
@@ -134,7 +129,7 @@
     </section>
   </div>
 
-  <script src="js/config.js?v=20260807.74"></script>
-  <script src="js/transportes-equipe.js?v=20260807.74" defer></script>
+  <script src="js/config.js?v=20260807.76"></script>
+  <script src="js/transportes-equipe-v76.js?v=20260807.76" defer></script>
 </body>
 </html>
