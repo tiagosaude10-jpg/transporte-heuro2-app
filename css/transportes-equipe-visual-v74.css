@@ -1,0 +1,174 @@
+/* Visual consolidado do painel da equipe — build 20260807.74 */
+html,
+body {
+  background: #123f70;
+}
+
+.overview-screen {
+  background: linear-gradient(180deg, #4288c7 0%, #2768a3 45%, #123f70 100%);
+}
+
+.overview-header h1 {
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(4, 36, 68, 0.24);
+}
+
+.overview-header p,
+.eyebrow {
+  color: #e8f4ff;
+}
+
+.header-back {
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: linear-gradient(145deg, #3189df 0%, #0b59ac 58%, #063b7a 100%);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 24, 60, 0.45);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.46), 0 8px 20px rgba(4, 34, 70, 0.34);
+}
+
+.metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.metric {
+  min-width: 0;
+  padding: 11px 5px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(7, 38, 72, 0.2);
+}
+
+.metric span {
+  overflow: hidden;
+  font-size: clamp(0.59rem, 2.8vw, 0.75rem);
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric strong {
+  margin-top: 4px;
+  font-size: clamp(1.3rem, 5vw, 1.58rem);
+  line-height: 1;
+}
+
+.toolbar {
+  grid-template-columns: minmax(0, 1fr) 126px;
+  gap: 8px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 9px 22px rgba(7, 38, 72, 0.22);
+  backdrop-filter: blur(5px);
+}
+
+.search {
+  height: 56px;
+  border: 2px solid #fff;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 1px 4px rgba(27, 62, 104, 0.1);
+  outline: none;
+}
+
+.search:focus {
+  border-color: #8fd0ff;
+  box-shadow: 0 0 0 3px rgba(143, 208, 255, 0.32);
+}
+
+.search-button {
+  min-height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #287ed3, #083e83);
+}
+
+.status-card {
+  grid-template-columns: 58px 1fr auto;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(4, 30, 60, 0.28);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.status-card-pending {
+  background: linear-gradient(135deg, #ec4052 0%, #b30f25 100%);
+}
+
+.status-card-active {
+  background: linear-gradient(135deg, #2dae6b 0%, #0f663b 100%);
+}
+
+.status-card-completed {
+  background: linear-gradient(135deg, #2469c7 0%, #082f70 100%);
+}
+
+.status-card-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.99), rgba(216, 232, 247, 0.94)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.86), 0 6px 15px rgba(0, 0, 0, 0.24);
+}
+
+.status-card-icon .realistic-status-icon {
+  display: block;
+  width: 54px;
+  height: 54px;
+  fill: initial;
+  stroke: initial;
+  filter: saturate(1.08) contrast(1.03);
+}
+
+.status-card strong,
+.status-card-arrow {
+  color: #fff;
+}
+
+.status-card small {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(4, 30, 60, 0.32);
+  }
+}
+
+@media (max-width: 560px) {
+  .metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .metric:last-child {
+    grid-column: auto;
+  }
+
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr) 112px;
+  }
+
+  .search {
+    padding: 0 12px;
+    font-size: 0.9rem;
+  }
+
+  .search-button {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr) 54px;
+  }
+
+  .search-button span {
+    display: none;
+  }
+}
