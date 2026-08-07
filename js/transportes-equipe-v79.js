@@ -170,6 +170,7 @@
     searchMode = false;
     searchTerm = '';
     focusedRequestId = null;
+    selectedIds.clear();
     categoryPanel.hidden = true;
     overview.hidden = false;
     search.value = '';
@@ -608,4 +609,3 @@
   load();
   setInterval(() => { if (!document.hidden && !staged.size && !committing) load(); }, 45000);
 })();
-
