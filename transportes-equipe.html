@@ -8,15 +8,15 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Transportes da Equipe — HEURO</title>
-  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.78">
-  <link rel="stylesheet" href="css/transportes-equipe-visual-v76.css?v=20260807.78">
-  <link rel="stylesheet" href="css/transportes-equipe-table-v78.css?v=20260807.78">
+  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.79">
+  <link rel="stylesheet" href="css/transportes-equipe-visual-v76.css?v=20260807.79">
+  <link rel="stylesheet" href="css/transportes-equipe-table-v79.css?v=20260807.79">
 </head>
-<body data-build="20260807.78">
+<body data-build="20260807.79">
   <main class="app-shell">
     <section id="overviewPanel" class="overview-screen">
       <header class="overview-header">
-        <a class="header-back" href="./comando.html?v=20260807.78" aria-label="Voltar à tela de comando">←</a>
+        <a class="header-back" href="./comando.html?v=20260807.79" aria-label="Voltar à tela de comando">←</a>
         <div>
           <span class="eyebrow">EQUIPE DE TRANSPORTE</span>
           <h1>Transportes da Equipe</h1>
@@ -98,7 +98,7 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
               <span>Equipe</span>
             </button>
-            <a id="commandBack" class="category-nav-button category-nav-button--home" href="./comando.html?v=20260807.78" aria-label="Voltar para a tela de comando">
+            <a id="commandBack" class="category-nav-button category-nav-button--home" href="./comando.html?v=20260807.79" aria-label="Voltar para a tela de comando">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7"/><path d="M6.5 10v10h11V10M10 20v-6h4v6"/></svg>
               <span>Início</span>
             </a>
@@ -107,7 +107,14 @@
             <span class="category-eyebrow">EQUIPE DE TRANSPORTE</span>
             <h1>Transportes da Equipe</h1>
           </div>
-          <div id="categoryCounter" class="category-counter"><strong>0</strong><span>Pendentes</span></div>
+          <div class="category-header-tools">
+            <button id="generateSelectedPdf" class="generate-selected-pdf" type="button" disabled aria-label="Gerar PDF dos transportes selecionados">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v5h5M9.5 13h5M9.5 16h5"/></svg>
+              <span class="pdf-button-label">Gerar PDF</span>
+              <b id="pdfSelectedCount">0</b>
+            </button>
+            <div id="categoryCounter" class="category-counter"><strong>0</strong><span>Pendentes</span></div>
+          </div>
         </div>
       </header>
 
@@ -130,7 +137,9 @@
     </section>
   </div>
 
-  <script src="js/config.js?v=20260807.78"></script>
-  <script src="js/transportes-equipe-v78.js?v=20260807.78" defer></script>
+  <script src="js/config.js?v=20260807.79"></script>
+  <script src="js/pdf-loader.js?v=20260807.79"></script>
+  <script src="js/transportes-equipe-v79.js?v=20260807.79" defer></script>
 </body>
 </html>
+
