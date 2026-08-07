@@ -8,8 +8,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Transportes da Equipe — HEURO</title>
-  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.71">
-  <link rel="stylesheet" href="css/transportes-equipe-visual-v71.css?v=20260807.71">
+  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.72">
+  <link rel="stylesheet" href="css/transportes-equipe-visual-v71.css?v=20260807.72">
 </head>
 <body>
   <main class="app-shell">
@@ -29,10 +29,13 @@
         <article class="metric metric-completed"><span>Concluídos</span><strong id="completedCount">0</strong></article>
       </section>
 
-      <section class="toolbar">
-        <input id="searchInput" class="search" type="search" placeholder="Pesquisar paciente ou protocolo" autocomplete="off">
-        <button id="refreshButton" class="refresh" type="button" aria-label="Atualizar">↻</button>
-      </section>
+      <form id="searchForm" class="toolbar" role="search">
+        <input id="searchInput" class="search" type="search" placeholder="Digite o nome do paciente ou protocolo" autocomplete="off" enterkeyhint="search" aria-label="Nome do paciente ou protocolo">
+        <button id="searchButton" class="search-button" type="submit" aria-label="Pesquisar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 4 4"></path></svg>
+          <span>Pesquisar</span>
+        </button>
+      </form>
 
       <nav class="status-cards" aria-label="Categorias dos transportes">
         <button class="status-card status-card-pending" data-tab="pending" type="button">
@@ -104,7 +107,7 @@
     </section>
   </div>
 
-  <script src="js/config.js?v=20260807.71"></script>
-  <script src="js/transportes-equipe.js?v=20260807.71" defer></script>
+  <script src="js/config.js?v=20260807.72"></script>
+  <script src="js/transportes-equipe.js?v=20260807.72" defer></script>
 </body>
 </html>
