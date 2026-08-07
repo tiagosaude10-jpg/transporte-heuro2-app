@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const APP_VERSION = '20260806.70';
+  const APP_VERSION = '20260807.74';
   const SUPABASE_URL = 'https://hahozrotaaqaftamvwmm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MLu7DsPF-xoVswv9Qeb1wg_7NDET0di';
   const SESSION_KEY = 'heuro_session';
