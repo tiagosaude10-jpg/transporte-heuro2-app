@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#d41425">
+  <meta name="theme-color" content="#1c5b99">
   <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Transportes da Equipe — HEURO</title>
-  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260806.70">
+  <link rel="stylesheet" href="css/transportes-equipe.css?v=20260807.71">
+  <link rel="stylesheet" href="css/transportes-equipe-visual-v71.css?v=20260807.71">
 </head>
 <body>
   <main class="app-shell">
@@ -35,17 +36,23 @@
 
       <nav class="status-cards" aria-label="Categorias dos transportes">
         <button class="status-card status-card-pending" data-tab="pending" type="button">
-          <span class="status-card-icon">◷</span>
+          <span class="status-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5l3.5 2"></path><path d="M8 3.5h8"></path></svg>
+          </span>
           <span><strong>Transportes pendentes</strong><small>Aguardando aceite da equipe.</small></span>
           <span class="status-card-arrow">›</span>
         </button>
         <button class="status-card status-card-active" data-tab="active" type="button">
-          <span class="status-card-icon">✓</span>
+          <span class="status-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3.5 8.5h10v8h-10z"></path><path d="M13.5 11h3.2l3 3v2.5h-6.2z"></path><circle cx="7" cy="18" r="1.7"></circle><circle cx="17.5" cy="18" r="1.7"></circle><path d="M6 6h5M8.5 3.5v5"></path></svg>
+          </span>
           <span><strong>Transportes aceitos</strong><small>Aceitos ou em execução.</small></span>
           <span class="status-card-arrow">›</span>
         </button>
         <button class="status-card status-card-completed" data-tab="completed" type="button">
-          <span class="status-card-icon">✓</span>
+          <span class="status-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="m8 12.2 2.6 2.6L16.5 9"></path></svg>
+          </span>
           <span><strong>Transportes concluídos</strong><small>Histórico de transportes finalizados.</small></span>
           <span class="status-card-arrow">›</span>
         </button>
@@ -97,7 +104,7 @@
     </section>
   </div>
 
-  <script src="js/config.js?v=20260806.70"></script>
-  <script src="js/transportes-equipe.js?v=20260806.70" defer></script>
+  <script src="js/config.js?v=20260807.71"></script>
+  <script src="js/transportes-equipe.js?v=20260807.71" defer></script>
 </body>
 </html>
