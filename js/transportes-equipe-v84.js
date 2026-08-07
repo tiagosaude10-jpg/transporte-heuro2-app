@@ -297,9 +297,8 @@
   function tableActionButtons(request, mode) {
     const execution = executionOf(request);
     const conclude = `<button class="lifecycle-action conclude compact" data-stage-complete="${esc(request.id)}" type="button">Concluir</button>`;
-    const more = `<button class="lifecycle-action compact status-more" data-status-menu="${esc(request.id)}" type="button">Outras</button>`;
-    if (mode === 'pending') return (isCollectiveFlow(request) ? '' : conclude) + more + lifecycleButton(request, mode);
-    if (mode === 'active') return lifecycleButton(request, mode) + more;
+    if (mode === 'pending') return (isCollectiveFlow(request) ? '' : conclude) + lifecycleButton(request, mode);
+    if (mode === 'active') return lifecycleButton(request, mode);
     if (mode === 'completed' && norm(execution?.status) === 'suspenso') {
       return `<button class="lifecycle-action accept compact" data-reactivate="${esc(request.id)}" type="button">Reativar</button>`;
     }
@@ -857,7 +856,7 @@
   $('categoryBack').addEventListener('click', () => leaveScreen(showOverview));
   $('commandBack').addEventListener('click', (event) => {
     event.preventDefault();
-    leaveScreen(() => location.assign(`./comando.html?v=20260807.87&fresh=${Date.now()}`));
+    leaveScreen(() => location.assign(`./comando.html?v=20260807.88&fresh=${Date.now()}`));
   });
   searchForm.addEventListener('submit', (event) => {
     event.preventDefault();
