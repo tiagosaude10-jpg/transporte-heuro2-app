@@ -1,0 +1,13 @@
+:root{--heuro-bottom-nav-height:94px}
+body.heuro-has-bottom-nav{padding-bottom:calc(var(--heuro-bottom-nav-height) + env(safe-area-inset-bottom))!important}
+.heuro-has-bottom-nav .page,.heuro-has-bottom-nav .app-shell,.heuro-has-bottom-nav .overview-screen,.heuro-has-bottom-nav .category-screen{padding-bottom:calc(var(--heuro-bottom-nav-height) + env(safe-area-inset-bottom) + 12px)!important}
+.heuro-bottom-nav{position:fixed;z-index:2147483000;left:0;right:0;bottom:0;min-height:var(--heuro-bottom-nav-height);padding:7px max(5px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));display:grid;grid-template-columns:repeat(var(--heuro-nav-count,5),minmax(0,1fr));align-items:stretch;background:linear-gradient(180deg,rgba(255,255,255,.98),#f7faff);border-top:1px solid #cddaea;box-shadow:0 -7px 24px rgba(13,50,103,.15);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+.heuro-bottom-nav__item{position:relative;min-width:0;min-height:76px;padding:4px 2px 3px;border:0;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:transparent;color:#385577;text-decoration:none;text-align:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .12s ease,background .12s ease,color .12s ease}
+.heuro-bottom-nav__item:active,.heuro-bottom-nav__item.is-pressed{transform:scale(.94);background:#e5f0ff}
+.heuro-bottom-nav__item.is-active{color:#064cae;background:linear-gradient(180deg,#edf5ff,#e2efff)}
+.heuro-bottom-nav__icon{width:37px;height:37px;display:grid;place-items:center;filter:drop-shadow(0 3px 2px rgba(13,42,82,.22));flex:0 0 auto}
+.heuro-bottom-nav__icon svg{display:block;width:100%;height:100%;overflow:visible}
+.heuro-bottom-nav__label{display:block;width:100%;overflow:hidden;font-size:clamp(8px,2.25vw,11px);font-weight:850;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.heuro-bottom-nav__item--admin .heuro-bottom-nav__icon{width:40px;height:40px;margin-top:-3px}
+@media(min-width:700px){.heuro-bottom-nav{left:50%;right:auto;width:min(100%,760px);transform:translateX(-50%);border-left:1px solid #d5e0ec;border-right:1px solid #d5e0ec;border-radius:20px 20px 0 0}.heuro-bottom-nav__label{font-size:11px}}
+@media(max-width:360px){:root{--heuro-bottom-nav-height:88px}.heuro-bottom-nav__item{min-height:70px}.heuro-bottom-nav__icon{width:32px;height:32px}.heuro-bottom-nav__label{font-size:8px}}

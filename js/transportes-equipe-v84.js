@@ -853,6 +853,11 @@
 
   readStaged();
   document.querySelectorAll('.status-card').forEach((button) => button.addEventListener('click', () => openCategory(button.dataset.tab, false)));
+  document.addEventListener('heuro:navigate', (event) => {
+    if (!event.detail?.navigate) return;
+    event.preventDefault();
+    leaveScreen(event.detail.navigate);
+  });
   $('categoryBack').addEventListener('click', () => leaveScreen(showOverview));
   $('commandBack').addEventListener('click', (event) => {
     event.preventDefault();
@@ -874,6 +879,8 @@
   });
   window.addEventListener('pagehide', flushInBackground);
 
+  const requestedTab = new URLSearchParams(location.search).get('tab');
+  if (['pending', 'active', 'completed'].includes(requestedTab)) openCategory(requestedTab, false);
   load();
   setInterval(() => { if (!document.hidden && !staged.size && !committing) load(); }, 45000);
 })();
