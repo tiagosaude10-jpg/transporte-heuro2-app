@@ -1,113 +1,68 @@
 (() => {
   'use strict';
+  const app = window.HEURO;
+  let session = app?.readSession?.();
+  if (!app || !session?.access_token || !session?.user_id) { location.replace('./login.html'); return; }
+  const $ = (id) => document.getElementById(id);
+  const setViewportHeight = () => document.documentElement.style.setProperty('--app-height', `${Math.round(window.visualViewport?.height || innerHeight)}px`);
+  setViewportHeight();
+  window.visualViewport?.addEventListener('resize', setViewportHeight, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(setViewportHeight, 150), { passive: true });
+  const press = (element) => { element?.classList.add('is-pressed'); setTimeout(() => element?.classList.remove('is-pressed'), 150); };
+  const deny = (message) => alert(message);
 
-  const IMAGE_WIDTH = 768;
-  const IMAGE_HEIGHT = 1664;
-  const IMAGE_RATIO = IMAGE_WIDTH / IMAGE_HEIGHT;
+  async function validateProfile() {
+    const response = await fetch(app.apiUrl(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user_id)}&select=id,display_name,status,authorized_access`), { headers: app.authenticatedHeaders(session.access_token), cache: 'no-store' });
+    const profiles = await response.json().catch(() => []);
+    if (!response.ok || !Array.isArray(profiles) || !profiles.length || profiles[0].status !== 'aprovado' || !profiles[0].authorized_access) throw new Error('Acesso não autorizado.');
+    const profile = profiles[0];
+    session = { ...session, display_name: profile.display_name || session.display_name || '', access: profile.authorized_access, status: profile.status };
+    app.saveSession(session);
+    $('commandUserName').textContent = session.display_name ? `${session.display_name}!` : '';
+  }
 
-  const fitCommandStage = () => {
-    const stage = document.getElementById('commandStage');
-    const screen = document.getElementById('commandScreen');
-    if (!stage || !screen) return;
-    const viewport = window.visualViewport;
-    const availableWidth = Math.max(1, Math.floor(viewport?.width || window.innerWidth || document.documentElement.clientWidth));
-    const availableHeight = Math.max(1, Math.floor((viewport?.height || window.innerHeight || document.documentElement.clientHeight) - 8));
-    let stageWidth = availableWidth;
-    let stageHeight = stageWidth / IMAGE_RATIO;
-    if (stageHeight > availableHeight) { stageHeight = availableHeight; stageWidth = stageHeight * IMAGE_RATIO; }
-    stage.style.width = `${Math.floor(stageWidth)}px`;
-    stage.style.height = `${Math.floor(stageHeight)}px`;
-    screen.style.width = `${availableWidth}px`;
-    screen.style.height = `${availableHeight + 8}px`;
-    screen.style.left = `${Math.floor(viewport?.offsetLeft || 0)}px`;
-    screen.style.top = `${Math.floor(viewport?.offsetTop || 0)}px`;
-  };
+  function portoVelhoDayRange() {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const start = new Date(`${parts}T00:00:00-04:00`);
+    const end = new Date(start.getTime() + 86400000);
+    return [start.toISOString(), end.toISOString()];
+  }
 
-  const loadConfig = () => new Promise((resolve, reject) => {
-    if (window.HEURO) { resolve(window.HEURO); return; }
-    const script = document.createElement('script');
-    script.src = `js/config.js?ts=${Date.now()}`;
-    script.onload = () => window.HEURO ? resolve(window.HEURO) : reject(new Error('Configuração não carregada.'));
-    script.onerror = () => reject(new Error('Falha ao carregar a configuração.'));
-    document.head.appendChild(script);
+  async function loadSummary() {
+    const [start, end] = portoVelhoDayRange();
+    const query = `/rest/v1/transport_requests?select=id,status,created_at,transport_executions(status)&created_at=gte.${encodeURIComponent(start)}&created_at=lt.${encodeURIComponent(end)}`;
+    const response = await fetch(app.apiUrl(query), { headers: app.authenticatedHeaders(session.access_token), cache: 'no-store' });
+    const requests = await response.json().catch(() => []);
+    if (!response.ok || !Array.isArray(requests)) return;
+    const terminal = new Set(['concluido', 'cancelado', 'recusado', 'suspenso']);
+    let pending = 0, active = 0, completed = 0;
+    requests.forEach((request) => {
+      const execution = Array.isArray(request.transport_executions) ? request.transport_executions[0] : request.transport_executions;
+      const status = String(execution?.status || request.status || '').toLowerCase();
+      if (terminal.has(status)) completed += 1;
+      else if (execution && status !== 'aguardando_aceites') active += 1;
+      else pending += 1;
+    });
+    $('summaryRequested').textContent = requests.length;
+    $('summaryActive').textContent = active;
+    $('summaryPending').textContent = pending;
+    $('summaryCompleted').textContent = completed;
+  }
+
+  $('requestTransportLink')?.addEventListener('click', (event) => {
+    event.preventDefault(); press(event.currentTarget);
+    if (!['solicitante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { deny('Seu perfil não possui permissão para criar solicitações de transporte.'); return; }
+    setTimeout(() => location.assign(`./solicitar-transporte.html?v=20260808.89&fresh=${Date.now()}`), 100);
   });
+  $('teamTransportLink')?.addEventListener('click', (event) => {
+    event.preventDefault(); press(event.currentTarget);
+    if (!['executante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { deny('Seu perfil não possui permissão para acessar a Equipe de Transporte.'); return; }
+    setTimeout(() => location.assign(`./transportes-equipe.html?v=20260808.89&fresh=${Date.now()}`), 100);
+  });
+  $('shiftTeamButton')?.addEventListener('click', () => { press($('shiftTeamButton')); $('shiftNotice').hidden = false; });
+  $('shiftNoticeClose')?.addEventListener('click', () => { $('shiftNotice').hidden = true; });
+  $('logoutButton')?.addEventListener('click', () => { press($('logoutButton')); app.clearSession(); location.replace('./login.html?logout=1'); });
 
-  const start = async () => {
-    fitCommandStage();
-    window.addEventListener('resize', fitCommandStage, { passive: true });
-    window.addEventListener('orientationchange', () => window.setTimeout(fitCommandStage, 120), { passive: true });
-    window.visualViewport?.addEventListener('resize', fitCommandStage, { passive: true });
-    window.visualViewport?.addEventListener('scroll', fitCommandStage, { passive: true });
-
-    const app = await loadConfig();
-    let session = app.readSession();
-    if (!session?.access_token || !session?.user_id) { window.location.replace('./login.html'); return; }
-
-    const invalidateSession = (reason = 'sessao_invalida') => {
-      app.clearSession();
-      window.location.replace(`./login.html?motivo=${encodeURIComponent(reason)}`);
-    };
-
-    try {
-      const response = await fetch(app.apiUrl(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user_id)}&select=id,display_name,status,authorized_access`), { headers: app.authenticatedHeaders(session.access_token) });
-      const profiles = await response.json().catch(() => []);
-      if (!response.ok || !Array.isArray(profiles) || profiles.length === 0) { invalidateSession('cadastro_indisponivel'); return; }
-      const profile = profiles[0];
-      if (profile.status !== 'aprovado' || !profile.authorized_access) { invalidateSession(profile.status === 'bloqueado' ? 'acesso_bloqueado' : 'acesso_nao_autorizado'); return; }
-      session = { ...session, display_name: profile.display_name || session.display_name || '', access: profile.authorized_access, status: profile.status };
-      app.saveSession(session);
-    } catch (_) { invalidateSession('falha_validacao'); return; }
-
-    const commandUserName = document.getElementById('commandUserName');
-    const displayName = String(session.display_name || '').trim();
-    if (commandUserName) { commandUserName.textContent = displayName ? `${displayName}!` : ''; commandUserName.title = displayName; }
-
-    const permissionDialog = document.getElementById('permissionDialog');
-    const permissionClose = document.getElementById('permissionClose');
-    const permissionMessage = document.getElementById('permissionMessage');
-    const requestLink = document.getElementById('requestTransportLink');
-    const teamLink = document.getElementById('teamTransportLink');
-    const adminLink = document.getElementById('adminPanelLink');
-    const logoutButton = document.getElementById('logoutButton');
-    let loggingOut = false;
-
-    const showDenied = (text) => { if (permissionMessage) permissionMessage.textContent = text; if (permissionDialog) permissionDialog.hidden = false; };
-    const press = (element, delay = 140) => { element?.classList.add('is-pressed'); window.setTimeout(() => element?.classList.remove('is-pressed'), delay); };
-
-    permissionClose?.addEventListener('click', () => { if (permissionDialog) permissionDialog.hidden = true; });
-    permissionDialog?.addEventListener('click', (event) => { if (event.target === permissionDialog) permissionDialog.hidden = true; });
-
-    requestLink?.addEventListener('click', (event) => {
-      event.preventDefault(); press(requestLink);
-      if (!['solicitante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { showDenied('Seu perfil não possui permissão para criar solicitações de transporte.'); return; }
-      window.setTimeout(() => window.location.assign(`./solicitar-transporte.html?fresh=${Date.now()}`), 100);
-    });
-
-    teamLink?.addEventListener('click', (event) => {
-      event.preventDefault(); press(teamLink);
-      if (!['executante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { showDenied('Seu perfil não possui permissão para acessar os Transportes da Equipe.'); return; }
-      window.setTimeout(() => window.location.assign(`./transportes-equipe.html?fresh=${Date.now()}`), 100);
-    });
-
-    adminLink?.addEventListener('click', (event) => {
-      press(adminLink, 120);
-      if (!(session.status === 'aprovado' && session.access === 'administrador_geral')) { event.preventDefault(); showDenied('Você não possui permissão para acessar esta função. Esta opção exige perfil Administrador Geral.'); }
-    });
-
-    const logout = (event) => {
-      if (event) { event.preventDefault(); event.stopPropagation(); }
-      if (loggingOut) return;
-      loggingOut = true; press(logoutButton, 180);
-      const token = session.access_token;
-      window.setTimeout(() => {
-        app.clearSession();
-        fetch(app.apiUrl('/auth/v1/logout'), { method: 'POST', keepalive: true, headers: app.authenticatedHeaders(token) }).catch(() => {});
-        window.location.replace('./login.html?logout=1');
-      }, 180);
-    };
-    ['click', 'pointerup', 'touchend'].forEach((type) => logoutButton?.addEventListener(type, logout, { passive: false }));
-    app.clearLegacyCaches().catch(() => {});
-  };
-
-  start().catch((error) => { console.error(error); window.location.replace('./login.html'); });
+  validateProfile().then(loadSummary).catch(() => { app.clearSession(); location.replace('./login.html?motivo=sessao_invalida'); });
+  app.clearLegacyCaches().catch(() => {});
 })();

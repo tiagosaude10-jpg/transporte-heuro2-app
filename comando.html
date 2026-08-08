@@ -1,20 +1,41 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><meta name="apple-mobile-web-app-capable" content="yes"><meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Tela de comando — HEURO Transportes</title><link rel="manifest" href="manifest.json?v=20260806.66">
-<style>
-*{box-sizing:border-box}
-:root{--app-height:100dvh}
-html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
-.command-screen{position:fixed;inset:0;display:grid;place-items:center;background:#fff;overflow:hidden}
-.command-stage{position:relative;height:min(var(--app-height),calc(100vw * 1664 / 768));width:min(100vw,calc(var(--app-height) * 768 / 1664));aspect-ratio:768/1664;overflow:hidden}
-.command-image{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.hotspot{position:absolute;z-index:20;display:block;border:0;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.request{left:3.4%;top:28.6%;width:93.2%;height:10.8%;border-radius:20px;background:transparent}
-.team-real{left:3.4%;top:40.2%;width:93.2%;height:10.9%;border-radius:21px;background:linear-gradient(135deg,#14b84d,#078b36);box-shadow:0 8px 18px rgba(0,117,53,.20);display:flex;align-items:center;padding:0 4.2%;gap:4%;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
-.team-real__icon{width:17%;aspect-ratio:1;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:clamp(29px,8vw,54px);flex:0 0 auto}
-.team-real__text{min-width:0;flex:1}.team-real__text strong{display:block;font-size:clamp(15px,4.1vw,27px);line-height:1.1;font-weight:850;white-space:nowrap}.team-real__text span{display:block;margin-top:5%;font-size:clamp(12px,3.35vw,22px);line-height:1.28;color:#f4fff7}.team-real__arrow{font-size:clamp(29px,7vw,48px);font-weight:900}.team-real:active{transform:scale(.985);filter:brightness(1.13);box-shadow:inset 0 0 0 3px rgba(255,255,255,.95),0 7px 18px rgba(0,117,53,.25)}
-.logout{left:75.2%;top:5%;width:20.5%;height:4.25%;border-radius:10px;background:transparent}.admin{left:78.4%;top:93.1%;width:17.2%;height:6.2%;border-radius:16px;background:transparent}.user-name{position:absolute;z-index:15;left:20.7%;top:13.35%;max-width:37%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font:900 clamp(15px,4vw,27px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;text-shadow:0 2px 5px rgba(0,20,75,.45);pointer-events:none}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+  <title>Tela de comando — HEURO Transportes</title>
+  <link rel="manifest" href="manifest.json?v=20260808.89">
+  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.89">
+  <style>
+    *{box-sizing:border-box}:root{--app-height:100dvh}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
+    .command-screen{position:fixed;inset:0;display:grid;place-items:center;background:#fff;overflow:hidden}
+    .command-stage{position:relative;height:min(var(--app-height),calc(100vw * 1825 / 862));width:min(100vw,calc(var(--app-height) * 862 / 1825));aspect-ratio:862/1825;overflow:hidden}
+    .command-image{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
+    .hotspot{position:absolute;z-index:20;display:block;border:0;text-decoration:none;background:transparent;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .12s ease,background .12s ease}
+    .hotspot:active,.hotspot.is-pressed{transform:scale(.985);background:rgba(15,100,214,.09)}
+    .request{left:5.2%;top:28.2%;width:89.5%;height:15.1%;border-radius:24px}.team{left:5.2%;top:44.9%;width:89.5%;height:15%;border-radius:24px}.shift{left:5.2%;top:61.6%;width:89.5%;height:13%;border-radius:24px}.logout{left:71%;top:4.1%;width:23%;height:4.8%;border-radius:12px}
+    .user-name{position:absolute;z-index:15;left:17.2%;top:13.2%;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font:900 clamp(15px,4vw,27px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;text-shadow:0 2px 5px rgba(0,20,75,.45);pointer-events:none}
+    .summary-value{position:absolute;z-index:16;top:85.75%;width:12%;height:2.7%;display:grid;place-items:center;color:#071d57;font:900 clamp(14px,4.3vw,28px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;pointer-events:none}.summary-requested{left:13.4%}.summary-active{left:35.3%}.summary-pending{left:57.3%}.summary-completed{left:79.2%}
+    .notice{position:fixed;z-index:2147483500;left:50%;top:50%;width:min(88%,390px);transform:translate(-50%,-50%);padding:22px;border:0;border-radius:22px;background:#fff;box-shadow:0 20px 70px rgba(0,25,75,.32);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17365f}.notice[hidden]{display:none}.notice h2{margin:0 0 8px;color:#073d9d;font-size:1.25rem}.notice p{margin:0 0 18px;line-height:1.45}.notice button{width:100%;min-height:50px;border:0;border-radius:14px;background:#0759c7;color:#fff;font:inherit;font-weight:850}
+  </style>
 </head>
-<body><main class="command-screen"><div class="command-stage"><img class="command-image" src="2AEAA123-F06C-4510-A36B-F98600DFC210.png?v=20260806.66" alt="Tela de comando do HEURO Transportes"><span id="commandUserName" class="user-name"></span><a class="hotspot request" href="./solicitar-transporte.html?v=20260806.66" aria-label="Abrir solicitação de transporte"></a><a id="teamTransportButton" class="hotspot team-real" href="./transportes-equipe.html?v=20260807.85" aria-label="Abrir Transportes da Equipe"><span class="team-real__icon" aria-hidden="true">🚑</span><span class="team-real__text"><strong>TRANSPORTES DA EQUIPE</strong><span>Visualizar e acompanhar<br>transportes da equipe</span></span><span class="team-real__arrow" aria-hidden="true">›</span></a><a class="hotspot admin" href="./admin-central.html?v=20260806.66" aria-label="Abrir painel do administrador"></a><button id="logoutButton" class="hotspot logout" type="button" aria-label="Sair do sistema"></button></div></main><script src="js/config.js?v=20260807.85"></script><script>(()=>{const setViewportHeight=()=>{const height=Math.round(window.visualViewport?.height||window.innerHeight);document.documentElement.style.setProperty('--app-height',`${height}px`)};setViewportHeight();window.visualViewport?.addEventListener('resize',setViewportHeight);window.addEventListener('orientationchange',()=>setTimeout(setViewportHeight,150));const app=window.HEURO;const session=app?.readSession?.();if(!session?.access_token||!session?.user_id){location.replace('./login.html');return;}app?.clearLegacyCaches?.();const teamButton=document.getElementById('teamTransportButton');teamButton?.addEventListener('click',event=>{event.preventDefault();location.assign(`./transportes-equipe.html?v=20260807.85&fresh=${Date.now()}`)});const name=document.getElementById('commandUserName');if(name)name.textContent=session.display_name?session.display_name+'!':'';document.getElementById('logoutButton')?.addEventListener('click',()=>{app.clearSession();location.replace('./login.html?logout=1')});})();</script></body></html>
+<body>
+  <main class="command-screen"><div id="commandStage" class="command-stage">
+    <img class="command-image" src="29BAFC3A-377C-49E7-B60A-A4D47176F7CC.png?v=20260808.89" alt="Tela de comando do HEURO Transportes">
+    <span id="commandUserName" class="user-name"></span>
+    <a id="requestTransportLink" class="hotspot request" href="./solicitar-transporte.html?v=20260808.89" aria-label="Solicitar transporte"></a>
+    <a id="teamTransportLink" class="hotspot team" href="./transportes-equipe.html?v=20260808.89" aria-label="Abrir Equipe de Transporte"></a>
+    <button id="shiftTeamButton" class="hotspot shift" type="button" aria-label="Cadastrar Equipe do Plantão"></button>
+    <button id="logoutButton" class="hotspot logout" type="button" aria-label="Sair do sistema"></button>
+    <span id="summaryRequested" class="summary-value summary-requested"></span><span id="summaryActive" class="summary-value summary-active"></span><span id="summaryPending" class="summary-value summary-pending"></span><span id="summaryCompleted" class="summary-value summary-completed"></span>
+  </div></main>
+  <section id="shiftNotice" class="notice" role="dialog" aria-modal="true" aria-labelledby="shiftNoticeTitle" hidden><h2 id="shiftNoticeTitle">Equipe do Plantão</h2><p>O cadastro diário das ambulâncias será ativado na próxima etapa, junto com as regras de Básica 1, Básica 2 e UTI.</p><button id="shiftNoticeClose" type="button">Entendi</button></section>
+  <script src="js/config.js?v=20260808.89"></script>
+  <script src="js/comando.js?v=20260808.89" defer></script>
+  <script src="js/bottom-navigation-v89.js?v=20260808.89" defer></script>
+</body>
+</html>
