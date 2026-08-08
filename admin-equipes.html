@@ -6,12 +6,12 @@
   <meta name="theme-color" content="#073d9d">
   <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
   <title>Escala e veículos — HEURO</title>
-  <link rel="stylesheet" href="css/admin-equipes-v96.css?v=20260808.96">
-  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.96">
+  <link rel="stylesheet" href="css/admin-equipes-v96.css?v=20260808.97">
+  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.97">
 </head>
 <body>
   <main class="admin-team-page">
-    <header class="page-header"><a href="./admin-central.html?v=20260808.96" aria-label="Voltar">←</a><div><p>ADMINISTRADOR GERAL</p><h1>Escala e veículos</h1><span>Cadastre as placas e prepare a escala oficial de cada plantão.</span></div></header>
+    <header class="page-header"><a href="./admin-central.html?v=20260808.97" aria-label="Voltar">←</a><div><p>ADMINISTRADOR GERAL</p><h1>Escala e veículos</h1><span>Cadastre placas, programe escalas e libere acessos.</span></div></header>
 
     <section class="panel plates-panel">
       <div class="panel-title"><div><span>Cadastro permanente</span><h2>Ambulâncias e placas</h2></div><b>3 veículos</b></div>
@@ -20,17 +20,25 @@
     </section>
 
     <section class="panel roster-panel">
-      <div class="panel-title"><div><span>Plantão das 07h às 07h</span><h2>Escala diária</h2></div></div>
-      <div class="date-picker"><button id="previousDay" type="button" aria-label="Dia anterior">‹</button><label>Data do plantão<input id="shiftDate" type="date"></label><button id="nextDay" type="button" aria-label="Próximo dia">›</button></div>
+      <div class="panel-title"><div><span>Plantão das 07h às 07h</span><h2>Escala diária ou mensal</h2></div></div>
+      <div class="date-picker"><button id="previousDay" type="button" aria-label="Dia anterior">‹</button><label>Data inicial<input id="shiftDate" type="date"></label><button id="nextDay" type="button" aria-label="Próximo dia">›</button></div>
+      <label class="repeat-toggle"><input id="repeatRoster" type="checkbox"><span>Repetir esta mesma composição por vários dias</span></label>
+      <div id="rangeFields" class="range-fields" hidden><label>Repetir até<input id="repeatUntil" type="date"></label><button id="monthEnd" type="button">Até o fim do mês</button><small>Depois, você pode abrir qualquer dia e corrigir somente aquela escala.</small></div>
       <p id="rosterStatus" class="roster-status">Carregando escala...</p>
       <div id="roleGroups" class="role-groups"></div>
       <p id="driverRule" class="rule"></p>
       <button id="saveRoster" class="primary" type="button">Salvar escala do dia</button>
     </section>
+
+    <section class="panel requests-panel">
+      <div class="panel-title"><div><span>Conflitos do plantão</span><h2>Solicitações de liberação</h2></div><b id="requestCount">0 pendentes</b></div>
+      <p class="rule">Pedidos aparecem aqui quando a escala da categoria já está completa ou a vaga do veículo já está ocupada.</p>
+      <div id="accessRequests" class="request-list" aria-live="polite"></div>
+    </section>
     <p id="message" class="message" role="alert" hidden></p>
   </main>
-  <script src="js/config.js?v=20260808.96"></script>
-  <script src="js/admin-equipes-v96.js?v=20260808.96" defer></script>
-  <script src="js/bottom-navigation-v89.js?v=20260808.96" defer></script>
+  <script src="js/config.js?v=20260808.97"></script>
+  <script src="js/admin-equipes-v96.js?v=20260808.97" defer></script>
+  <script src="js/bottom-navigation-v89.js?v=20260808.97" defer></script>
 </body>
 </html>
