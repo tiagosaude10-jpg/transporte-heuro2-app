@@ -6,14 +6,14 @@
   <meta name="theme-color" content="#0759c7">
   <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
   <title>Assumir plantão — HEURO</title>
-  <link rel="stylesheet" href="css/equipe-plantao-v95.css?v=20260808.98">
-  <link rel="stylesheet" href="css/equipe-plantao-v98.css?v=20260808.98">
-  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.98">
+  <link rel="stylesheet" href="css/equipe-plantao-v95.css?v=20260808.99">
+  <link rel="stylesheet" href="css/equipe-plantao-v98.css?v=20260808.99">
+  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.99">
 </head>
 <body>
   <main class="shift-page">
     <header class="shift-header">
-      <a class="back" href="./comando.html?v=20260808.98" aria-label="Voltar">←</a>
+      <a class="back" href="./comando.html?v=20260808.99" aria-label="Voltar">←</a>
       <div><p>HEURO TRANSPORTES</p><h1>Equipe do Plantão</h1><span>Entre no veículo em que trabalhará hoje.</span></div>
     </header>
 
@@ -26,17 +26,18 @@
     <section id="identityCard" class="identity-card" aria-live="polite"></section>
     <section id="statusBanner" class="status-banner" role="status">Verificando o plantão...</section>
     <section id="durationChoice" class="duration-choice" aria-labelledby="durationTitle">
-      <div><span>Jornada de hoje</span><strong id="durationTitle">Quantas horas você ficará no plantão?</strong></div>
+      <div><span>Jornada de hoje</span><strong id="durationTitle">Qual jornada você assumirá?</strong></div>
       <div class="duration-options">
-        <label class="hours-12"><input type="radio" name="durationHours" value="12"><span>12 horas</span></label>
-        <label class="hours-24"><input type="radio" name="durationHours" value="24" checked><span>24 horas</span></label>
+        <label class="hours-12-day"><input type="radio" name="shiftPeriod" value="12h_diurno"><span><b>12h diurno</b><small>07h às 19h</small></span></label>
+        <label class="hours-12-night"><input type="radio" name="shiftPeriod" value="12h_noturno"><span><b>12h noturno</b><small>19h às 07h</small></span></label>
+        <label class="hours-24"><input type="radio" name="shiftPeriod" value="24h" checked><span><b>24 horas</b><small>07h às 07h</small></span></label>
       </div>
     </section>
     <section id="vehicleCards" class="vehicle-list" aria-live="polite"></section>
     <p id="message" class="message" role="alert" hidden></p>
   </main>
-  <script src="js/config.js?v=20260808.98"></script>
-  <script src="js/equipe-plantao-v95.js?v=20260808.98" defer></script>
-  <script src="js/bottom-navigation-v89.js?v=20260808.98" defer></script>
+  <script src="js/config.js?v=20260808.99"></script>
+  <script src="js/equipe-plantao-v95.js?v=20260808.99" defer></script>
+  <script src="js/bottom-navigation-v89.js?v=20260808.99" defer></script>
 </body>
 </html>
