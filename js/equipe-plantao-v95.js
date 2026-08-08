@@ -13,8 +13,12 @@
   const activeShiftDate = () => { const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, p.value])); const date = new Date(`${parts.year}-${parts.month}-${parts.day}T12:00:00-04:00`); if (Number(parts.hour) < 7) date.setDate(date.getDate() - 1); return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date); };
   const show = (text, ok = false) => { const el = $('message'); el.textContent = text; el.className = `message${ok ? ' ok' : ''}`; el.hidden = false; setTimeout(() => { el.hidden = true; }, 6000); };
   const formatDate = value => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Porto_Velho', dateStyle: 'long' }).format(new Date(`${value}T12:00:00-04:00`));
-  const ownAssignment = () => state.assignments.find(a => a.user_id === session.user_id && a.assumed_at);
+  const isActive = assignment => !!assignment.assumed_at && (!assignment.shift_ends_at || new Date(assignment.shift_ends_at) > new Date());
+  const ownAssignment = () => state.assignments.find(a => a.user_id === session.user_id && isActive(a));
+  const ownPlanned = () => state.assignments.find(a => a.user_id === session.user_id && !a.assumed_at);
   const ownPending = () => state.requests.find(r => r.user_id === session.user_id && r.status === 'pendente');
+  const selectedDuration = () => Number(document.querySelector('input[name="durationHours"]:checked')?.value || 24);
+  const durationBadge = hours => `<span class="duration-badge hours-${hours === 12 ? '12' : '24'}">${hours === 12 ? '12 horas' : '24 horas'}</span>`;
   const cardClass = vehicle => vehicle.code === 'UTI-01' ? 'uti' : vehicle.code === 'BASICA-02' ? 'basic-two' : 'basic-one';
   const ambulanceIcon = vehicle => vehicle.code === 'UTI-01'
     ? '<svg viewBox="0 0 96 68" aria-hidden="true"><path fill="currentColor" d="M8 16h52v8h17l11 15v19H8z"/><path fill="#fff" d="M64 29h11l7 10H64zM27 23h10v8h8v10h-8v8H27v-8h-8V31h8z"/><circle cx="26" cy="58" r="8" fill="#26384d"/><circle cx="73" cy="58" r="8" fill="#26384d"/></svg>'
@@ -27,49 +31,57 @@
   }
 
   function teamRows(vehicle) {
-    const team = state.assignments.filter(a => a.vehicle_id === vehicle.id && a.assumed_at);
+    const team = state.assignments.filter(a => a.vehicle_id === vehicle.id && isActive(a));
     const expected = vehicle.code === 'UTI-01' ? ['medico', 'enfermagem', 'motorista'] : ['enfermagem', 'motorista'];
-    const rows = expected.map(role => { const people = team.filter(a => a.professional_role === role); return `<div class="person ${people.length ? 'confirmed' : ''}"><div><span>${roles[role]}</span><strong>${people.length ? people.map(p => escapeHtml(p.user_name)).join(', ') : 'Aguardando entrada'}</strong></div><b>${people.length ? '✓ No plantão' : 'Livre'}</b></div>`; });
-    team.filter(a => a.professional_role === 'administrador').forEach(person => rows.push(`<div class="person admin"><div><span>Administrador Geral</span><strong>${escapeHtml(person.user_name)}</strong></div><b>Acesso total</b></div>`));
+    const rows = expected.map(role => { const people = team.filter(a => a.professional_role === role); return `<div class="person ${people.length ? 'confirmed' : ''}"><div><span>${roles[role]}</span><strong>${people.length ? people.map(p => escapeHtml(p.user_name)).join(', ') : 'Aguardando entrada'}</strong></div><div class="person-status">${people.length ? durationBadge(people[0].duration_hours || 24) : ''}<b>${people.length ? '✓ No plantão' : 'Livre'}</b></div></div>`; });
+    team.filter(a => a.professional_role === 'administrador').forEach(person => rows.push(`<div class="person admin"><div><span>Administrador Geral</span><strong>${escapeHtml(person.user_name)}</strong></div><div class="person-status">${durationBadge(person.duration_hours || 24)}<b>Acesso total</b></div></div>`));
     return rows.join('');
   }
 
   function vehicleCard(vehicle, role) {
     const selected = ownAssignment()?.vehicle_id === vehicle.id;
     const pending = ownPending()?.vehicle_id === vehicle.id;
+    const planned = ownPlanned()?.vehicle_id === vehicle.id;
     const medicalBlocked = !state.isAdmin && role === 'medico' && vehicle.code !== 'UTI-01';
     if (medicalBlocked) return '';
-    const status = selected ? 'Em plantão' : pending ? 'Aguardando liberação' : 'Disponível';
+    const status = selected ? 'Em plantão' : pending ? 'Aguardando liberação' : planned ? 'Escalado aqui' : 'Disponível';
     const label = selected ? 'Plantão assumido' : pending ? 'Solicitação registrada' : state.isAdmin ? 'Entrar neste veículo' : role === 'medico' ? 'Assumir UTI 01' : 'Assumir nesta equipe';
-    return `<article class="vehicle-card choice ${cardClass(vehicle)} ${selected ? 'selected' : ''} ${pending ? 'waiting' : ''}"><header><span class="vehicle-icon">${ambulanceIcon(vehicle)}</span><div><h2>${escapeHtml(vehicle.display_name)}</h2><small>${vehicle.support_type === 'avancado_uti' ? 'Ambulância de suporte avançado' : 'Ambulância de suporte básico'}</small><span class="plate">${plateText(vehicle)}</span></div><span class="choice-status">${status}</span></header><div class="people">${teamRows(vehicle)}</div><button type="button" data-assume="${vehicle.id}" ${selected || pending ? 'disabled' : ''}>${label}</button></article>`;
+    return `<article class="vehicle-card choice ${cardClass(vehicle)} ${selected ? 'selected' : ''} ${pending ? 'waiting' : ''} ${planned ? 'planned' : ''}"><header><span class="vehicle-icon">${ambulanceIcon(vehicle)}</span><div><h2>${escapeHtml(vehicle.display_name)}</h2><small>${vehicle.support_type === 'avancado_uti' ? 'Ambulância de suporte avançado' : 'Ambulância de suporte básico'}</small><span class="plate">${plateText(vehicle)}</span></div><span class="choice-status">${status}</span></header><div class="people">${teamRows(vehicle)}</div><button type="button" data-assume="${vehicle.id}" ${selected || pending ? 'disabled' : ''}>${label}</button></article>`;
   }
 
   function render() {
     renderIdentity();
     const role = state.isAdmin ? 'administrador' : roleForJob(state.profile.job_role);
     const assignment = ownAssignment();
+    const planned = ownPlanned();
     const pending = ownPending();
+    if (planned && !assignment && !pending) {
+      const radio = document.querySelector(`input[name="durationHours"][value="${planned.duration_hours || 24}"]`);
+      if (radio) radio.checked = true;
+    }
+    $('durationChoice').hidden = !!assignment || !!pending;
     if (!role) { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = 'Seu cargo não corresponde às categorias Médico, Enfermagem ou Motorista. Solicite a correção do cadastro ao administrador.'; $('vehicleCards').innerHTML = ''; return; }
-    if (pending) { $('statusBanner').className = 'status-banner pending'; $('statusBanner').textContent = `${pending.conflict_reason || 'Foi identificado conflito com a escala.'} Sua solicitação ficou registrada. Entre em contato com o Administrador Geral para liberar o acesso.`; }
-    else if (assignment) { const vehicle = state.vehicles.find(v => v.id === assignment.vehicle_id); $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = `${state.isAdmin ? 'Acesso administrativo' : 'Plantão'} ativo em ${vehicle?.display_name || 'ambulância selecionada'}${vehicle?.license_plate ? ` · placa ${vehicle.license_plate}` : ''}.`; }
-    else if (state.isAdmin) { $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = 'Administrador Geral: escolha qualquer veículo. Seu acesso é direto e não ocupa a vaga da equipe assistencial.'; }
-    else { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = `Escolha o veículo do plantão. Se houver conflito com a escala, o pedido será registrado para liberação administrativa.`; }
+    if (pending) { $('statusBanner').className = 'status-banner pending'; $('statusBanner').textContent = `${pending.conflict_reason || 'Foi identificado conflito com a escala.'} Sua solicitação de ${pending.duration_hours || 24}h ficou registrada. Entre em contato com o Administrador Geral.`; }
+    else if (assignment) { const vehicle = state.vehicles.find(v => v.id === assignment.vehicle_id); $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = `${state.isAdmin ? 'Acesso administrativo' : 'Plantão'} de ${assignment.duration_hours || 24}h ativo em ${vehicle?.display_name || 'ambulância selecionada'}${vehicle?.license_plate ? ` · placa ${vehicle.license_plate}` : ''}.`; }
+    else if (state.isAdmin) { $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = 'Administrador Geral: escolha a jornada e qualquer veículo. Seu acesso não ocupa vaga assistencial.'; }
+    else if (planned) { const vehicle = state.vehicles.find(v => v.id === planned.vehicle_id); $('statusBanner').className = 'status-banner planned'; $('statusBanner').textContent = `Você está escalado em ${vehicle?.display_name || 'um veículo'} por ${planned.duration_hours || 24}h. Confirme abaixo; outra escolha será enviada ao administrador se gerar conflito.`; }
+    else { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = 'Escolha 12h ou 24h e o veículo do plantão. Conflitos serão registrados para liberação administrativa.'; }
     $('vehicleCards').innerHTML = state.vehicles.sort((a, b) => order[a.code] - order[b.code]).map(v => vehicleCard(v, role)).join('');
   }
 
   async function assume(vehicleId, button) {
     button.disabled = true; button.textContent = 'Registrando...';
     try {
-      const result = await api('/rest/v1/rpc/assume_transport_shift', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ p_vehicle_id: vehicleId }) });
-      if (result?.status === 'pendente') show('Conflito registrado. A solicitação foi enviada ao Administrador Geral.'); else show('Entrada no plantão confirmada e vinculada ao seu login.', true);
+      const result = await api('/rest/v1/rpc/assume_transport_shift', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ p_vehicle_id: vehicleId, p_duration_hours: selectedDuration() }) });
+      if (result?.status === 'pendente') show('Conflito registrado. A solicitação foi enviada ao Administrador Geral.'); else show(`Entrada de ${result?.duration_hours || selectedDuration()}h confirmada e vinculada ao seu login.`, true);
       await loadShift();
     } catch (error) { show(error.message); button.disabled = false; button.textContent = 'Assumir nesta equipe'; }
   }
 
   async function loadShift() {
     const [rosters, requests] = await Promise.all([
-      api(`/rest/v1/transport_shift_rosters?shift_date=eq.${state.shiftDate}&select=id,shift_date,driver_required,transport_shift_assignments(id,vehicle_id,user_id,user_name,professional_role,assumed_at)`),
-      api(`/rest/v1/transport_shift_access_requests?shift_date=eq.${state.shiftDate}&status=eq.pendente&select=id,user_id,vehicle_id,professional_role,status,conflict_reason,requested_at`)
+      api(`/rest/v1/transport_shift_rosters?shift_date=eq.${state.shiftDate}&select=id,shift_date,driver_required,transport_shift_assignments(id,vehicle_id,user_id,user_name,professional_role,assumed_at,duration_hours,shift_ends_at)`),
+      api(`/rest/v1/transport_shift_access_requests?shift_date=eq.${state.shiftDate}&status=eq.pendente&select=id,user_id,vehicle_id,professional_role,duration_hours,status,conflict_reason,requested_at`)
     ]);
     state.assignments = rosters?.[0]?.transport_shift_assignments || [];
     state.requests = requests || [];
