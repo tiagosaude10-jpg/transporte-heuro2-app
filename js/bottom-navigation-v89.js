@@ -23,12 +23,12 @@
     admin: '<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="ad"><stop stop-color="#8fc2ff"/><stop offset=".55" stop-color="#1767c9"/><stop offset="1" stop-color="#06377f"/></radialGradient></defs><circle cx="24" cy="24" r="20" fill="url(#ad)" stroke="#fff" stroke-width="2"/><path d="M24 13v22M13 24h22" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M12 15a17 17 0 0 1 15-8" fill="none" stroke="#cde6ff" stroke-width="2.5" stroke-linecap="round"/></svg>'
   };
   const items = [
-    ['home', 'Início', './comando.html?v=20260808.89'],
-    ['pending', 'Solicitações pendentes', './transportes-equipe.html?tab=pending&v=20260808.89'],
-    ['agenda', 'Agenda de transportes', './transportes-equipe.html?tab=active&v=20260808.89'],
-    ['history', 'Histórico de transportes', './transportes-equipe.html?tab=completed&v=20260808.89']
+    ['home', 'Início', './comando.html?v=20260808.96'],
+    ['pending', 'Solicitações pendentes', './transportes-equipe.html?tab=pending&v=20260808.96'],
+    ['agenda', 'Agenda de transportes', './transportes-equipe.html?tab=active&v=20260808.96'],
+    ['history', 'Histórico de transportes', './transportes-equipe.html?tab=completed&v=20260808.96']
   ];
-  if (isAdmin) items.push(['admin', 'Administrativo', './admin-central.html?v=20260808.89']);
+  if (isAdmin) items.push(['admin', 'Administrativo', './admin-central.html?v=20260808.96']);
 
   const nav = document.createElement('nav');
   nav.className = 'heuro-bottom-nav';

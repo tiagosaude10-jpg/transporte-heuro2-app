@@ -33,11 +33,11 @@ button,a{-webkit-tap-highlight-color:transparent}
 .dialog{position:fixed;inset:0;display:none;place-items:center;padding:24px;background:rgba(3,18,58,.58);z-index:10}.dialog.show{display:grid}.dialog-box{width:min(100%,390px);padding:24px;border-radius:22px;background:#fff;text-align:center;box-shadow:0 22px 55px rgba(0,0,0,.28)}.dialog-box h2{margin:0 0 10px}.dialog-box p{margin:0 0 20px;color:#637898;line-height:1.5}.dialog-box button{width:100%;min-height:52px;border:0;border-radius:14px;background:#0a55c4;color:#fff;font:inherit;font-weight:900}
 @media(max-width:480px){.page{padding-left:10px;padding-right:10px}.header{grid-template-columns:52px 62px 1fr;gap:10px}.back{width:52px;height:52px}.logo{width:62px;height:62px}.header h1{font-size:1.7rem}.panel{padding:15px}.menu-button{grid-template-columns:52px 1fr 22px;padding:12px}.menu-icon{width:52px;height:52px}.metric{min-height:105px;padding:12px}}
 </style>
-<link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.89">
+<link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.96">
 </head>
 <body>
 <main class="page">
-<header class="header"><a class="back" href="./comando.html?v=20260807.83" aria-label="Voltar">←</a><img class="logo" src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt=""><div><p>PAINEL DO ADMINISTRADOR</p><h1>Central de gerenciamento</h1><span>Visão operacional e funções administrativas.</span></div></header>
+<header class="header"><a class="back" href="./comando.html?v=20260808.96" aria-label="Voltar">←</a><img class="logo" src="A5B6B48E-DCCE-4B36-9A5F-F7C1D1225E82.png" alt=""><div><p>PAINEL DO ADMINISTRADOR</p><h1>Central de gerenciamento</h1><span>Visão operacional e funções administrativas.</span></div></header>
 
 <section class="metrics" aria-label="Indicadores operacionais">
 <article class="metric"><div class="metric-top"><span>Cadastros pendentes</span><span class="metric-icon">👥</span></div><strong id="pendingUsers">0</strong><small>Aguardando análise</small></article>
@@ -51,18 +51,18 @@ button,a{-webkit-tap-highlight-color:transparent}
 <section class="alert-panel"><h2>Alertas operacionais</h2><div id="alertsList" class="alerts"><div class="alert-item ok">Carregando dados operacionais...</div></div></section>
 
 <section class="panel"><div class="panel-head"><h2>Funções administrativas</h2><p>Cada função possui uma área própria, sem misturar configurações.</p></div><nav class="menu" aria-label="Funções administrativas">
-<a class="menu-button approval" href="./admin-cadastros.html?v=20260807.83"><span class="menu-icon">✅</span><span class="menu-copy"><strong>Aprovação de cadastros</strong><small>Analisar, aprovar, rejeitar, bloquear e reativar usuários.</small></span><span class="arrow">›</span><span id="pendingBadge" class="badge"></span></a>
-<a class="menu-button whatsapp" href="./admin-whatsapp-config.html?v=20260807.83"><span class="menu-icon">📱</span><span class="menu-copy"><strong>WhatsApp dos transportes</strong><small>Cadastrar contatos do Suporte Básico e Avançado / UTI.</small></span><span class="arrow">›</span></a>
+<a class="menu-button approval" href="./admin-cadastros.html?v=20260808.96"><span class="menu-icon">✅</span><span class="menu-copy"><strong>Aprovação de cadastros</strong><small>Analisar, aprovar, rejeitar, bloquear e reativar usuários.</small></span><span class="arrow">›</span><span id="pendingBadge" class="badge"></span></a>
+<a class="menu-button whatsapp" href="./admin-whatsapp-config.html?v=20260808.96"><span class="menu-icon">📱</span><span class="menu-copy"><strong>WhatsApp dos transportes</strong><small>Cadastrar contatos do Suporte Básico e Avançado / UTI.</small></span><span class="arrow">›</span></a>
 <button class="menu-button users future" type="button" data-title="Usuários"><span class="menu-icon">👥</span><span class="menu-copy"><strong>Usuários</strong><small>Consultar perfis e gerenciar permissões de acesso.</small></span><span class="arrow">›</span></button>
-<a class="menu-button settings" href="./admin-configuracoes.html?v=20260807.83"><span class="menu-icon">⚙️</span><span class="menu-copy"><strong>Configurações do sistema</strong><small>Configurar alertas e ativar ou desativar o relatório do motorista.</small></span><span class="arrow">›</span></a>
-<button class="menu-button teams future" type="button" data-title="Equipes de transporte"><span class="menu-icon">🚑</span><span class="menu-copy"><strong>Equipes de transporte</strong><small>Cadastrar e organizar profissionais e equipes.</small></span><span class="arrow">›</span></button>
-<a class="menu-button history" href="./admin-relatorios.html?v=20260807.83#historico"><span class="menu-icon">🕘</span><span class="menu-copy"><strong>Histórico dos transportes</strong><small>Consultar cada transporte, horários, responsáveis e situação final.</small></span><span class="arrow">›</span></a>
-<a id="reportsButton" class="menu-button reports" href="./admin-relatorios.html?v=20260807.83#relatorios"><span class="menu-icon">📊</span><span class="menu-copy"><strong>Relatórios</strong><small>Indicadores por período, setor, prioridade e profissional.</small></span><span class="arrow">›</span></a>
-<a class="menu-button teams" href="./admin-relatorios.html?v=20260807.83#arquivar"><span class="menu-icon">🗄️</span><span class="menu-copy"><strong>Arquivar e liberar espaço</strong><small>Gerar PDF definitivo e remover anexos confirmados com segurança.</small></span><span class="arrow">›</span></a>
+<a class="menu-button settings" href="./admin-configuracoes.html?v=20260808.96"><span class="menu-icon">⚙️</span><span class="menu-copy"><strong>Configurações do sistema</strong><small>Configurar alertas e ativar ou desativar o relatório do motorista.</small></span><span class="arrow">›</span></a>
+<a class="menu-button teams" href="./admin-equipes.html?v=20260808.96"><span class="menu-icon">🚑</span><span class="menu-copy"><strong>Equipes de transporte</strong><small>Cadastrar placas e organizar a escala diária dos profissionais.</small></span><span class="arrow">›</span></a>
+<a class="menu-button history" href="./admin-relatorios.html?v=20260808.96#historico"><span class="menu-icon">🕘</span><span class="menu-copy"><strong>Histórico dos transportes</strong><small>Consultar cada transporte, horários, responsáveis e situação final.</small></span><span class="arrow">›</span></a>
+<a id="reportsButton" class="menu-button reports" href="./admin-relatorios.html?v=20260808.96#relatorios"><span class="menu-icon">📊</span><span class="menu-copy"><strong>Relatórios</strong><small>Indicadores por período, setor, prioridade e profissional.</small></span><span class="arrow">›</span></a>
+<a class="menu-button teams" href="./admin-relatorios.html?v=20260808.96#arquivar"><span class="menu-icon">🗄️</span><span class="menu-copy"><strong>Arquivar e liberar espaço</strong><small>Gerar PDF definitivo e remover anexos confirmados com segurança.</small></span><span class="arrow">›</span></a>
 </nav></section>
 </main>
 <div id="dialog" class="dialog" role="dialog" aria-modal="true"><div class="dialog-box"><h2 id="dialogTitle">Função</h2><p>Esta função já está posicionada no painel e será ativada na etapa correspondente.</p><button id="dialogClose" type="button">Entendi</button></div></div>
-<script src="js/config.js?v=20260807.83"></script>
+<script src="js/config.js?v=20260808.96"></script>
 <script>
 (() => {
 'use strict';
@@ -183,6 +183,6 @@ loadDashboard();
 setInterval(()=>{if(!document.hidden)loadDashboard()},60000);
 })();
 </script>
-<script src="js/bottom-navigation-v89.js?v=20260808.89" defer></script>
+<script src="js/bottom-navigation-v89.js?v=20260808.96" defer></script>
 </body>
 </html>

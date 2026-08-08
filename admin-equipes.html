@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#073d9d">
+  <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+  <title>Escala e veículos — HEURO</title>
+  <link rel="stylesheet" href="css/admin-equipes-v96.css?v=20260808.96">
+  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.96">
+</head>
+<body>
+  <main class="admin-team-page">
+    <header class="page-header"><a href="./admin-central.html?v=20260808.96" aria-label="Voltar">←</a><div><p>ADMINISTRADOR GERAL</p><h1>Escala e veículos</h1><span>Cadastre as placas e prepare a escala oficial de cada plantão.</span></div></header>
+
+    <section class="panel plates-panel">
+      <div class="panel-title"><div><span>Cadastro permanente</span><h2>Ambulâncias e placas</h2></div><b>3 veículos</b></div>
+      <div id="plateFields" class="plate-grid" aria-live="polite"></div>
+      <button id="savePlates" class="primary" type="button">Salvar placas dos veículos</button>
+    </section>
+
+    <section class="panel roster-panel">
+      <div class="panel-title"><div><span>Plantão das 07h às 07h</span><h2>Escala diária</h2></div></div>
+      <div class="date-picker"><button id="previousDay" type="button" aria-label="Dia anterior">‹</button><label>Data do plantão<input id="shiftDate" type="date"></label><button id="nextDay" type="button" aria-label="Próximo dia">›</button></div>
+      <p id="rosterStatus" class="roster-status">Carregando escala...</p>
+      <div id="roleGroups" class="role-groups"></div>
+      <p id="driverRule" class="rule"></p>
+      <button id="saveRoster" class="primary" type="button">Salvar escala do dia</button>
+    </section>
+    <p id="message" class="message" role="alert" hidden></p>
+  </main>
+  <script src="js/config.js?v=20260808.96"></script>
+  <script src="js/admin-equipes-v96.js?v=20260808.96" defer></script>
+  <script src="js/bottom-navigation-v89.js?v=20260808.96" defer></script>
+</body>
+</html>
