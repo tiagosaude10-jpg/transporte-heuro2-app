@@ -64,12 +64,12 @@
   $('requestTransportLink')?.addEventListener('click', (event) => {
     event.preventDefault(); press(event.currentTarget);
     if (!['solicitante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { deny('Seu perfil não possui permissão para criar solicitações de transporte.'); return; }
-    setTimeout(() => location.assign(`./solicitar-transporte.html?v=20260808.91&fresh=${Date.now()}`), 100);
+    setTimeout(() => location.assign(`./solicitar-transporte.html?v=20260808.92&fresh=${Date.now()}`), 100);
   });
   $('teamTransportLink')?.addEventListener('click', (event) => {
     event.preventDefault(); press(event.currentTarget);
     if (!['executante', 'solicitante_executante', 'administrador_geral'].includes(session.access)) { deny('Seu perfil não possui permissão para acessar a Equipe de Transporte.'); return; }
-    setTimeout(() => location.assign(`./transportes-equipe.html?v=20260808.91&fresh=${Date.now()}`), 100);
+    setTimeout(() => location.assign(`./transportes-equipe.html?v=20260808.92&fresh=${Date.now()}`), 100);
   });
   $('shiftTeamButton')?.addEventListener('click', () => { press($('shiftTeamButton')); $('shiftNotice').hidden = false; });
   $('shiftNoticeClose')?.addEventListener('click', () => { $('shiftNotice').hidden = true; });
@@ -78,4 +78,3 @@
   validateProfile().then(loadSummary).catch(() => { app.clearSession(); location.replace('./login.html?motivo=sessao_invalida'); });
   app.clearLegacyCaches().catch(() => {});
 })();
-
