@@ -3,8 +3,6 @@
   const app = window.HEURO, session = app?.readSession?.();
   if (!app || !session?.access_token || session.access !== 'administrador_geral') { location.replace('./comando.html'); return; }
   const $ = id => document.getElementById(id);
-  const roleMeta = { medico: { title: 'Médico', subtitle: '1 profissional · UTI 01', slots: 1 }, enfermagem: { title: 'Enfermagem', subtitle: '3 profissionais · veículo escolhido ao entrar', slots: 3 }, motorista: { title: 'Motoristas', subtitle: '3 profissionais · veículo escolhido ao entrar', slots: 3 } };
-  const roleOrder = ['medico', 'enfermagem', 'motorista'];
   const roleNames = { medico: 'Médico', enfermagem: 'Enfermagem', motorista: 'Motorista' };
   const vehicleOrder = { 'UTI-01': 0, 'BASICA-01': 1, 'BASICA-02': 2 };
   const state = { vehicles: [], profiles: [], assignments: [], requests: [], driverRequired: true };
@@ -15,31 +13,43 @@
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   const moveDate = days => { const d = new Date(`${$('shiftDate').value}T12:00:00-04:00`); d.setDate(d.getDate() + days); $('shiftDate').value = d.toISOString().slice(0, 10); syncRangeStart(); loadRoster(); };
   const syncRangeStart = () => { if (!$('repeatUntil').value || $('repeatUntil').value < $('shiftDate').value) $('repeatUntil').value = $('shiftDate').value; };
+  const rolesForVehicle = vehicle => vehicle.code === 'UTI-01' ? ['medico', 'enfermagem', 'motorista'] : ['enfermagem', 'motorista'];
 
   function renderPlates() {
     $('plateFields').innerHTML = state.vehicles.sort((a, b) => vehicleOrder[a.code] - vehicleOrder[b.code]).map(v => `<label class="plate-field" data-code="${esc(v.code)}"><span><strong>${esc(v.display_name)}</strong><small>${v.support_type === 'avancado_uti' ? 'Suporte avançado' : 'Suporte básico'}</small></span><input data-plate="${esc(v.code)}" value="${esc(v.license_plate || '')}" maxlength="8" placeholder="ABC1D23" autocomplete="off" autocapitalize="characters"></label>`).join('');
   }
   const optionsFor = role => state.profiles.filter(p => roleForJob(p.job_role) === role).map(p => `<option value="${p.id}">${esc(p.display_name || p.full_name)} — ${esc(p.job_role)}</option>`).join('');
+  const durationPicker = (vehicleId, role) => `<div class="slot-duration"><label class="hours-12"><input type="radio" name="duration-${vehicleId}-${role}" value="12"><span>12h</span></label><label class="hours-24"><input type="radio" name="duration-${vehicleId}-${role}" value="24" checked><span>24h</span></label></div>`;
   function renderRoster() {
-    $('roleGroups').innerHTML = roleOrder.map(role => { const meta = roleMeta[role], slots = Array.from({ length: meta.slots }, (_, index) => `<div class="role-slot"><label>${meta.title} ${meta.slots > 1 ? index + 1 : ''}</label><select data-role="${role}" data-slot="${index}"><option value="">Não informado</option>${optionsFor(role)}</select></div>`).join(''); return `<section class="role-group"><header><h3>${meta.title}</h3><span>${meta.subtitle}</span></header><div class="role-slots">${slots}</div></section>`; }).join('');
-    roleOrder.forEach(role => { const rows = state.assignments.filter(a => a.professional_role === role); document.querySelectorAll(`select[data-role="${role}"]`).forEach((select, index) => { select.value = rows[index]?.user_id || ''; }); });
-    const counts = Object.fromEntries(roleOrder.map(role => [role, state.assignments.filter(a => a.professional_role === role).length]));
-    const complete = counts.medico >= 1 && counts.enfermagem >= 3 && (!state.driverRequired || counts.motorista >= 3);
+    const vehicles = [...state.vehicles].sort((a, b) => vehicleOrder[a.code] - vehicleOrder[b.code]);
+    $('vehicleRosters').innerHTML = vehicles.map(vehicle => {
+      const roles = rolesForVehicle(vehicle).filter(role => role !== 'motorista' || state.driverRequired);
+      const slots = roles.map(role => `<div class="vehicle-slot"><label>${roleNames[role]}</label><select data-vehicle="${vehicle.id}" data-role="${role}"><option value="">Não informado</option>${optionsFor(role)}</select>${durationPicker(vehicle.id, role)}</div>`).join('');
+      return `<section class="vehicle-roster ${vehicle.code === 'UTI-01' ? 'uti' : vehicle.code === 'BASICA-02' ? 'basic-two' : 'basic-one'}"><header><div><span>VEÍCULO</span><h3>${esc(vehicle.display_name)}</h3></div><b>${esc(vehicle.license_plate || 'SEM PLACA')}</b></header><div class="vehicle-slots">${slots}</div></section>`;
+    }).join('');
+    state.assignments.filter(a => a.professional_role !== 'administrador' && a.vehicle_id).forEach(a => {
+      const select = document.querySelector(`select[data-vehicle="${a.vehicle_id}"][data-role="${a.professional_role}"]`);
+      if (select) select.value = a.user_id;
+      const radio = document.querySelector(`input[name="duration-${a.vehicle_id}-${a.professional_role}"][value="${a.duration_hours || 24}"]`);
+      if (radio) radio.checked = true;
+    });
+    const required = [...document.querySelectorAll('select[data-vehicle][data-role]')];
+    const complete = required.length > 0 && required.every(select => select.value);
     $('rosterStatus').className = `roster-status${complete ? ' complete' : ''}`;
-    $('rosterStatus').textContent = complete ? 'Escala completa. Os profissionais escolhem o veículo ao entrar no plantão.' : 'Escala em rascunho. Quem chegar ao plantão ainda poderá entrar espontaneamente; conflitos serão enviados para sua liberação.';
+    $('rosterStatus').textContent = complete ? 'Escala completa por veículo. Cada profissional já possui ambulância e jornada previstas.' : 'Escala em rascunho. Os campos podem ser completados depois; a entrada espontânea continua disponível.';
     $('driverRule').textContent = state.driverRequired ? 'Configuração atual: motorista obrigatório nas três ambulâncias.' : 'Configuração atual: motorista opcional. Essa regra é controlada em Configurações do sistema.';
   }
   function renderRequests() {
     $('requestCount').textContent = `${state.requests.length} ${state.requests.length === 1 ? 'pendente' : 'pendentes'}`;
     if (!state.requests.length) { $('accessRequests').innerHTML = '<div class="request-empty">Nenhuma solicitação aguardando liberação nesta data.</div>'; return; }
-    $('accessRequests').innerHTML = state.requests.map(r => `<article class="access-request"><div class="request-head"><div><strong>${esc(r.user_name)}</strong><span>${esc(roleNames[r.professional_role] || r.professional_role)} · ${esc(r.transport_vehicles?.display_name || 'Veículo')}</span></div><b>${esc(r.transport_vehicles?.license_plate || 'SEM PLACA')}</b></div><p>${esc(r.conflict_reason || 'Conflito com a escala vigente.')}</p><div class="request-actions"><button class="approve" data-review="${r.id}" data-approve="true">Liberar acesso</button><button class="deny" data-review="${r.id}" data-approve="false">Recusar</button></div></article>`).join('');
+    $('accessRequests').innerHTML = state.requests.map(r => `<article class="access-request"><div class="request-head"><div><strong>${esc(r.user_name)}</strong><span>${esc(roleNames[r.professional_role] || r.professional_role)} · ${esc(r.transport_vehicles?.display_name || 'Veículo')} · ${r.duration_hours || 24}h</span></div><b>${esc(r.transport_vehicles?.license_plate || 'SEM PLACA')}</b></div><p>${esc(r.conflict_reason || 'Conflito com a escala vigente.')}</p><div class="request-actions"><button class="approve" data-review="${r.id}" data-approve="true">Liberar acesso</button><button class="deny" data-review="${r.id}" data-approve="false">Recusar</button></div></article>`).join('');
   }
   async function loadRoster() {
     $('rosterStatus').textContent = 'Carregando escala...';
     try {
       const [rows, requests] = await Promise.all([
-        api(`/rest/v1/transport_shift_rosters?shift_date=eq.${$('shiftDate').value}&select=id,driver_required,transport_shift_assignments(id,user_id,user_name,professional_role,vehicle_id,assumed_at)`),
-        api(`/rest/v1/transport_shift_access_requests?shift_date=eq.${$('shiftDate').value}&status=eq.pendente&select=id,user_id,user_name,professional_role,vehicle_id,status,conflict_reason,requested_at,transport_vehicles(display_name,license_plate)&order=requested_at.asc`)
+        api(`/rest/v1/transport_shift_rosters?shift_date=eq.${$('shiftDate').value}&select=id,driver_required,transport_shift_assignments(id,user_id,user_name,professional_role,vehicle_id,assumed_at,duration_hours,shift_ends_at)`),
+        api(`/rest/v1/transport_shift_access_requests?shift_date=eq.${$('shiftDate').value}&status=eq.pendente&select=id,user_id,user_name,professional_role,vehicle_id,duration_hours,status,conflict_reason,requested_at,transport_vehicles(display_name,license_plate)&order=requested_at.asc`)
       ]);
       const roster = rows?.[0]; state.assignments = roster?.transport_shift_assignments || []; state.requests = requests || []; if (roster) state.driverRequired = roster.driver_required; renderRoster(); renderRequests();
     } catch (error) { show(error.message); }
@@ -51,10 +61,13 @@
   async function saveRoster() {
     const button = $('saveRoster'); button.disabled = true; button.textContent = 'Salvando...';
     try {
-      const assignments = [...document.querySelectorAll('select[data-role]')].filter(select => select.value).map(select => ({ user_id: select.value, professional_role: select.dataset.role }));
+      const assignments = [...document.querySelectorAll('select[data-vehicle][data-role]')].filter(select => select.value).map(select => {
+        const duration = document.querySelector(`input[name="duration-${select.dataset.vehicle}-${select.dataset.role}"]:checked`);
+        return { user_id: select.value, professional_role: select.dataset.role, vehicle_id: select.dataset.vehicle, duration_hours: Number(duration?.value || 24) };
+      });
       const end = $('repeatRoster').checked ? $('repeatUntil').value : $('shiftDate').value;
       const result = await api('/rest/v1/rpc/save_transport_shift_roster_range', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ p_start_date: $('shiftDate').value, p_end_date: end, p_assignments: assignments }) });
-      show(`${result?.days_saved || 1} ${Number(result?.days_saved) === 1 ? 'escala salva' : 'escalas salvas'}. Os profissionais poderão escolher o veículo ao entrar.`, true); await loadRoster();
+      show(`${result?.days_saved || 1} ${Number(result?.days_saved) === 1 ? 'escala salva' : 'escalas salvas'} por veículo.`, true); await loadRoster();
     } catch (error) { show(error.message); } finally { button.disabled = false; button.textContent = $('repeatRoster').checked ? 'Salvar escalas do período' : 'Salvar escala do dia'; }
   }
   async function reviewRequest(id, approve, button) {
