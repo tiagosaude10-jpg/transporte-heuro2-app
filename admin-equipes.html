@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#073d9d">
   <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
   <title>Escala e veículos — HEURO</title>
-  <link rel="stylesheet" href="css/admin-equipes-v96.css?v=20260808.98">
-  <link rel="stylesheet" href="css/admin-equipes-v98.css?v=20260808.98">
-  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.98">
+  <link rel="stylesheet" href="css/admin-equipes-v96.css?v=20260808.99">
+  <link rel="stylesheet" href="css/admin-equipes-v98.css?v=20260808.99">
+  <link rel="stylesheet" href="css/bottom-navigation-v89.css?v=20260808.99">
 </head>
 <body>
   <main class="admin-team-page">
-    <header class="page-header"><a href="./admin-central.html?v=20260808.98" aria-label="Voltar">←</a><div><p>ADMINISTRADOR GERAL</p><h1>Escala por veículo</h1><span>Organize cada ambulância, a equipe e a jornada.</span></div></header>
+    <header class="page-header"><a href="./admin-central.html?v=20260808.99" aria-label="Voltar">←</a><div><p>ADMINISTRADOR GERAL</p><h1>Escala por veículo</h1><span>Organize cada ambulância, a equipe e a jornada.</span></div></header>
 
     <section class="panel plates-panel">
       <div class="panel-title"><div><span>Cadastro permanente e opcional</span><h2>Ambulâncias e placas</h2></div><b>3 veículos</b></div>
@@ -27,7 +27,7 @@
       <label class="repeat-toggle"><input id="repeatRoster" type="checkbox"><span>Repetir esta mesma composição por vários dias</span></label>
       <div id="rangeFields" class="range-fields" hidden><label>Repetir até<input id="repeatUntil" type="date"></label><button id="monthEnd" type="button">Até o fim do mês</button><small>Depois, você pode abrir qualquer dia e corrigir somente aquela escala.</small></div>
       <p id="rosterStatus" class="roster-status">Carregando escala...</p>
-      <div class="duration-legend"><span class="duration-badge hours-12">12 horas</span><span class="duration-badge hours-24">24 horas</span></div>
+      <div class="duration-legend"><span class="duration-badge hours-12-day">12h diurno · 07h–19h</span><span class="duration-badge hours-12-night">12h noturno · 19h–07h</span><span class="duration-badge hours-24">24h · 07h–07h</span></div>
       <div id="vehicleRosters" class="vehicle-rosters"></div>
       <p id="driverRule" class="rule"></p>
       <button id="saveRoster" class="primary" type="button">Salvar escala do dia</button>
@@ -40,8 +40,8 @@
     </section>
     <p id="message" class="message" role="alert" hidden></p>
   </main>
-  <script src="js/config.js?v=20260808.98"></script>
-  <script src="js/admin-equipes-v96.js?v=20260808.98" defer></script>
-  <script src="js/bottom-navigation-v89.js?v=20260808.98" defer></script>
+  <script src="js/config.js?v=20260808.99"></script>
+  <script src="js/admin-equipes-v96.js?v=20260808.99" defer></script>
+  <script src="js/bottom-navigation-v89.js?v=20260808.99" defer></script>
 </body>
 </html>
