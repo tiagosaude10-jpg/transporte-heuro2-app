@@ -4,20 +4,20 @@
   let session = app?.readSession?.();
   if (!app || !session?.access_token || !session?.user_id) { location.replace('./login.html'); return; }
   const $ = id => document.getElementById(id);
-  const roles = { medico: 'Médico', enfermagem: 'Enfermagem', motorista: 'Motorista', administrador: 'Administrador Geral' };
+  const roles = { medico: 'Médico', enfermagem: 'Enfermagem', motorista: 'Motorista' };
   const order = { 'UTI-01': 0, 'BASICA-01': 1, 'BASICA-02': 2 };
-  const state = { profile: null, isAdmin: false, vehicles: [], assignments: [], requests: [], shiftDate: '' };
+  const state = { profile: null, isAdmin: false, professionalRole: null, vehicles: [], assignments: [], requests: [], shiftDate: '', entryTarget: null };
   const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
   const roleForJob = job => { const j = String(job || '').toLowerCase(); if (j.includes('médic') || j.includes('medic')) return 'medico'; if (j.includes('enfermeir') || ((j.includes('técnic') || j.includes('tecnic') || j.includes('auxiliar')) && j.includes('enferm'))) return 'enfermagem'; if (j.includes('motorista') || j.includes('condutor')) return 'motorista'; return null; };
   const api = async (path, options = {}) => { const response = await fetch(app.apiUrl(path), { ...options, headers: { ...app.authenticatedHeaders(session.access_token), ...(options.headers || {}) }, cache: 'no-store' }); const data = await response.json().catch(() => null); if (!response.ok) throw new Error(data?.message || data?.hint || 'Não foi possível concluir a operação.'); return data; };
   const activeShiftDate = () => { const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, p.value])); const date = new Date(`${parts.year}-${parts.month}-${parts.day}T12:00:00-04:00`); if (Number(parts.hour) < 7) date.setDate(date.getDate() - 1); return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Porto_Velho', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date); };
-  const show = (text, ok = false) => { const el = $('message'); el.textContent = text; el.className = `message${ok ? ' ok' : ''}`; el.hidden = false; setTimeout(() => { el.hidden = true; }, 6000); };
+  const show = (text, ok = false) => { const el = $('message'); el.textContent = text; el.className = `message${ok ? ' ok' : ''}`; el.hidden = false; clearTimeout(show.timer); show.timer = setTimeout(() => { el.hidden = true; }, 6500); };
   const formatDate = value => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Porto_Velho', dateStyle: 'long' }).format(new Date(`${value}T12:00:00-04:00`));
   const isActive = assignment => !!assignment.assumed_at && (!assignment.shift_ends_at || new Date(assignment.shift_ends_at) > new Date());
   const ownAssignment = () => state.assignments.find(a => a.user_id === session.user_id && isActive(a));
   const ownPlanned = () => state.assignments.find(a => a.user_id === session.user_id && !a.assumed_at);
   const ownPending = () => state.requests.find(r => r.user_id === session.user_id && r.status === 'pendente');
-  const selectedPeriod = () => document.querySelector('input[name="shiftPeriod"]:checked')?.value || '24h';
+  const selectedPeriod = () => document.querySelector('input[name="shiftPeriod"]:checked')?.value || '';
   const periodLabel = period => ({ '12h_diurno': '12h diurno · 07h–19h', '12h_noturno': '12h noturno · 19h–07h', '24h': '24h · 07h–07h' }[period] || '24h · 07h–07h');
   const periodClass = period => period === '12h_diurno' ? 'hours-12-day' : period === '12h_noturno' ? 'hours-12-night' : 'hours-24';
   const durationBadge = period => `<span class="duration-badge ${periodClass(period)}">${periodLabel(period)}</span>`;
@@ -28,56 +28,74 @@
   const plateText = vehicle => vehicle.license_plate ? escapeHtml(vehicle.license_plate) : 'SEM PLACA';
 
   function renderIdentity() {
-    const role = state.isAdmin ? 'administrador' : roleForJob(state.profile.job_role);
-    $('identityCard').innerHTML = `<div class="identity-icon">👤</div><div><span>Profissional conectado</span><strong>${escapeHtml(state.profile.display_name || state.profile.full_name)}</strong><small>${escapeHtml(state.profile.job_role || 'Cargo não informado')}${role ? ` · ${roles[role]}` : ''}</small></div>`;
+    const access = state.isAdmin ? ' · Administrador Geral' : '';
+    $('identityCard').innerHTML = `<div class="identity-icon">👤</div><div><span>Profissional conectado</span><strong>${escapeHtml(state.profile.display_name || state.profile.full_name)}</strong><small>${escapeHtml(state.profile.job_role || 'Cargo não informado')}${access}</small></div>`;
   }
 
   function teamRows(vehicle) {
     const team = state.assignments.filter(a => a.vehicle_id === vehicle.id && isActive(a));
     const expected = vehicle.code === 'UTI-01' ? ['medico', 'enfermagem', 'motorista'] : ['enfermagem', 'motorista'];
-    const rows = expected.map(role => { const people = team.filter(a => a.professional_role === role); return `<div class="person ${people.length ? 'confirmed' : ''}"><div><span>${roles[role]}</span><strong>${people.length ? people.map(p => escapeHtml(p.user_name)).join(', ') : 'Aguardando entrada'}</strong></div><div class="person-status">${people.length ? durationBadge(people[0].shift_period || '24h') : ''}<b>${people.length ? '✓ No plantão' : 'Livre'}</b></div></div>`; });
-    team.filter(a => a.professional_role === 'administrador').forEach(person => rows.push(`<div class="person admin"><div><span>Administrador Geral</span><strong>${escapeHtml(person.user_name)}</strong></div><div class="person-status">${durationBadge(person.shift_period || '24h')}<b>Acesso total</b></div></div>`));
-    return rows.join('');
+    return expected.map(role => {
+      const people = team.filter(a => a.professional_role === role);
+      const own = people.some(p => p.user_id === session.user_id);
+      const unavailable = !!ownAssignment() || !!ownPending();
+      return `<button type="button" class="person category-entry ${people.length ? 'confirmed' : ''} ${own ? 'own' : ''}" data-role="${role}" data-vehicle="${vehicle.id}" ${unavailable ? 'disabled' : ''}><span class="person-main"><span>${roles[role]}</span><strong>${people.length ? people.map(p => escapeHtml(p.user_name)).join(', ') : 'Toque para assumir'}</strong></span><span class="person-status">${people.length ? durationBadge(people[0].shift_period || '24h') : ''}<b>${people.length ? '✓ No plantão' : 'Livre ›'}</b></span></button>`;
+    }).join('');
   }
 
-  function vehicleCard(vehicle, role) {
+  function vehicleCard(vehicle) {
     const selected = ownAssignment()?.vehicle_id === vehicle.id;
     const pending = ownPending()?.vehicle_id === vehicle.id;
     const planned = ownPlanned()?.vehicle_id === vehicle.id;
-    const medicalBlocked = !state.isAdmin && role === 'medico' && vehicle.code !== 'UTI-01';
-    if (medicalBlocked) return '';
     const status = selected ? 'Em plantão' : pending ? 'Aguardando liberação' : planned ? 'Escalado aqui' : 'Disponível';
-    const label = selected ? 'Plantão assumido' : pending ? 'Solicitação registrada' : state.isAdmin ? 'Entrar neste veículo' : role === 'medico' ? 'Assumir UTI 01' : 'Assumir nesta equipe';
-    return `<article class="vehicle-card choice ${cardClass(vehicle)} ${selected ? 'selected' : ''} ${pending ? 'waiting' : ''} ${planned ? 'planned' : ''}"><header><span class="vehicle-icon">${ambulanceIcon(vehicle)}</span><div><h2>${escapeHtml(vehicle.display_name)}</h2><small>${vehicle.support_type === 'avancado_uti' ? 'Ambulância de suporte avançado' : 'Ambulância de suporte básico'}</small><span class="plate">${plateText(vehicle)}</span></div><span class="choice-status">${status}</span></header><div class="people">${teamRows(vehicle)}</div><button type="button" data-assume="${vehicle.id}" ${selected || pending ? 'disabled' : ''}>${label}</button></article>`;
+    return `<article class="vehicle-card choice ${cardClass(vehicle)} ${selected ? 'selected' : ''} ${pending ? 'waiting' : ''} ${planned ? 'planned' : ''}"><header><span class="vehicle-icon">${ambulanceIcon(vehicle)}</span><div><h2>${escapeHtml(vehicle.display_name)}</h2><small>${vehicle.support_type === 'avancado_uti' ? 'Ambulância de suporte avançado' : 'Ambulância de suporte básico'}</small><span class="plate">${plateText(vehicle)}</span></div><span class="choice-status">${status}</span></header><div class="people">${teamRows(vehicle)}</div></article>`;
+  }
+
+  function closeEntry() { state.entryTarget = null; $('entryPanel').hidden = true; document.querySelectorAll('input[name="shiftPeriod"]').forEach(radio => { radio.checked = false; }); }
+
+  function chooseCategory(vehicleId, role) {
+    if (!state.professionalRole) { show('Seu cargo não corresponde às categorias operacionais. Solicite a correção ao Administrador Geral.'); return; }
+    if (role !== state.professionalRole) {
+      const message = `Seu cadastro é de ${roles[state.professionalRole]}. Você não pode assumir como ${roles[role]}.`;
+      $('statusBanner').className = 'status-banner pending'; $('statusBanner').textContent = message; show(message); return;
+    }
+    const vehicle = state.vehicles.find(v => v.id === vehicleId);
+    if (role === 'medico' && vehicle?.code !== 'UTI-01') { show('A categoria Médico só pode assumir a UTI 01.'); return; }
+    state.entryTarget = { vehicleId, role };
+    $('entryTitle').textContent = `${roles[role]} · ${vehicle?.display_name || 'Veículo'}`;
+    $('entrySubtitle').textContent = 'Escolha o turno e confirme sua entrada.';
+    const planned = ownPlanned();
+    const suggested = planned?.vehicle_id === vehicleId ? planned.shift_period : '';
+    document.querySelectorAll('input[name="shiftPeriod"]').forEach(radio => { radio.checked = radio.value === suggested; });
+    $('entryPanel').hidden = false;
+    $('entryPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function render() {
     renderIdentity();
-    const role = state.isAdmin ? 'administrador' : roleForJob(state.profile.job_role);
     const assignment = ownAssignment();
     const planned = ownPlanned();
     const pending = ownPending();
-    if (planned && !assignment && !pending) {
-      const radio = document.querySelector(`input[name="shiftPeriod"][value="${planned.shift_period || '24h'}"]`);
-      if (radio) radio.checked = true;
-    }
-    $('durationChoice').hidden = !!assignment || !!pending;
-    if (!role) { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = 'Seu cargo não corresponde às categorias Médico, Enfermagem ou Motorista. Solicite a correção do cadastro ao administrador.'; $('vehicleCards').innerHTML = ''; return; }
-    if (pending) { $('statusBanner').className = 'status-banner pending'; $('statusBanner').textContent = `${pending.conflict_reason || 'Foi identificado conflito com a escala.'} Sua solicitação de ${periodLabel(pending.shift_period)} ficou registrada. Entre em contato com o Administrador Geral.`; }
-    else if (assignment) { const vehicle = state.vehicles.find(v => v.id === assignment.vehicle_id); $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = `${state.isAdmin ? 'Acesso administrativo' : 'Plantão'} de ${periodLabel(assignment.shift_period)} ativo em ${vehicle?.display_name || 'ambulância selecionada'}${vehicle?.license_plate ? ` · placa ${vehicle.license_plate}` : ''}.`; }
-    else if (state.isAdmin) { $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = 'Administrador Geral: escolha a jornada e qualquer veículo. Seu acesso não ocupa vaga assistencial.'; }
-    else if (planned) { const vehicle = state.vehicles.find(v => v.id === planned.vehicle_id); $('statusBanner').className = 'status-banner planned'; $('statusBanner').textContent = `Você está escalado em ${vehicle?.display_name || 'um veículo'} para ${periodLabel(planned.shift_period)}. Confirme abaixo; outra escolha será enviada ao administrador se gerar conflito.`; }
-    else { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = 'Escolha 12h diurno, 12h noturno ou 24h e o veículo do plantão. Conflitos serão registrados para liberação administrativa.'; }
-    $('vehicleCards').innerHTML = state.vehicles.sort((a, b) => order[a.code] - order[b.code]).map(v => vehicleCard(v, role)).join('');
+    if (!state.professionalRole) { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = 'Seu cargo não corresponde às categorias Médico, Enfermagem ou Motorista. Solicite a correção do cadastro ao administrador.'; }
+    else if (pending) { $('statusBanner').className = 'status-banner pending'; $('statusBanner').textContent = `${pending.conflict_reason || 'Foi identificado conflito com a escala.'} Sua solicitação de ${periodLabel(pending.shift_period)} ficou registrada. Entre em contato com o Administrador Geral.`; }
+    else if (assignment) { const vehicle = state.vehicles.find(v => v.id === assignment.vehicle_id); $('statusBanner').className = 'status-banner active'; $('statusBanner').textContent = `${roles[assignment.professional_role] || 'Plantão'} de ${periodLabel(assignment.shift_period)} ativo em ${vehicle?.display_name || 'ambulância selecionada'}${vehicle?.license_plate ? ` · placa ${vehicle.license_plate}` : ''}.`; }
+    else if (planned) { const vehicle = state.vehicles.find(v => v.id === planned.vehicle_id); $('statusBanner').className = 'status-banner planned'; $('statusBanner').textContent = `Você está escalado como ${roles[state.professionalRole]} em ${vehicle?.display_name || 'um veículo'} para ${periodLabel(planned.shift_period)}. Toque na sua categoria para confirmar.`; }
+    else { $('statusBanner').className = 'status-banner'; $('statusBanner').textContent = `Toque em ${roles[state.professionalRole]} no veículo em que trabalhará. Depois escolha o turno.`; }
+    if (assignment || pending) closeEntry();
+    $('vehicleCards').innerHTML = state.vehicles.sort((a, b) => order[a.code] - order[b.code]).map(vehicleCard).join('');
   }
 
-  async function assume(vehicleId, button) {
-    button.disabled = true; button.textContent = 'Registrando...';
+  async function assume() {
+    const period = selectedPeriod();
+    if (!state.entryTarget) { show('Escolha sua categoria em um dos veículos.'); return; }
+    if (!period) { show('Escolha 12h diurno, 12h noturno ou 24h.'); return; }
+    const button = $('confirmEntry'); button.disabled = true; button.textContent = 'Registrando...';
     try {
-      const result = await api('/rest/v1/rpc/assume_transport_shift', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ p_vehicle_id: vehicleId, p_shift_period: selectedPeriod() }) });
-      if (result?.status === 'pendente') show('Conflito registrado. A solicitação foi enviada ao Administrador Geral.'); else show(`Entrada de ${periodLabel(result?.shift_period || selectedPeriod())} confirmada e vinculada ao seu login.`, true);
+      const result = await api('/rest/v1/rpc/assume_transport_shift', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ p_vehicle_id: state.entryTarget.vehicleId, p_shift_period: period }) });
+      if (result?.status === 'pendente') show('Conflito registrado. A solicitação foi enviada ao Administrador Geral.'); else show(`Entrada como ${roles[state.professionalRole]} em ${periodLabel(result?.shift_period || period)} confirmada.`, true);
       await loadShift();
-    } catch (error) { show(error.message); button.disabled = false; button.textContent = 'Assumir nesta equipe'; }
+    } catch (error) { show(error.message); }
+    finally { button.disabled = false; button.textContent = 'Confirmar entrada'; }
   }
 
   async function loadShift() {
@@ -96,6 +114,7 @@
       state.profile = profiles?.[0];
       if (!state.profile || state.profile.status !== 'aprovado') throw new Error('Acesso não autorizado.');
       state.isAdmin = state.profile.authorized_access === 'administrador_geral';
+      state.professionalRole = roleForJob(state.profile.job_role);
       session = { ...session, access: state.profile.authorized_access, display_name: state.profile.display_name }; app.saveSession(session);
       state.shiftDate = activeShiftDate(); $('shiftDateLabel').textContent = formatDate(state.shiftDate);
       state.vehicles = await api('/rest/v1/transport_vehicles?active=eq.true&code=in.(BASICA-01,BASICA-02,UTI-01)&select=id,code,display_name,support_type,license_plate,active');
@@ -103,6 +122,8 @@
     } catch (error) { $('statusBanner').textContent = error.message; $('vehicleCards').innerHTML = ''; }
   }
 
-  $('vehicleCards').addEventListener('click', event => { const button = event.target.closest('button[data-assume]'); if (button) assume(button.dataset.assume, button); });
+  $('vehicleCards').addEventListener('click', event => { const button = event.target.closest('button[data-role][data-vehicle]'); if (button) chooseCategory(button.dataset.vehicle, button.dataset.role); });
+  $('confirmEntry').addEventListener('click', assume);
+  $('cancelEntry').addEventListener('click', closeEntry);
   init(); app.clearLegacyCaches().catch(() => {});
 })();
